@@ -1,0 +1,484 @@
+openapi: 3.0.0
+info:
+  title: My Backend API
+  description: A simple API for demonstration
+  version: 1.0.0
+
+tags: 
+  - name: User Registration
+    description: New user registration
+  - name: User Maintenance
+    description: User Maintenance
+  - name: User Authentication
+    description: User Authentication
+  - name: Student
+    description: Student and Class
+
+servers:
+  - url: http://localhost:4000
+    description: Local development server
+  - url: https://sad6ntmjsh.execute-api.eu-west-2.amazonaws.com/prod
+    description: Demo server
+
+paths:
+  /classes:
+    get:
+      summary: List all classes
+      operationId: findClass
+      tags:
+        - Student
+      parameters:
+        - in: query
+          name: grade
+          schema:
+            type: number
+        - in: query
+          name: classNumber
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Class"
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /students:
+    get:
+      summary: Search students by criteria
+      operationId: findStudent
+      tags:
+        - Student
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: array
+            items:
+              type: string
+          description: Id of the student        
+        - in: query
+          name: classId
+          schema:
+            type: string
+          description: Id of the class  
+          example: 1A
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Find student with lastName + firstName contains input name as substring, for any language
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Student"
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"             
+  /users:
+    get:
+      summary: Search users by criteria
+      operationId: findUser
+      tags:
+        - User Maintenance
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: email
+          schema:
+            type: string
+        - in: query
+          name: name
+          schema:
+            type: string
+        - in: query
+          name: studentId
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/UserStatus"
+        - in: query
+          name: role
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/UserRole"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create a new user
+      operationId: createUser
+      tags:
+        - User Maintenance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: "#/components/schemas/UserCreation"
+                - $ref: "#/components/schemas/UserRegistration"
+      responses:
+        "201":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /users/{id}:
+    put:
+      summary: Update an existing user
+      operationId: updateUser
+      tags:
+        - User Maintenance
+      parameters:
+        - in: path
+          name: id
+          required: true          
+          schema:
+            type: string
+          description: User ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"      
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /user-authentications:
+    post:
+      summary: Authenticate a user
+      operationId: authenticateUser
+      tags:
+        - User Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                  example: "mySecret123"
+      responses:
+        '200':
+          description: JWT token returned on successful login
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationResponse"
+        '401':
+          description: Unauthorized - Invalid userId or password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /google-authentications:
+    post:
+      summary: Authenticate a user who is signed up with google
+      operationId: authenticateGoogleUser
+      tags:
+        - User Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - accessToken
+              properties:
+                accessToken:
+                  type: string
+                  description: Id token returned from Google
+      responses:
+        '200':
+          description: JWT token returned on successful login
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationResponse"
+        '401':
+          description: Unauthorized - Invalid user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        parameter:
+          type: array
+          items:
+            type: string
+        message:
+          type: string
+    Language:
+      type: string
+      enum:
+      - English
+      - TraditionalChinese
+      - SimplifiedChinese
+    AuthenticationStatus:
+      type: string
+      enum:
+      - Success
+      - ChangePasswordOnly
+    UserRole:
+      type: string
+      enum:
+      - Student
+      - Parent
+      - Teacher
+      - Admin
+    UserStatus:
+      type: string
+      enum:
+      - Active
+      - Inactive
+      - Suspend
+    AuditControl:
+      type: object
+      required:
+        - createdBy
+        - createdAt
+        - updatedBy
+        - updatedAt
+        - version
+      properties:
+        createdBy:
+          type: string
+          description: Id of the create user
+        createdAt:
+          type: string
+          format: datetime
+          description: Create datetime
+        updatedBy:
+          type: string
+          description: Id of the last update user
+        updatedAt:
+          type: string
+          format: datetime
+          description: Create datetime
+        version:
+          type: number      
+    Class:
+      type: object
+      required:
+        - id
+        - level
+        - grade
+        - classNumber
+      properties:
+        id:
+          type: string
+          description: grade + class number
+        grade:
+          type: number
+        classNumber:
+          type: string
+          maxLength: 1
+    Student:
+      type: object
+      required:
+        - id
+        - lastName
+        - firstName
+        - classId
+        - studentNumber
+      properties:
+        id:
+          type: string
+          description: Student Id in format of className + "-" + studentNumber
+        classId:
+          type: string
+          description: level + gradeNumber + classNumber of class
+        studentNumber:
+          type: number
+        lastName:
+          type: object
+          additionalProperties: true
+        firstName:
+          type: object
+          additionalProperties: true
+    UserRegistrationRequest:
+      type: object
+      required:
+        - email
+        - classId
+        - studentNumber
+      properties:
+        email:
+          type: string
+          description: Email address of user.  Unique among all users
+        classId:
+          type: string
+          description: Id of the student          
+        studentNumber:
+          type: number
+    UserCreation:
+      type: object
+      required:
+        - email
+        - name
+        - role
+        - status
+        - entitledStudentId
+      properties:
+        email:
+          type: string
+          description: Email address of user.  Unique among all users
+        name:
+          type: object
+          additionalProperties: true
+        role:
+          $ref: "#/components/schemas/UserRole"
+        status:
+          $ref: "#/components/schemas/UserStatus"
+        entitledStudentId:
+          type: array
+          items:
+            type: string
+          description: Id of students
+    UserRegistration:
+      type: object
+      required:
+        - accessToken
+        - studentId
+        - studentName
+      properties:
+        accessToken:
+          type: string
+          description: Access token returned from Google
+        studentId:
+          type: string
+        studentName:
+          type: string
+          description: Name of the student
+    UserUpdate:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/UserCreation"
+        - type: object
+          required:
+            - version
+          properties:
+            password:
+              type: string
+            version:
+              type: number
+    User:
+      type: object
+      required:
+        - id
+        - status
+      allOf:
+        - $ref: "#/components/schemas/AuditControl"
+        - $ref: "#/components/schemas/UserCreation"
+        - type: object
+          properties:
+            id:
+              type: string
+            status:
+              $ref: "#/components/schemas/UserStatus"
+            lastLoginDatetime:
+              type: string
+              format: datetime        
+            passwordExpiryDatetime:
+              type: string
+              format: datetime
+    AuthenticationResponse:
+      type: object
+      required:
+        - status
+        - user
+      properties:
+        status:
+          $ref: "#/components/schemas/AuthenticationStatus"
+        user:
+          $ref: "#/components/schemas/User"
+

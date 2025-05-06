@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  output        = "../node_modules/.prisma/client/"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  student
+  parent
+  teacher
+  admin
+}
+
+enum UserStatus {
+  active
+  inactivate
+  suspend
+}
+
+model Class {
+  oid          Int       @id @default(autoincrement())
+  grade        Int
+  class_number String    @db.VarChar(1)
+  students     Student[]
+
+  @@unique([grade, class_number])
+  @@map("class")
+}
+
+model Student {
+  oid               Int     @id @default(autoincrement())
+  id                String  @db.VarChar(20)
+  firstname_en      String? @db.VarChar(50)
+  firstname_zh_hant String? @db.VarChar(50)
+  firstname_zh_hans String? @db.VarChar(50)
+  lastname_en       String? @db.VarChar(50)
+  lastname_zh_hant  String? @db.VarChar(50)
+  lastname_zh_hans  String? @db.VarChar(50)
+  name_en           String? @db.VarChar(200)
+  name_zh_hant      String? @db.VarChar(200)
+  name_zh_hans      String? @db.VarChar(200)
+  class_oid         Int
+  student_number    Int
+
+  class            Class         @relation(fields: [class_oid], references: [oid])
+  entitled_by_user UserStudent[]
+
+  @@unique([class_oid, student_number])
+  @@map("student")
+}
+
+model User {
+  oid                      Int        @id @default(autoincrement())
+  email                    String     @db.VarChar(50)
+  name_en                  String?    @db.VarChar(200)
+  name_zh_hant             String?    @db.VarChar(200)
+  name_zh_hans             String?    @db.VarChar(200)
+  role                     UserRole
+  status                   UserStatus
+  password                 String
+  password_expiry_datetime DateTime?  @db.Timestamptz(6)
+  last_login_datetime      DateTime?  @db.Timestamptz(6)
+  created_by_user_id       Int
+  created_at               DateTime   @default(now()) @db.Timestamptz(6)
+  updated_by_user_id       Int
+  updated_at               DateTime   @updatedAt @db.Timestamptz(6)
+  version                  Int
+
+  entitled_students UserStudent[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model UserStudent {
+  oid         Int @id @default(autoincrement())
+  user_oid    Int
+  student_oid Int
+
+  user    User    @relation(fields: [user_oid], references: [oid], onDelete: Cascade)
+  student Student @relation(fields: [student_oid], references: [oid], onDelete: Cascade)
+
+  @@map("user_student")
+}
