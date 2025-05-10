@@ -11,7 +11,8 @@ import {
 } from '../../../repo/user_repo';
 import { safeParseInt } from '../../../util/string-util';
 import { UserNotFoundErrorDto } from '../error-not-found';
-import { validateStudentIds, validateUserUniqueness } from './user-validation';
+import { validateStudentIds, validateStudentUserUniqueness, validateUserUniqueness } from './user-validation';
+import { UserRole } from '@prisma/client';
 
 export const updateUser = async (
   req: Request<UsersPutRequestPathDto, {}, UsersPutRequestBodyDto, {}>,
@@ -37,7 +38,10 @@ export const updateUser = async (
       Array.from(studentClassMap.entries()).map(([id, value]) => [id, value.student])
     );
 
-    await validateUserUniqueness(userUpdateDto.email, studentMap, id);
+    await validateUserUniqueness(userUpdateDto.email, id);
+    if (userUpdateDto.role === 'Student') {
+      await validateStudentUserUniqueness(studentMap);
+    }
 
     const userUpdate = updateDto2Entity(user[0].user, userUpdateDto);
     const updatedUser = await updateUserRepo(

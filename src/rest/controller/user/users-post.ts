@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import { UsersPost201ResponseDto, UsersPostRequestDto } from '../../dto-schema';
+import { UserRoleDto, UserStatusDto, UserCreationDto, UsersPost201ResponseDto, UsersPostRequestDto } from '../../dto-schema';
 import { creationDto2Entity, entity2Dto } from '../../mapper/user-dto-mapper';
 import { createUser as createUserRepo } from '../../../repo/user_repo';
 import { currentDatetime } from '../../../util/datetime-util';
 import {
   validateField,
   validateStudentIds,
+  validateStudentUserUniqueness,
   validateUserUniqueness,
 } from './user-validation';
 import { OAuth2Client } from 'google-auth-library';
@@ -13,8 +14,10 @@ import {
   ClassEntity,
   StudentEntity,
   UserCreationEntity,
+  UserStatusEntity,
 } from '../../../repo/entity/db_entity';
 import { StudentNotFoundErrorDto } from '../error-not-found';
+import { UserRole } from '@prisma/client';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
@@ -35,9 +38,11 @@ export const createUser = async (
       const { accessToken, studentId, studentName } = userCreationDto;
       const tokenInfo = await googleClient.getTokenInfo(accessToken);
       const email = tokenInfo.email;
+      const role = _isUserCreation(userCreationDto) ? userCreationDto.role : "Student";
+      const status = _isUserCreation(userCreationDto) ? userCreationDto.status : "Active";
 
       const studentClassMap = await validateStudentIds([studentId]);
-
+      
       const matchedStudentEntry = Array.from(studentClassMap.values()).find(
         ({ student }) =>
           (student.name_en &&
@@ -61,8 +66,8 @@ export const createUser = async (
 
       userCreation = creationDto2Entity({
         email: email!,
-        status: 'Active',
-        role: 'Student',
+        status: status,
+        role: role,
         name: {
           English: matchedStudentEntry.student.name_en,
           TraditionalChinese: matchedStudentEntry.student.name_zh_hant,
@@ -86,7 +91,10 @@ export const createUser = async (
       ])
     );
 
-    await validateUserUniqueness(userCreation.email!, studentMap);
+    await validateUserUniqueness(userCreation.email!);
+    if (userCreation.role === UserRole.student) {
+      await validateStudentUserUniqueness(studentMap);
+    }
 
     const now = currentDatetime();
 
@@ -114,3 +122,7 @@ export const createUser = async (
     next(error);
   }
 };
+
+const _isUserCreation = (info: UsersPostRequestDto): info is UserCreationDto => {
+  return 'role' in info && 'status' in info;
+}

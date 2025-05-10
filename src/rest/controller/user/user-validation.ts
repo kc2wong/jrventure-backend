@@ -10,9 +10,6 @@ import {
 } from '../error-validation';
 import { Class, Student } from '@prisma/client';
 import { findUser } from '../../../repo/user_repo';
-import { studentIdDto2Entity } from '../../mapper/student-dto-mapper';
-import { classIdDto2Entity } from '../../mapper/class-dto-mapper';
-import { findClass } from '../../../repo/class_repo';
 import { findStudent } from '../../../repo/student_repo';
 
 const UserSchema = z
@@ -24,7 +21,7 @@ const UserSchema = z
         message: 'zod.error.Required',
         path: ['English'], // path of error
       }),
-    role: z.enum(['Student', 'Teacher', 'Admin']),
+    role: z.enum(['Student', 'Parent', 'Teacher', 'Admin']),
     entitledStudentId: z.array(zodString()),
     status: z.enum(['Active', 'Inactive', 'Suspended']),
   })
@@ -35,8 +32,10 @@ const UserSchema = z
     { message: 'zod.error.Required', path: ['entitledStudentId'] }
   )
   .refine(
+    // If role is not student / parent, then entitledStudentId must be empty
     (data) =>
       data.role === 'Student' ||
+      data.role === 'Parent' ||
       !data.entitledStudentId ||
       data.entitledStudentId.length == 0,
     { message: 'zod.error.NotRequired', path: ['entitledStudentId'] }
@@ -62,7 +61,7 @@ export const validateField = (userCreationDto: UserCreationDto) => {
 type StudentClass = {
   student: Student;
   clazz: Class;
-}
+};
 
 /**
  * Validate if student id is valid and student exists
@@ -70,31 +69,13 @@ type StudentClass = {
  * @param studentId
  * @returns
  */
-const validateStudentId = async (
-  studentId: string
-): Promise<StudentClass> => {
-  // const studentIdEntity = studentIdDto2Entity(studentId);
-  // if (!studentIdEntity) {
-  //   throw new StudentNotFoundByIdErrorDto(studentId);
-  // }
-
-  // const classId = classIdDto2Entity(studentIdEntity[0]);
-  // if (!classId) {
-  //   throw new StudentNotFoundByIdErrorDto(studentId);
-  // }
-
-  // const clazz = await findClass(classId[0], classId[1]);
-  // if (clazz.length !== 1) {
-  //   throw new StudentNotFoundByIdErrorDto(studentId);
-  // }
-
-  // const student = await findStudent(undefined, undefined, clazz[0].oid, studentIdEntity[1]);
+const validateStudentId = async (studentId: string): Promise<StudentClass> => {
   const student = await findStudent([studentId]);
   if (student.length !== 1) {
     throw new StudentNotFoundByIdErrorDto(studentId);
   }
 
-  return {student: student[0][0], clazz: student[0][1]};
+  return { student: student[0][0], clazz: student[0][1] };
 };
 
 export async function validateStudentIds(
@@ -116,7 +97,6 @@ export async function validateStudentIds(
  */
 export const validateUserUniqueness = async (
   email: string,
-  students: Map<string, Student>,
   userId?: number
 ) => {
   const existingUser = (
@@ -130,13 +110,17 @@ export const validateUserUniqueness = async (
   ) {
     throw new UserWithEmailExistsErrorDto(email);
   }
+};
 
+export const validateStudentUserUniqueness = async (
+  students: Map<string, Student>,
+  userId?: number
+) => {
   for (const [studentId, student] of students.entries()) {
     const existingUser = (
       await findUser({
         email: undefined,
         studentId: student.id,
-        // studentId: [student.class_oid, student.student_number],
       })
     )[0];
 
@@ -144,4 +128,4 @@ export const validateUserUniqueness = async (
       throw new UserForStudentExistsErrorDto(studentId);
     }
   }
-}
+};
