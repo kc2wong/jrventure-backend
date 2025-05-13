@@ -12,9 +12,9 @@ type UserCreationEntity = Omit<
   | 'created_datetime'
   | 'password'
   | 'password_expiry_datetime'
-  | 'created_by_user_id'
+  | 'created_by_user_oid'
   | 'created_at'
-  | 'updated_by_user_id'
+  | 'updated_by_user_oid'
   | 'updated_at'
   | 'version'
 >;

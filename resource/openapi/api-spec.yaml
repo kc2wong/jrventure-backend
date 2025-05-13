@@ -5,8 +5,6 @@ info:
   version: 1.0.0
 
 tags: 
-  - name: User Registration
-    description: New user registration
   - name: User Maintenance
     description: User Maintenance
   - name: User Authentication
@@ -19,6 +17,9 @@ servers:
     description: Local development server
   - url: https://sad6ntmjsh.execute-api.eu-west-2.amazonaws.com/prod
     description: Demo server
+
+security:
+  - bearerAuth: []
 
 paths:
   /classes:
@@ -169,6 +170,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Unexpected error
           content:
@@ -220,6 +227,7 @@ paths:
       operationId: authenticateUser
       tags:
         - User Authentication
+      security: []        
       requestBody:
         required: true
         content:
@@ -256,6 +264,7 @@ paths:
       operationId: authenticateGoogleUser
       tags:
         - User Authentication
+      security: []        
       requestBody:
         required: true
         content:
@@ -282,6 +291,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Error:
       type: object
@@ -315,6 +329,7 @@ components:
       - Parent
       - Teacher
       - Admin
+      - Alumni
     UserStatus:
       type: string
       enum:

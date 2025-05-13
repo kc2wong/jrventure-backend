@@ -11,8 +11,13 @@ import {
 } from '../../../repo/user_repo';
 import { safeParseInt } from '../../../util/string-util';
 import { UserNotFoundErrorDto } from '../error-not-found';
-import { validateStudentIds, validateStudentUserUniqueness, validateUserUniqueness } from './user-validation';
-import { UserRole } from '@prisma/client';
+import {
+  validateStudentIds,
+  validateStudentUserUniqueness,
+  validateUserUniqueness,
+} from './user-validation';
+import { NotLoginErrorDto } from '../error-unauthorized';
+import { currentDatetime } from '../../../util/datetime-util';
 
 export const updateUser = async (
   req: Request<UsersPutRequestPathDto, {}, UsersPutRequestBodyDto, {}>,
@@ -23,9 +28,14 @@ export const updateUser = async (
     const userUpdateDto = req.body;
     const id = safeParseInt(req.params.id);
 
+    const authenticatedUser = res.locals.authenticatedUser;
+    if (!authenticatedUser) {
+      throw new NotLoginErrorDto();
+    }
     if (!id) {
       throw new UserNotFoundErrorDto(req.params.id);
     }
+
     const user = await findUser({ id: [id] });
     if (user.length !== 1) {
       throw new UserNotFoundErrorDto(req.params.id);
@@ -35,7 +45,10 @@ export const updateUser = async (
       userUpdateDto.entitledStudentId
     );
     const studentMap = new Map(
-      Array.from(studentClassMap.entries()).map(([id, value]) => [id, value.student])
+      Array.from(studentClassMap.entries()).map(([id, value]) => [
+        id,
+        value.student,
+      ])
     );
 
     await validateUserUniqueness(userUpdateDto.email, id);
@@ -45,7 +58,11 @@ export const updateUser = async (
 
     const userUpdate = updateDto2Entity(user[0].user, userUpdateDto);
     const updatedUser = await updateUserRepo(
-      userUpdate,
+      {
+        ...userUpdate,
+        updated_at: currentDatetime(),
+        updated_by_user_oid: authenticatedUser.oid,
+      },
       Array.from(studentMap.values())
     );
 

@@ -1,7 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
-import { UserRoleDto, UserStatusDto, UserCreationDto, UsersPost201ResponseDto, UsersPostRequestDto } from '../../dto-schema';
+import {
+  UnAuthorizedErrorDto,
+  UserCreationDto,
+  UsersPost201ResponseDto,
+  UsersPostRequestDto,
+} from '../../dto-schema';
 import { creationDto2Entity, entity2Dto } from '../../mapper/user-dto-mapper';
-import { createUser as createUserRepo } from '../../../repo/user_repo';
+import {
+  createUser as createUserRepo,
+  updateUser as updateUserRepo,
+} from '../../../repo/user_repo';
 import { currentDatetime } from '../../../util/datetime-util';
 import {
   validateField,
@@ -14,10 +22,10 @@ import {
   ClassEntity,
   StudentEntity,
   UserCreationEntity,
-  UserStatusEntity,
 } from '../../../repo/entity/db_entity';
 import { StudentNotFoundErrorDto } from '../error-not-found';
 import { UserRole } from '@prisma/client';
+import { NotLoginErrorDto } from '../error-unauthorized';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
@@ -30,19 +38,27 @@ export const createUser = async (
   try {
     const userCreationDto = req.body;
     const isSignUpWithGoogle = 'accessToken' in userCreationDto;
-
     let userCreation: UserCreationEntity;
     let studentIds: string[];
+
+    const authenticatedUser = res.locals.authenticatedUser;
+    if (!authenticatedUser) {
+      throw new NotLoginErrorDto();      
+    }
 
     if (isSignUpWithGoogle) {
       const { accessToken, studentId, studentName } = userCreationDto;
       const tokenInfo = await googleClient.getTokenInfo(accessToken);
       const email = tokenInfo.email;
-      const role = _isUserCreation(userCreationDto) ? userCreationDto.role : "Student";
-      const status = _isUserCreation(userCreationDto) ? userCreationDto.status : "Active";
+      const role = _isUserCreation(userCreationDto)
+        ? userCreationDto.role
+        : 'Student';
+      const status = _isUserCreation(userCreationDto)
+        ? userCreationDto.status
+        : 'Active';
 
       const studentClassMap = await validateStudentIds([studentId]);
-      
+
       const matchedStudentEntry = Array.from(studentClassMap.values()).find(
         ({ student }) =>
           (student.name_en &&
@@ -97,6 +113,7 @@ export const createUser = async (
     }
 
     const now = currentDatetime();
+    const createUserOid = isSignUpWithGoogle ? -1 : authenticatedUser.oid;
 
     const newUser = await createUserRepo(
       {
@@ -104,14 +121,22 @@ export const createUser = async (
         password: '123456',
         password_expiry_datetime: now,
         last_login_datetime: null,
-        created_by_user_id: -1,
+        created_by_user_oid: createUserOid,
         created_at: now,
-        updated_by_user_id: -1,
+        updated_by_user_oid: createUserOid,
         updated_at: now,
         version: 1,
       },
       Array.from(studentMap.values())
     );
+
+    if (isSignUpWithGoogle) {
+      await updateUserRepo({
+        ...newUser,
+        created_by_user_oid: newUser.oid,
+        updated_by_user_oid: newUser.oid,
+      });
+    }
 
     const studentClassPairs: [StudentEntity, ClassEntity][] = Array.from(
       studentClassMap.values()
@@ -123,6 +148,8 @@ export const createUser = async (
   }
 };
 
-const _isUserCreation = (info: UsersPostRequestDto): info is UserCreationDto => {
+const _isUserCreation = (
+  info: UsersPostRequestDto
+): info is UserCreationDto => {
   return 'role' in info && 'status' in info;
-}
+};

@@ -16,7 +16,6 @@ export const userGet = async (
 ) => {
   try {
     const id = asArray(req.query?.id)?.map((i) => parseInt(i));
-    // const id = req.query?.id?.map((item) => parseInt(item));
     const email = req.query?.email;
     const name = req.query?.name;
     const studentId = req.query?.studentId;

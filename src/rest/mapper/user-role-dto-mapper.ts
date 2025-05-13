@@ -6,6 +6,7 @@ const roleDto2EntityMap: Record<UserRoleDto, UserRole> = {
   Parent: UserRole.parent,
   Teacher: UserRole.teacher,
   Admin: UserRole.admin,
+  Alumni: UserRole.alumni,
 };
 
 const roleEntity2DtoMap: Record<UserRole, UserRoleDto> = Object.fromEntries(

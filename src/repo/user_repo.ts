@@ -68,7 +68,7 @@ export const findUser = async ({
         studentWithClass:
           entitled_students.length === 0
             ? []
-            : entitled_students.map((es) => ({
+            : entitled_students.sort((e1, e2) => e1.sequence - e2.sequence).map((es) => ({
                 student: es.student,
                 clazz: es.student.class,
               })),
@@ -93,14 +93,15 @@ export const createUser = async (
         entitled_students:
           students.length > 0
             ? {
-                create: students.map((s) => ({
+                create: students.map((s, idx) => ({
+                  sequence: idx + 1, // Assign a sequence value
                   student: { connect: { oid: s.oid } },
                 })),
               }
             : undefined,
       },
       include: {
-        entitled_students: true,
+        entitled_students: false,
       },
     });
   } catch (error) {
@@ -114,7 +115,7 @@ export const updateUser = async (
   students?: Student[]
 ): Promise<User> => {
   try {
-    const { oid, updated_at, version, ...rest } = user; // separate controlled fields
+    const { oid, version, ...rest } = user; // separate controlled fields
 
     if (students) {
       return await prisma.user.update({
@@ -123,9 +124,10 @@ export const updateUser = async (
           ...rest,
           entitled_students: {
             deleteMany: {}, // delete all existing entitled_students
-            create: students.map((student) => ({
+            create: students.map((s, idx) => ({
+              sequence: idx + 1, // Assign a sequence value
               student: {
-                connect: { oid: student.oid },
+                connect: { oid: s.oid },
               },
             })),
           },
