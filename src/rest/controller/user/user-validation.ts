@@ -23,8 +23,15 @@ const UserSchema = z
       }),
     role: z.enum(['Student', 'Parent', 'Teacher', 'Admin']),
     entitledStudentId: z.array(zodString()),
+    withApprovalRight: z.boolean(),
     status: z.enum(['Active', 'Inactive', 'Suspended']),
   })
+  .refine(
+    (data) =>
+      (data.role !== 'Teacher' && data.withApprovalRight === false) ||
+      data.role === 'Teacher',
+    { message: 'zod.error.NotRequired', path: ['withApprovalRight'] }
+  )
   .refine(
     (data) =>
       data.role !== 'Student' ||

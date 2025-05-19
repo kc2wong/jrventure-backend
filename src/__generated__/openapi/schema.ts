@@ -177,6 +177,8 @@ export interface components {
             status: components["schemas"]["UserStatus"];
             /** @description Id of students */
             entitledStudentId: string[];
+            /** @description Has approval right or not.  Applicable to Teacher only */
+            withApprovalRight: boolean;
         };
         UserRegistration: {
             /** @description Access token returned from Google */

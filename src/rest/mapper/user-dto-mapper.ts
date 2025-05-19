@@ -1,8 +1,4 @@
-import {
-  UserDto,
-  UserCreationDto,
-  UserUpdateDto,
-} from '../dto-schema';
+import { UserDto, UserCreationDto, UserUpdateDto } from '../dto-schema';
 import { entity2Dto as datetimeEntity2Dto } from './datetime-dto-mapper';
 import {
   entity2Dto as roleEntity2Dto,
@@ -24,6 +20,7 @@ export const creationDto2Entity = ({
   name,
   role,
   status,
+  withApprovalRight,
 }: UserCreationDto): UserCreationEntity => {
   return {
     email,
@@ -37,6 +34,7 @@ export const creationDto2Entity = ({
     role: roleDto2Entity(role),
     status: statusDto2Entity(status),
     last_login_datetime: null,
+    with_approval_right: withApprovalRight,
   };
 };
 
@@ -79,6 +77,7 @@ export const entity2Dto = (
     status: statusEntity2Dto(src.status),
     lastLoginDatetime: datetimeEntity2Dto(src.last_login_datetime),
     passwordExpiryDatetime: datetimeEntity2Dto(src.password_expiry_datetime),
+    withApprovalRight: src.with_approval_right,
     createdBy: src.created_by_user_oid.toString(),
     createdAt: datetimeEntity2Dto(src.created_at)!,
     updatedBy: src.updated_by_user_oid.toString(),

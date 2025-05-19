@@ -50,12 +50,10 @@ export const createUser = async (
       const { accessToken, studentId, studentName } = userCreationDto;
       const tokenInfo = await googleClient.getTokenInfo(accessToken);
       const email = tokenInfo.email;
-      const role = _isUserCreation(userCreationDto)
-        ? userCreationDto.role
-        : 'Student';
-      const status = _isUserCreation(userCreationDto)
-        ? userCreationDto.status
-        : 'Active';
+      const role = 'Student';
+      const status = 'Active';
+      // no approval right for student self registratiom
+      const withApprovalRight = false;
 
       const studentClassMap = await validateStudentIds([studentId]);
 
@@ -90,6 +88,7 @@ export const createUser = async (
           SimplifiedChinese: matchedStudentEntry.student.name_zh_hans,
         },
         entitledStudentId: [studentId],
+        withApprovalRight 
       });
 
       studentIds = [studentId];
