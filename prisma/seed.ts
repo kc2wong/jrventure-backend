@@ -967,12 +967,13 @@ async function main() {
       name_zh_hans: '系统创建',
       role: 'admin',
       status: 'active',
-      created_by_user_id: 1,
+      created_by_user_oid: 1,
       created_at: now,
-      updated_by_user_id: 1,
+      updated_by_user_oid: 1,
       updated_at: now,
       version: 1,
       password: 'securepassword123', // Replace with hashed password if needed
+      with_approval_right: false,
     },
   });
 

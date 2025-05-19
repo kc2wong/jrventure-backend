@@ -41,6 +41,9 @@ type GoogleAuthenticationPostRequestDto =
 type GoogleAuthenticationPost200ResponseDto =
   paths['/google-authentications']['post']['responses']['200']['content']['application/json'];
 
+type ActivityCategoryGet200ResponseDto =
+  paths['/activity-categories']['get']['responses']['200']['content']['application/json'];
+
 type ErrorDto = components['schemas']['Error'];
 
 type LanguageDto = components['schemas']['Language'];
@@ -64,6 +67,8 @@ type UserUpdateDto = components['schemas']['UserUpdate'];
 
 type UserDto = components['schemas']['User'];
 
+type ActivityCategoryDto = components['schemas']['ActivityCategory'];
+
 export {
   GetClassesQueryDto,
   GetClasses200ResponseDto,
@@ -82,6 +87,7 @@ export {
   GoogleAuthenticationPostRequestDto,
   GoogleAuthenticationPost200ResponseDto,
   ClassDto,
+  ActivityCategoryGet200ResponseDto,
   StudentDto,
   ErrorDto,
   LanguageDto,
@@ -91,6 +97,7 @@ export {
   UserCreationDto,
   UserUpdateDto,
   UserDto,
+  ActivityCategoryDto,
 };
 
 class BaseErrorDto extends Error {

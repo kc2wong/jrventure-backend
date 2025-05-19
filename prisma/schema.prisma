@@ -96,3 +96,47 @@ model UserStudent {
 
   @@map("user_student")
 }
+
+model ActivityCategory {
+  oid          Int     @id @default(autoincrement())
+  name_en      String? @db.VarChar(200)
+  name_zh_hant String? @db.VarChar(200)
+  name_zh_hans String? @db.VarChar(200)
+
+  @@map("activity_category")
+}
+
+enum ActivityStatus {
+  Closed
+  Open
+  Scheduled
+  Cancelled
+}
+
+enum AchievementSubmissionBy {
+  Teacher
+  Student
+  Both
+}
+
+model Activity {
+  oid                    Int                     @id @default(autoincrement())
+  category_oid           Int
+  code                   String                  @db.VarChar(20)
+  name_en                String?                 @db.VarChar(200)
+  name_zh_hant           String?                 @db.VarChar(200)
+  name_zh_hans           String?                 @db.VarChar(200)
+  description_en         String?                 @db.Text
+  description_zh_hant    String?                 @db.Text
+  description_zh_hans    String?                 @db.Text
+  grade                  Int // bitmask of 6 grades
+  start_date             DateTime                @db.Timestamptz(6)
+  end_date               DateTime                @db.Timestamptz(6)
+  sharable               Boolean
+  rating_enabled         Boolean
+  e_coin                 Int
+  achievement_submission AchievementSubmissionBy
+  status                 ActivityStatus
+
+  @@map("activity")
+}
