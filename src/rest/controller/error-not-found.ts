@@ -47,3 +47,12 @@ export class UserRegistrationNotFoundErrorDto extends NotFoundErrorDto {
     );
   }
 }
+
+export class ActivityNotFoundErrorDto extends NotFoundErrorDto {
+  constructor(activityId: string) {
+    super(
+      replaceParameters('Activity with id {1} is not found', [activityId]),
+      'ACTIVITY_NOT_FOUND'
+    );
+  }
+}

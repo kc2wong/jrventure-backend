@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { listActivityCategory } from '../controller/activity/activity-categoryt-get';
+import { listActivityCategory } from '../controller/activity-category/activity-category-get';
 
 const router = Router();
 

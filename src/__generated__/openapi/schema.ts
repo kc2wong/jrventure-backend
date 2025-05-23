@@ -124,6 +124,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/activities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search activities by criteria */
+        get: operations["findActivity"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/activities/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get activity by id */
+        get: operations["getActivityById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -141,6 +175,10 @@ export interface components {
         UserRole: "Student" | "Parent" | "Teacher" | "Admin" | "Alumni";
         /** @enum {string} */
         UserStatus: "Active" | "Inactive" | "Suspend";
+        /** @enum {string} */
+        ActivityStatus: "Closed" | "Open" | "Scheduled" | "Cancelled";
+        /** @enum {string} */
+        AchievementSubmissionRole: "Teacher" | "Student" | "Both";
         AuditControl: {
             /** @description Id of the create user */
             createdBy: string;
@@ -221,11 +259,36 @@ export interface components {
             user: components["schemas"]["User"];
         };
         ActivityCategory: {
-            id: string;
+            code: string;
             name: {
                 [key: string]: unknown;
             };
         };
+        Activity: {
+            id: string;
+            categoryCode: string;
+            name: {
+                [key: string]: unknown;
+            };
+            description: string;
+            /**
+             * Format: datetime
+             * @description Start date of the activity.  The time part must be zero
+             */
+            startDate: string;
+            /**
+             * Format: datetime
+             * @description Start date of the activity.  The time part must be zero
+             */
+            endDate: string;
+            achievementSubmissionRole: components["schemas"]["AchievementSubmissionRole"];
+            participantGrade: number[];
+            sharable: boolean;
+            ratable: boolean;
+            /** Format: int32 */
+            eCoin: number;
+            status: components["schemas"]["ActivityStatus"];
+        } & components["schemas"]["AuditControl"];
     };
     responses: never;
     parameters: never;
@@ -531,6 +594,85 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ActivityCategory"][];
+                };
+            };
+            /** @description Unexpected error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    findActivity: {
+        parameters: {
+            query?: {
+                categoryCode?: string[];
+                name?: string;
+                startDateFrom?: string;
+                startDateTo?: string;
+                endDateFrom?: string;
+                endDateTo?: string;
+                participantGrade?: number[];
+                status?: components["schemas"]["ActivityStatus"][];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Activity"][];
+                };
+            };
+            /** @description Unexpected error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    getActivityById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description activity id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Activity"];
+                };
+            };
+            /** @description not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
                 };
             };
             /** @description Unexpected error */

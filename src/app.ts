@@ -8,6 +8,7 @@ import userRouter from './rest/route/user-end-point';
 import userAuthenticationRouter from './rest/route/user-authentication-end-point';
 import googleAuthenticationRouter from './rest/route/google-authentication-end-point';
 import activityCategoryRouter from './rest/route/activity-category-end-point';
+import activityRouter from './rest/route/activity-end-point';
 
 import { errorHandler } from './rest/middleware/error-handler';
 import { jwtHandler } from './rest/middleware/jwt-handler';
@@ -26,6 +27,7 @@ app.use('/users', userRouter);
 app.use('/google-authentications', googleAuthenticationRouter);
 app.use('/user-authentications', userAuthenticationRouter);
 app.use('/activity-categories', activityCategoryRouter);
+app.use('/activities', activityRouter);
 app.use(errorHandler); // Global error handler
 
 export default app;

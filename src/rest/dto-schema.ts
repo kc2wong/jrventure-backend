@@ -2,6 +2,11 @@ import { paths, components } from '../__generated__/openapi/schema';
 
 type GetClassesQueryDto = paths['/classes']['get']['parameters']['query'];
 
+type ActivityGetQueryDto = paths['/activities']['get']['parameters']['query'];
+
+type ActivityGetByIdPathDto =
+  paths['/activities/{id}']['get']['parameters']['path'];
+
 type GetClasses200ResponseDto =
   paths['/classes']['get']['responses']['200']['content']['application/json'];
 
@@ -44,6 +49,12 @@ type GoogleAuthenticationPost200ResponseDto =
 type ActivityCategoryGet200ResponseDto =
   paths['/activity-categories']['get']['responses']['200']['content']['application/json'];
 
+type ActivityGet200ResponseDto =
+  paths['/activities']['get']['responses']['200']['content']['application/json'];
+
+type ActivityGetById200ResponseDto =
+  paths['/activities/{id}']['get']['responses']['200']['content']['application/json'];
+
 type ErrorDto = components['schemas']['Error'];
 
 type LanguageDto = components['schemas']['Language'];
@@ -55,6 +66,11 @@ type StudentDto = components['schemas']['Student'];
 type UserRoleDto = components['schemas']['UserRole'];
 
 type UserStatusDto = components['schemas']['UserStatus'];
+
+type AchievementSubmissionRoleDto =
+  components['schemas']['AchievementSubmissionRole'];
+
+type ActivityStatusDto = components['schemas']['ActivityStatus'];
 
 type AuthenticationResponseDto =
   components['schemas']['AuthenticationResponse'];
@@ -68,6 +84,8 @@ type UserUpdateDto = components['schemas']['UserUpdate'];
 type UserDto = components['schemas']['User'];
 
 type ActivityCategoryDto = components['schemas']['ActivityCategory'];
+
+type ActivityDto = components['schemas']['Activity'];
 
 export {
   GetClassesQueryDto,
@@ -87,7 +105,11 @@ export {
   GoogleAuthenticationPostRequestDto,
   GoogleAuthenticationPost200ResponseDto,
   ClassDto,
+  ActivityGetQueryDto,
   ActivityCategoryGet200ResponseDto,
+  ActivityGet200ResponseDto,
+  ActivityGetByIdPathDto,
+  ActivityGetById200ResponseDto,
   StudentDto,
   ErrorDto,
   LanguageDto,
@@ -98,6 +120,9 @@ export {
   UserUpdateDto,
   UserDto,
   ActivityCategoryDto,
+  ActivityDto,
+  ActivityStatusDto,
+  AchievementSubmissionRoleDto,
 };
 
 class BaseErrorDto extends Error {

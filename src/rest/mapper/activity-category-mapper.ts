@@ -3,7 +3,7 @@ import { ActivityCategoryDto } from '../dto-schema';
 
 export const entity2Dto = (src: ActivityCategory): ActivityCategoryDto => {
   return {
-    id: src.oid.toString(),
+    code: src.code,
     name: {
       English: src.name_en,
       TraditionalChinese: src.name_zh_hant,
