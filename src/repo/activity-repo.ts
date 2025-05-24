@@ -14,12 +14,20 @@ type FindActivityParams = {
   endDateFrom?: Date;
   endDateTo?: Date;
   participantGrade?: number[];
-  status?: ActivityStatus[]; // classId and studentNumber
+  status?: ActivityStatus[];
+  offset?: number;
+  limit?: number;
 };
 
 type FindActivityResult = {
   activity: Activity;
   category: ActivityCategory;
+};
+
+type FindActivityPageResult = {
+  data: FindActivityResult[];
+  offset: number;
+  total: number;
 };
 
 export const findActivity = async ({
@@ -31,49 +39,55 @@ export const findActivity = async ({
   endDateTo,
   participantGrade,
   status,
-}: FindActivityParams): Promise<FindActivityResult[]> => {
+  offset = 0,
+  limit,
+}: FindActivityParams): Promise<FindActivityPageResult> => {
   try {
-    const activities = await prisma.activity.findMany({
-      where: {
-        ...(status && { status: { in: status } }),
-        ...(name && {
-          OR: [
-            { name_en_up_case: { contains: name } },
-            { name_zh_hans: { contains: name } },
-            { name_zh_hant: { contains: name } },
-          ],
-        }),
-        ...(startDateFrom && { start_date: { gte: startDateFrom } }),
-        ...(startDateTo && {
-          start_date: { ...(startDateFrom ? {} : {}), lte: startDateTo },
-        }),
-        ...(endDateFrom && { end_date: { gte: endDateFrom } }),
-        ...(endDateTo && {
-          end_date: { ...(endDateFrom ? {} : {}), lte: endDateTo },
-        }),
-        ...(participantGrade &&
-          participantGrade.length > 0 && {
-            // Bitmask filtering is not natively supported, so we use a numeric filter as a workaround
-            participant_grade: {
-              in: getMatchingBitmaskValues(participantGrade), // This is a placeholder; adjust logic as needed for your use case
-            },
-          }),
-        ...(categoryCode && {
-          category: {
-            code: {
-              in: categoryCode,
-            },
+    const whereClause: Prisma.ActivityWhereInput = {
+      ...(status && { status: { in: status } }),
+      ...(name && {
+        OR: [
+          { name_en_up_case: { contains: name } },
+          { name_zh_hans: { contains: name } },
+          { name_zh_hant: { contains: name } },
+        ],
+      }),
+      ...(startDateFrom && { start_date: { gte: startDateFrom } }),
+      ...(startDateTo && { start_date: { lte: startDateTo } }),
+      ...(endDateFrom && { end_date: { gte: endDateFrom } }),
+      ...(endDateTo && { end_date: { lte: endDateTo } }),
+      ...(participantGrade &&
+        participantGrade.length > 0 && {
+          participant_grade: {
+            in: getMatchingBitmaskValues(participantGrade),
           },
         }),
-      },
-      include: {
-        category: true,
-      },
-    });
-    return activities.map(({ category, ...rest }) => ({
-      activity: { ...rest },
-      category: category,
-    }));
+      ...(categoryCode && {
+        category: {
+          code: { in: categoryCode },
+        },
+      }),
+    };
+
+    const [total, items] = await prisma.$transaction([
+      prisma.activity.count({ where: whereClause }),
+      prisma.activity.findMany({
+        where: whereClause,
+        include: { category: true },
+        skip: offset,
+        take: limit,
+        orderBy: { oid: 'asc' },
+      }),
+    ]);
+
+    return {
+      offset,
+      total,
+      data: items.map(({ category, ...rest }) => ({
+        activity: rest,
+        category,
+      })),
+    };
   } catch (error) {
     console.error('Error fetching activity:', error);
     throw error;

@@ -293,6 +293,12 @@ export interface components {
         Activity: {
             id: string;
         } & components["schemas"]["ActivityPayload"] & components["schemas"]["AuditControl"];
+        FindActivityResult: {
+            offset: number;
+            limit?: number;
+            total: number;
+            data: components["schemas"]["Activity"][];
+        };
     };
     responses: never;
     parameters: never;
@@ -622,6 +628,8 @@ export interface operations {
                 endDateTo?: string;
                 participantGrade?: number[];
                 status?: components["schemas"]["ActivityStatus"][];
+                offset?: number;
+                limit?: number;
             };
             header?: never;
             path?: never;
@@ -635,7 +643,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Activity"][];
+                    "application/json": components["schemas"]["FindActivityResult"];
                 };
             };
             /** @description Unexpected error */

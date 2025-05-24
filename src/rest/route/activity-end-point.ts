@@ -3,9 +3,9 @@ import { findActivity } from '../controller/activity/activity-get';
 import { getActivityById } from '../controller/activity/activity-get-by-id';
 import { createActivity } from '../controller/activity/activity-post';
 import { updateActivity } from '../controller/activity/activity-put';
+import { z } from 'zod';
 
 const router = Router();
-
 router.get('/', findActivity);
 router.post('/', createActivity);
 router.get('/:id', getActivityById);

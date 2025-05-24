@@ -4,7 +4,7 @@ info:
   description: A simple API for demonstration
   version: 1.0.0
 
-tags: 
+tags:
   - name: User Maintenance
     description: User Maintenance
   - name: User Authentication
@@ -40,20 +40,20 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Class"
-        "500":
+                  $ref: '#/components/schemas/Class'
+        '500':
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
   /students:
     get:
       summary: Search students by criteria
@@ -67,12 +67,12 @@ paths:
             type: array
             items:
               type: string
-          description: Id of the student        
+          description: Id of the student
         - in: query
           name: classId
           schema:
             type: string
-          description: Id of the class  
+          description: Id of the class
           example: 1A
         - in: query
           name: name
@@ -80,20 +80,20 @@ paths:
             type: string
           description: Find student with lastName + firstName contains input name as substring, for any language
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Student"
-        "500":
+                  $ref: '#/components/schemas/Student'
+        '500':
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"             
+                $ref: '#/components/schemas/Error'
   /users:
     get:
       summary: Search users by criteria
@@ -124,28 +124,28 @@ paths:
           schema:
             type: array
             items:
-              $ref: "#/components/schemas/UserStatus"
+              $ref: '#/components/schemas/UserStatus'
         - in: query
           name: role
           schema:
             type: array
             items:
-              $ref: "#/components/schemas/UserRole"
+              $ref: '#/components/schemas/UserRole'
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/User"
-        "500":
+                  $ref: '#/components/schemas/User'
+        '500':
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
     post:
       summary: Create a new user
       operationId: createUser
@@ -157,33 +157,33 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: "#/components/schemas/UserCreation"
-                - $ref: "#/components/schemas/UserRegistration"
+                - $ref: '#/components/schemas/UserCreation'
+                - $ref: '#/components/schemas/UserRegistration'
       responses:
-        "201":
+        '201':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-        "400":
+                $ref: '#/components/schemas/User'
+        '400':
           description: Validation error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        "401":
+                $ref: '#/components/schemas/Error'
+        '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        "500":
+                $ref: '#/components/schemas/Error'
+        '500':
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
 
   /users/{id}:
     put:
@@ -194,7 +194,7 @@ paths:
       parameters:
         - in: path
           name: id
-          required: true          
+          required: true
           schema:
             type: string
           description: User ID
@@ -203,33 +203,33 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserUpdate"      
+              $ref: '#/components/schemas/UserUpdate'
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-        "400":
+                $ref: '#/components/schemas/User'
+        '400':
           description: Validation error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        "500":
+                $ref: '#/components/schemas/Error'
+        '500':
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
   /user-authentications:
     post:
       summary: Authenticate a user
       operationId: authenticateUser
       tags:
         - User Authentication
-      security: []        
+      security: []
       requestBody:
         required: true
         content:
@@ -246,27 +246,27 @@ paths:
                 password:
                   type: string
                   format: password
-                  example: "mySecret123"
+                  example: 'mySecret123'
       responses:
         '200':
           description: JWT token returned on successful login
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AuthenticationResponse"
+                $ref: '#/components/schemas/AuthenticationResponse'
         '401':
           description: Unauthorized - Invalid userId or password
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
   /google-authentications:
     post:
       summary: Authenticate a user who is signed up with google
       operationId: authenticateGoogleUser
       tags:
         - User Authentication
-      security: []        
+      security: []
       requestBody:
         required: true
         content:
@@ -285,13 +285,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AuthenticationResponse"
+                $ref: '#/components/schemas/AuthenticationResponse'
         '401':
           description: Unauthorized - Invalid user
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
 
   /activity-categories:
     get:
@@ -300,20 +300,20 @@ paths:
       tags:
         - Activity
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ActivityCategory"
-        "500":
+                  $ref: '#/components/schemas/ActivityCategory'
+        '500':
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"                
+                $ref: '#/components/schemas/Error'
   /activities:
     get:
       summary: Search activities by criteria
@@ -362,22 +362,28 @@ paths:
           schema:
             type: array
             items:
-              $ref: "#/components/schemas/ActivityStatus"
+              $ref: '#/components/schemas/ActivityStatus'
+        - in: query
+          name: offset
+          schema:
+            type: number
+        - in: query
+          name: limit
+          schema:
+            type: number
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Activity"
-        "500":
+                $ref: '#/components/schemas/FindActivityResult'
+        '500':
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
     post:
       summary: Create a new activity
       operationId: createActivity
@@ -388,32 +394,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ActivityPayload"
+              $ref: '#/components/schemas/ActivityPayload'
       responses:
-        "201":
+        '201':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Activity"
-        "400":
+                $ref: '#/components/schemas/Activity'
+        '400':
           description: Validation error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        "401":
+                $ref: '#/components/schemas/Error'
+        '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        "500":
+                $ref: '#/components/schemas/Error'
+        '500':
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
   /activities/{id}:
     get:
       summary: Get activity by id
@@ -423,29 +429,29 @@ paths:
       parameters:
         - in: path
           name: id
-          required: true          
+          required: true
           schema:
             type: string
           description: activity id
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Activity"
-        "404":
+                $ref: '#/components/schemas/Activity'
+        '404':
           description: not found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"                  
-        "500":
+                $ref: '#/components/schemas/Error'
+        '500':
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
     put:
       summary: Update an existing activity
       operationId: updateActivity
@@ -454,7 +460,7 @@ paths:
       parameters:
         - in: path
           name: id
-          required: true          
+          required: true
           schema:
             type: string
           description: Activity ID
@@ -465,7 +471,7 @@ paths:
             schema:
               type: object
               allOf:
-                - $ref: "#/components/schemas/ActivityPayload"
+                - $ref: '#/components/schemas/ActivityPayload'
                 - type: object
                   required:
                     - version
@@ -474,24 +480,24 @@ paths:
                       type: number
 
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Activity"
-        "400":
+                $ref: '#/components/schemas/Activity'
+        '400':
           description: Validation error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        "500":
+                $ref: '#/components/schemas/Error'
+        '500':
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
 components:
   securitySchemes:
     bearerAuth:
@@ -516,41 +522,41 @@ components:
     Language:
       type: string
       enum:
-      - English
-      - TraditionalChinese
-      - SimplifiedChinese
+        - English
+        - TraditionalChinese
+        - SimplifiedChinese
     AuthenticationStatus:
       type: string
       enum:
-      - Success
-      - ChangePasswordOnly
+        - Success
+        - ChangePasswordOnly
     UserRole:
       type: string
       enum:
-      - Student
-      - Parent
-      - Teacher
-      - Admin
-      - Alumni
+        - Student
+        - Parent
+        - Teacher
+        - Admin
+        - Alumni
     UserStatus:
       type: string
       enum:
-      - Active
-      - Inactive
-      - Suspend
+        - Active
+        - Inactive
+        - Suspend
     ActivityStatus:
       type: string
       enum:
-      - Closed
-      - Open
-      - Scheduled
-      - Cancelled      
+        - Closed
+        - Open
+        - Scheduled
+        - Cancelled
     AchievementSubmissionRole:
       type: string
       enum:
-      - Teacher
-      - Student
-      - Both
+        - Teacher
+        - Student
+        - Both
     AuditControl:
       type: object
       required:
@@ -575,7 +581,7 @@ components:
           format: datetime
           description: Create datetime
         version:
-          type: number      
+          type: number
     Class:
       type: object
       required:
@@ -627,7 +633,7 @@ components:
           description: Email address of user.  Unique among all users
         classId:
           type: string
-          description: Id of the student          
+          description: Id of the student
         studentNumber:
           type: number
     UserCreation:
@@ -647,9 +653,9 @@ components:
           type: object
           additionalProperties: true
         role:
-          $ref: "#/components/schemas/UserRole"
+          $ref: '#/components/schemas/UserRole'
         status:
-          $ref: "#/components/schemas/UserStatus"
+          $ref: '#/components/schemas/UserStatus'
         entitledStudentId:
           type: array
           items:
@@ -676,7 +682,7 @@ components:
     UserUpdate:
       type: object
       allOf:
-        - $ref: "#/components/schemas/UserCreation"
+        - $ref: '#/components/schemas/UserCreation'
         - type: object
           required:
             - version
@@ -691,17 +697,17 @@ components:
         - id
         - status
       allOf:
-        - $ref: "#/components/schemas/AuditControl"
-        - $ref: "#/components/schemas/UserCreation"
+        - $ref: '#/components/schemas/AuditControl'
+        - $ref: '#/components/schemas/UserCreation'
         - type: object
           properties:
             id:
               type: string
             status:
-              $ref: "#/components/schemas/UserStatus"
+              $ref: '#/components/schemas/UserStatus'
             lastLoginDatetime:
               type: string
-              format: datetime        
+              format: datetime
             passwordExpiryDatetime:
               type: string
               format: datetime
@@ -712,9 +718,9 @@ components:
         - user
       properties:
         status:
-          $ref: "#/components/schemas/AuthenticationStatus"
+          $ref: '#/components/schemas/AuthenticationStatus'
         user:
-          $ref: "#/components/schemas/User"
+          $ref: '#/components/schemas/User'
 
     ActivityCategory:
       type: object
@@ -760,7 +766,7 @@ components:
               format: datetime
               description: Start date of the activity.  The time part must be zero
             achievementSubmissionRole:
-              $ref: "#/components/schemas/AchievementSubmissionRole"
+              $ref: '#/components/schemas/AchievementSubmissionRole'
             participantGrade:
               type: array
               items:
@@ -774,7 +780,7 @@ components:
               type: number
               format: int32
             status:
-              $ref: "#/components/schemas/ActivityStatus"          
+              $ref: '#/components/schemas/ActivityStatus'
     Activity:
       type: object
       allOf:
@@ -784,5 +790,22 @@ components:
           properties:
             id:
               type: string
-        - $ref: "#/components/schemas/ActivityPayload"
-        - $ref: "#/components/schemas/AuditControl"
+        - $ref: '#/components/schemas/ActivityPayload'
+        - $ref: '#/components/schemas/AuditControl'
+    FindActivityResult:
+      type: object
+      required:
+        - offset
+        - total
+        - data
+      properties:
+        offset:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Activity'
