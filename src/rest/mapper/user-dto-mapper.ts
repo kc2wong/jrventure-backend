@@ -14,6 +14,7 @@ import {
   UserCreationEntity,
   UserEntity,
 } from '../../repo/entity/db_entity';
+import { removeNilValues } from '../../util/string-util';
 
 export const creationDto2Entity = ({
   email,
@@ -64,11 +65,11 @@ export const entity2Dto = (
 ): UserDto => {
   return {
     id: src.oid.toString(),
-    name: {
-      ...(src.name_en && { English: src.name_en }),
-      ...(src.name_zh_hant && { TraditionalChinese: src.name_zh_hant }),
-      ...(src.name_zh_hans && { SimplifiedChinese: src.name_zh_hans }),
-    },
+    name: removeNilValues({
+      English: src.name_en,
+      TraditionalChinese: src.name_zh_hant,
+      SimplifiedChinese: src.name_zh_hans,
+    }),    
     email: src.email,
     entitledStudentId: entitledSutdent
       ? entitledSutdent.map((item) => item[0].id)

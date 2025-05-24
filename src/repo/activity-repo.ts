@@ -95,13 +95,50 @@ export const getActivityById = async (
     if (activities.length === 1) {
       const { category, ...rest } = activities[0];
       return { activity: { ...rest }, category: category };
-    }
-    else {
-      console.log(`getActivityById() - id = ${id}, number of result = ${activities.length}`)
+    } else {
+      console.log(
+        `getActivityById() - id = ${id}, number of result = ${activities.length}`
+      );
       return undefined;
     }
   } catch (error) {
     console.error('Error fetching activity:', error);
+    throw error;
+  }
+};
+
+export const createActivity = async (
+  activity: Omit<Activity, 'oid'>
+): Promise<Activity> => {
+  try {
+    return await prisma.activity.create({
+      data: {
+        ...activity,
+      },
+    });
+  } catch (error) {
+    console.error('Error creating activity:', error);
+    throw error;
+  }
+};
+
+export const updateActivity = async (activity: Activity): Promise<Activity> => {
+  try {
+    const { oid, version, ...rest } = activity; // separate controlled fields
+
+    return await prisma.activity.update({
+      where: { oid, version },
+      data: { ...rest, version: { increment: 1 } },
+    });
+  } catch (error) {
+    console.error('Error updating activity:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2025') {
+        throw new Error(
+          'Optimistic Locking Failed: The record was modified by another process.'
+        );
+      }
+    }
     throw error;
   }
 };

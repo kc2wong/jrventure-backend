@@ -1,4 +1,6 @@
 import {
+  Activity,
+  ActivityCategory,
   Class,
   Student,
   User,
@@ -9,9 +11,18 @@ import {
 type UserCreationEntity = Omit<
   User,
   | 'oid'
-  | 'created_datetime'
   | 'password'
   | 'password_expiry_datetime'
+  | 'created_by_user_oid'
+  | 'created_at'
+  | 'updated_by_user_oid'
+  | 'updated_at'
+  | 'version'
+>;
+
+type ActivityCreationEntity = Omit<
+  Activity,
+  | 'oid'
   | 'created_by_user_oid'
   | 'created_at'
   | 'updated_by_user_oid'
@@ -26,4 +37,7 @@ export type {
   UserRole as UserRoleEntity,
   UserStatus as UserStatusEntity,
   UserCreationEntity,
+  ActivityCategory as ActivityCategoryEntity,
+  Activity as ActivityEntity,
+  ActivityCreationEntity
 };

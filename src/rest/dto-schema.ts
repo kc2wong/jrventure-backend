@@ -55,6 +55,21 @@ type ActivityGet200ResponseDto =
 type ActivityGetById200ResponseDto =
   paths['/activities/{id}']['get']['responses']['200']['content']['application/json'];
 
+type ActivityPostRequestDto =
+  paths['/activities']['post']['requestBody']['content']['application/json'];
+
+type ActivityPost201ResponseDto =
+  paths['/activities']['post']['responses']['201']['content']['application/json'];
+
+type ActivityPutRequestPathDto =
+  paths['/activities/{id}']['put']['parameters']['path'];
+
+type ActivityPutRequestDto =
+  paths['/activities/{id}']['put']['requestBody']['content']['application/json'];
+
+type ActivityPut200ResponseDto =
+  paths['/activities/{id}']['put']['responses']['200']['content']['application/json'];
+
 type ErrorDto = components['schemas']['Error'];
 
 type LanguageDto = components['schemas']['Language'];
@@ -86,6 +101,8 @@ type UserDto = components['schemas']['User'];
 type ActivityCategoryDto = components['schemas']['ActivityCategory'];
 
 type ActivityDto = components['schemas']['Activity'];
+
+type ActivityPayloadDto = components['schemas']['ActivityPayload'];
 
 export {
   GetClassesQueryDto,
@@ -123,6 +140,12 @@ export {
   ActivityDto,
   ActivityStatusDto,
   AchievementSubmissionRoleDto,
+  ActivityPayloadDto,
+  ActivityPostRequestDto,
+  ActivityPost201ResponseDto,
+  ActivityPutRequestPathDto,
+  ActivityPutRequestDto,
+  ActivityPut200ResponseDto
 };
 
 class BaseErrorDto extends Error {

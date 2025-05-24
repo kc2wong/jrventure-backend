@@ -13,4 +13,11 @@ export const replaceParameters = (
 export const safeParseInt = (value: string): number | undefined => {
   const rtn = parseInt(value);
   return isNaN(rtn) ? undefined : rtn;
-}
+};
+
+export const removeNilValues = <T extends Record<string, any>>(
+  obj: T
+): Partial<T> =>
+  Object.fromEntries(
+    Object.entries(obj).filter(([, value]) => value != null)
+  ) as Partial<T>;

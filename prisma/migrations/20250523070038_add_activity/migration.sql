@@ -18,7 +18,6 @@ CREATE TABLE "activity_category" (
 -- CreateTable
 CREATE TABLE "activity" (
     "oid" SERIAL NOT NULL,
-    "code" VARCHAR(20) NOT NULL,
     "category_oid" INTEGER NOT NULL,
     "name_en" VARCHAR(200),
     "name_en_up_case" VARCHAR(200),
@@ -44,9 +43,6 @@ CREATE TABLE "activity" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "activity_category_code_key" ON "activity_category"("code");
-
--- CreateIndex
-CREATE UNIQUE INDEX "activity_code_key" ON "activity"("code");
 
 -- AddForeignKey
 ALTER TABLE "activity" ADD CONSTRAINT "activity_category_oid_fkey" FOREIGN KEY ("category_oid") REFERENCES "activity_category"("oid") ON DELETE RESTRICT ON UPDATE CASCADE;

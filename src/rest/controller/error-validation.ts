@@ -1,10 +1,37 @@
 import { replaceParameters } from '../../util/string-util';
-import { BadRequestErrorDto, UnAuthorizedErrorDto, UserRoleDto } from '../dto-schema';
+import {
+  BadRequestErrorDto,
+  UnAuthorizedErrorDto,
+  UserRoleDto,
+} from '../dto-schema';
 
-export class InvalidFieldValueErrorDto extends BadRequestErrorDto {
+export class ZodValidationErrorDto extends BadRequestErrorDto {
+  constructor(message: string, path: string, parameters: string[] = []) {
+    super(
+      message,
+      message,
+      [...parameters, path]
+    );
+  }
+}
+
+export class ValueTooLargeErrorDto extends BadRequestErrorDto {
   constructor(fileValue: string, filedName: string) {
     super(
-      replaceParameters('Invalid value [{1}] for field [{2}]', [
+      replaceParameters('Value for [${1}] cannot be greater than [{2}]', [
+        filedName,
+        fileValue,
+      ]),
+      'TOO_LARGE_VALUE',
+      [fileValue, filedName]
+    );
+  }
+}
+
+export class InvalidValueErrorDto extends BadRequestErrorDto {
+  constructor(fileValue: string, filedName: string) {
+    super(
+      replaceParameters('Invalid value [${1}] for field [{2}]', [
         fileValue,
         filedName,
       ]),
@@ -14,19 +41,15 @@ export class InvalidFieldValueErrorDto extends BadRequestErrorDto {
   }
 }
 
-export class NotRequiredFieldValueErrorDto extends BadRequestErrorDto {
-  constructor(fileValue: string, filedName: string) {
+export class NotFoundErrorDto extends BadRequestErrorDto {
+  constructor(objectName: string, fieldName: string, fieldValue: string) {
     super(
-      replaceParameters('Field [{1}] must be empty, provided value is [{2}]', [
-        fileValue,
-        filedName,
-      ]),
-      'MUST_BE_EMPTY',
-      [fileValue, filedName]
+      replaceParameters('Object ${1} with [${2}] = [${3}] is not found', [objectName, fieldName, fieldValue]),
+      'NOT_FOUND',
+      [objectName, fieldName, fieldValue]
     );
   }
 }
-
 
 export class InvalidClassErrorDto extends BadRequestErrorDto {
   constructor(classId: string) {
@@ -126,7 +149,6 @@ export class InvalidFieldErrorDto extends BadRequestErrorDto {
     );
   }
 }
-
 
 export class InvalidEmailOrPasswordErrorDto extends UnAuthorizedErrorDto {
   constructor(email: string) {

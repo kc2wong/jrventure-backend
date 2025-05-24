@@ -2,11 +2,10 @@ import { z } from 'zod';
 import { zodEmail, zodOptionalString, zodString } from '../../../type/zod';
 import { UserCreationDto } from '../../dto-schema';
 import {
-  NotRequiredFieldValueErrorDto,
-  InvalidFieldValueErrorDto,
   UserWithEmailExistsErrorDto,
   UserForStudentExistsErrorDto,
   StudentNotFoundByIdErrorDto,
+  ZodValidationErrorDto,
 } from '../error-validation';
 import { Class, Student } from '@prisma/client';
 import { findUser } from '../../../repo/user_repo';
@@ -57,11 +56,7 @@ export const validateField = (userCreationDto: UserCreationDto) => {
       userCreationDto
     );
     const path = firstIssue.path.join('.');
-    if (firstIssue.message === 'zod.error.NotRequired') {
-      throw new NotRequiredFieldValueErrorDto(path, invalidValue);
-    } else {
-      throw new InvalidFieldValueErrorDto(invalidValue, path);
-    }
+    throw new ZodValidationErrorDto(firstIssue.message, path, invalidValue);
   }
 };
 

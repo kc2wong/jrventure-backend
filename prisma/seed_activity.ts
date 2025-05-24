@@ -9,7 +9,6 @@ const now = new Date();
 const data: Omit<Activity, 'oid'>[] = [
   {
     category_oid: 1,
-    code: 'ACT_1',
     name_en: 'Central District Flag Selling',
     name_en_up_case: 'Central District Flag Selling'.toUpperCase(),
     name_zh_hant: '中西區賣旗',
@@ -31,7 +30,6 @@ const data: Omit<Activity, 'oid'>[] = [
   },
   {
     category_oid: 2,
-    code: 'ACT_2',
     name_en: 'Outschool Sport Achievement',
     name_en_up_case: 'Outschool Sport Achievement'.toUpperCase(),
     name_zh_hant: null,
@@ -53,7 +51,6 @@ const data: Omit<Activity, 'oid'>[] = [
   },
   {
     category_oid: 3,
-    code: 'ACT_3',
     name_en: 'Conduct and Manner',
     name_en_up_case: 'Conduct and Manner'.toUpperCase(),
     name_zh_hant: '品行',
@@ -75,7 +72,6 @@ const data: Omit<Activity, 'oid'>[] = [
   },
   {
     category_oid: 4,
-    code: 'ACT_4',
     name_en: 'Communication',
     name_en_up_case: 'Communication'.toUpperCase(),
     name_zh_hant: '溝通能力',
@@ -97,7 +93,6 @@ const data: Omit<Activity, 'oid'>[] = [
   },
   {
     category_oid: 4,
-    code: 'ACT_5',
     name_en: 'Critical Thinking',
     name_en_up_case: 'Critical Thinking'.toUpperCase(),
     name_zh_hant: '慎思明辨',
@@ -119,7 +114,6 @@ const data: Omit<Activity, 'oid'>[] = [
   },
   {
     category_oid: 1,
-    code: 'ACT_6',
     name_en: 'Mid-Autumn Elderly Visit',
     name_en_up_case: 'Mid-Autumn Elderly Visit'.toUpperCase(),
     name_zh_hant: '中秋探訪獨居老人',
@@ -141,7 +135,6 @@ const data: Omit<Activity, 'oid'>[] = [
   },
   {
     category_oid: 5,
-    code: 'ACT_7',
     name_en: 'HKICF2025',
     name_en_up_case: 'HKICF2025'.toUpperCase(),
     name_zh_hant: null,

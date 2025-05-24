@@ -124,7 +124,6 @@ enum AchievementSubmissionRole {
 
 model Activity {
   oid                         Int                       @id @default(autoincrement())
-  code                        String                    @db.VarChar(20)
   category_oid                Int
   name_en                     String?                   @db.VarChar(200)
   name_en_up_case             String?                   @db.VarChar(200)
@@ -147,6 +146,5 @@ model Activity {
 
   category ActivityCategory @relation(fields: [category_oid], references: [oid])
 
-  @@unique([code])
   @@map("activity")
 }

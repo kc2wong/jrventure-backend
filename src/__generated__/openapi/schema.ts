@@ -134,7 +134,8 @@ export interface paths {
         /** Search activities by criteria */
         get: operations["findActivity"];
         put?: never;
-        post?: never;
+        /** Create a new activity */
+        post: operations["createActivity"];
         delete?: never;
         options?: never;
         head?: never;
@@ -150,7 +151,8 @@ export interface paths {
         };
         /** Get activity by id */
         get: operations["getActivityById"];
-        put?: never;
+        /** Update an existing activity */
+        put: operations["updateActivity"];
         post?: never;
         delete?: never;
         options?: never;
@@ -264,8 +266,7 @@ export interface components {
                 [key: string]: unknown;
             };
         };
-        Activity: {
-            id: string;
+        ActivityPayload: {
             categoryCode: string;
             name: {
                 [key: string]: unknown;
@@ -288,7 +289,10 @@ export interface components {
             /** Format: int32 */
             eCoin: number;
             status: components["schemas"]["ActivityStatus"];
-        } & components["schemas"]["AuditControl"];
+        };
+        Activity: {
+            id: string;
+        } & components["schemas"]["ActivityPayload"] & components["schemas"]["AuditControl"];
     };
     responses: never;
     parameters: never;
@@ -645,6 +649,57 @@ export interface operations {
             };
         };
     };
+    createActivity: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ActivityPayload"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Activity"];
+                };
+            };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unexpected error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
     getActivityById: {
         parameters: {
             query?: never;
@@ -668,6 +723,53 @@ export interface operations {
             };
             /** @description not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unexpected error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    updateActivity: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Activity ID */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ActivityPayload"] & {
+                    version: number;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Activity"];
+                };
+            };
+            /** @description Validation error */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };
