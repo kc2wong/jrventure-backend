@@ -23,7 +23,7 @@ export const errorHandler = (
     console.error('Unexpected error:', err);
     const errorDto: ErrorDto = {
       code: err.message === 'Optimistic Locking Failed: The record was modified by another process.' ? 'RECORD_MODIFIED' : 'INTERNAL_SERVER_ERROR',
-      message: err.message,
+      message: 'An unexpected error occurred. Please try again later.',
     };
     res.status(500).json(errorDto);  
 }
