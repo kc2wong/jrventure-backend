@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "rimraf ./node_modules src/__generated__ dist",
     "openapi:generate": "openapi-typescript ./resource/openapi/api-spec.yaml -o src/__generated__/openapi/schema.ts",
-    "db:migrate": "prisma migrate dev --name init",
+    "db:migrate": "prisma migrate dev",
     "db:seed": "ts-node prisma/seed.ts",
     "dev": "ts-node src/index.ts",
     "build": "tsc",

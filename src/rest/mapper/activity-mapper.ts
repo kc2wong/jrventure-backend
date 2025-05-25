@@ -1,5 +1,9 @@
 import { Activity, ActivityCategory } from '@prisma/client';
-import { ActivityPayloadDto, ActivityDto } from '../dto-schema';
+import {
+  ActivityPayloadDto,
+  ActivityDto,
+  FindActivityOrderByFieldDto,
+} from '../dto-schema';
 import {
   entity2Dto as datetimeEntity2Dto,
   dto2Entity as datetimeDto2Entity,
@@ -110,3 +114,16 @@ export const creationDto2Entity = (
     ratable,
   };
 };
+
+const orderByfieldMapping: Record<
+  FindActivityOrderByFieldDto,
+  'name_en' | 'start_date' | 'end_date'
+> = {
+  Name: 'name_en',
+  StartDate: 'start_date',
+  EndDate: 'end_date',
+};
+
+export const orderByFieldDto2Entity = (
+  src: FindActivityOrderByFieldDto
+): 'name_en' | 'start_date' | 'end_date' => orderByfieldMapping[src];

@@ -371,6 +371,14 @@ paths:
           name: limit
           schema:
             type: number
+        - in: query
+          name: orderByField
+          schema:
+            $ref: '#/components/schemas/FindActivityOrderByField'
+        - in: query
+          name: orderByDirection
+          schema:
+            $ref: '#/components/schemas/OrderByDirection'
       responses:
         '200':
           description: OK
@@ -525,6 +533,11 @@ components:
         - English
         - TraditionalChinese
         - SimplifiedChinese
+    OrderByDirection:
+      type: string
+      enum:
+        - Ascending
+        - Descending
     AuthenticationStatus:
       type: string
       enum:
@@ -582,6 +595,18 @@ components:
           description: Create datetime
         version:
           type: number
+    Pagination:
+      type: object
+      required:
+        - offset
+        - total
+      properties:
+        offset:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
     Class:
       type: object
       required:
@@ -792,20 +817,21 @@ components:
               type: string
         - $ref: '#/components/schemas/ActivityPayload'
         - $ref: '#/components/schemas/AuditControl'
+    FindActivityOrderByField:
+      type: string
+      enum:
+        - Name
+        - StartDate
+        - EndDate
     FindActivityResult:
       type: object
-      required:
-        - offset
-        - total
-        - data
-      properties:
-        offset:
-          type: integer
-        limit:
-          type: integer
-        total:
-          type: integer
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Activity'
+      allOf:
+        - type: object
+          required:
+            - data
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Activity'
+        - $ref: '#/components/schemas/Pagination'

@@ -172,6 +172,8 @@ export interface components {
         /** @enum {string} */
         Language: "English" | "TraditionalChinese" | "SimplifiedChinese";
         /** @enum {string} */
+        OrderByDirection: "Ascending" | "Descending";
+        /** @enum {string} */
         AuthenticationStatus: "Success" | "ChangePasswordOnly";
         /** @enum {string} */
         UserRole: "Student" | "Parent" | "Teacher" | "Admin" | "Alumni";
@@ -197,6 +199,11 @@ export interface components {
              */
             updatedAt: string;
             version: number;
+        };
+        Pagination: {
+            offset: number;
+            limit?: number;
+            total: number;
         };
         Class: {
             /** @description grade + class number */
@@ -293,12 +300,11 @@ export interface components {
         Activity: {
             id: string;
         } & components["schemas"]["ActivityPayload"] & components["schemas"]["AuditControl"];
+        /** @enum {string} */
+        FindActivityOrderByField: "Name" | "StartDate" | "EndDate";
         FindActivityResult: {
-            offset: number;
-            limit?: number;
-            total: number;
             data: components["schemas"]["Activity"][];
-        };
+        } & components["schemas"]["Pagination"];
     };
     responses: never;
     parameters: never;
@@ -630,6 +636,8 @@ export interface operations {
                 status?: components["schemas"]["ActivityStatus"][];
                 offset?: number;
                 limit?: number;
+                orderByField?: components["schemas"]["FindActivityOrderByField"];
+                orderByDirection?: components["schemas"]["OrderByDirection"];
             };
             header?: never;
             path?: never;

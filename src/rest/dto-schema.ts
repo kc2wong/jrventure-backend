@@ -102,6 +102,8 @@ type ActivityCategoryDto = components['schemas']['ActivityCategory'];
 
 type ActivityDto = components['schemas']['Activity'];
 
+type FindActivityOrderByFieldDto = components['schemas']['FindActivityOrderByField'];
+
 type ActivityPayloadDto = components['schemas']['ActivityPayload'];
 
 export {
@@ -145,7 +147,8 @@ export {
   ActivityPost201ResponseDto,
   ActivityPutRequestPathDto,
   ActivityPutRequestDto,
-  ActivityPut200ResponseDto
+  ActivityPut200ResponseDto,
+  FindActivityOrderByFieldDto
 };
 
 class BaseErrorDto extends Error {

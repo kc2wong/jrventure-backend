@@ -17,6 +17,8 @@ type FindActivityParams = {
   status?: ActivityStatus[];
   offset?: number;
   limit?: number;
+  orderByField?: 'name_en' | 'start_date' | 'end_date';
+  orderByDirection?: 'asc' | 'desc';
 };
 
 type FindActivityResult = {
@@ -41,6 +43,8 @@ export const findActivity = async ({
   status,
   offset = 0,
   limit,
+  orderByField,
+  orderByDirection,
 }: FindActivityParams): Promise<FindActivityPageResult> => {
   try {
     const whereClause: Prisma.ActivityWhereInput = {
@@ -69,6 +73,16 @@ export const findActivity = async ({
       }),
     };
 
+    const orderByClause: Prisma.ActivityFindManyArgs['orderBy'] = [
+      ...(orderByField
+        ? [
+            {
+              [orderByField]: orderByDirection,
+            },
+          ]
+        : []),
+      { oid: 'asc' }, // secondary sort to ensure consistent order
+    ];
     const [total, items] = await prisma.$transaction([
       prisma.activity.count({ where: whereClause }),
       prisma.activity.findMany({
@@ -76,7 +90,7 @@ export const findActivity = async ({
         include: { category: true },
         skip: offset,
         take: limit,
-        orderBy: { oid: 'asc' },
+        orderBy: orderByClause,
       }),
     ]);
 
