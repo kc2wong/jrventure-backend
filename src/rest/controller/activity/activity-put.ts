@@ -7,7 +7,7 @@ import {
 import { creationDto2Entity, entity2Dto } from '../../mapper/activity-mapper';
 import {
   updateActivity as updateActivityRepo,
-  getActivityById as getActivityByIdRepo,
+  getActivityByOid as getActivityByOidRepo,
 } from '../../../repo/activity-repo';
 import { currentDatetime } from '../../../util/datetime-util';
 import { validateField, validateActivityCategory } from './activity-validation';
@@ -33,8 +33,9 @@ export const updateActivity = async (
       activityUpdateDto.categoryCode
     );
 
-    const id = safeParseInt(req.params.id);
-    const activity = id ? (await getActivityByIdRepo(id))?.activity : undefined;
+    const id = req.params.id;
+    const oid = safeParseInt(id);
+    const activity = oid ? (await getActivityByOidRepo(oid))?.activity : undefined;
     if (activity === undefined) {
       throw new NotFoundErrorDto('Activity', 'id', req.params.id);
     }

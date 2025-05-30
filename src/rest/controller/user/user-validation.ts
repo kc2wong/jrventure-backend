@@ -4,7 +4,7 @@ import { UserCreationDto } from '../../dto-schema';
 import {
   UserWithEmailExistsErrorDto,
   UserForStudentExistsErrorDto,
-  StudentNotFoundByIdErrorDto,
+  NotFoundErrorDto,
   ZodValidationErrorDto,
 } from '../error-validation';
 import { Class, Student } from '@prisma/client';
@@ -74,7 +74,7 @@ type StudentClass = {
 const validateStudentId = async (studentId: string): Promise<StudentClass> => {
   const student = await findStudent([studentId]);
   if (student.length !== 1) {
-    throw new StudentNotFoundByIdErrorDto(studentId);
+    throw new NotFoundErrorDto("Student", "studentId", studentId);
   }
 
   return { student: student[0][0], clazz: student[0][1] };

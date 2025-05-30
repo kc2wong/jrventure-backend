@@ -1,4 +1,9 @@
 import {
+  Achievement,
+  AchievementStatus,
+  AchievementApproval,
+  AchievementApprovalStatus,
+  AchievementSubmissionRole,
   Activity,
   ActivityCategory,
   Class,
@@ -30,6 +35,33 @@ type ActivityCreationEntity = Omit<
   | 'version'
 >;
 
+type AchievementCreationEntity = Omit<
+  Achievement,
+  | 'oid'
+  | 'created_by_user_oid'
+  | 'created_at'
+  | 'updated_by_user_oid'
+  | 'updated_at'
+  | 'version'
+>;
+
+type AchievementApprovalCreationEntity = Omit<
+  AchievementApproval,
+  | 'oid'
+  | 'created_by_user_oid'
+  | 'created_at'
+  | 'updated_by_user_oid'
+  | 'updated_at'
+  | 'version'
+>;
+
+export type PaginationResult<T> = {
+  offset: number,
+  total: number,
+  limit: number,
+  data: T[]
+}
+
 export type {
   Class as ClassEntity,
   Student as StudentEntity,
@@ -39,5 +71,16 @@ export type {
   UserCreationEntity,
   ActivityCategory as ActivityCategoryEntity,
   Activity as ActivityEntity,
-  ActivityCreationEntity
+  Achievement as AchievementEntity,
+  AchievementApproval as AchievementApprovalEntity,
+  ActivityCreationEntity,
+  AchievementCreationEntity,
+  AchievementApprovalCreationEntity,
+};
+
+// enum
+export {
+  AchievementStatus as AchievementStatusEntity,
+  AchievementSubmissionRole as AchievementSubmissionRoleEntity,
+  AchievementApprovalStatus as AchievementApprovalStatusEntity,
 };

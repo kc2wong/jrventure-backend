@@ -3,6 +3,7 @@ import {
   ActivityStatus,
   Activity,
   Prisma,
+  AchievementSubmissionRole,
 } from '@prisma/client';
 import prisma from './db';
 
@@ -14,6 +15,7 @@ type FindActivityParams = {
   endDateFrom?: Date;
   endDateTo?: Date;
   participantGrade?: number[];
+  role?: AchievementSubmissionRole[];
   status?: ActivityStatus[];
   offset?: number;
   limit?: number;
@@ -40,6 +42,7 @@ export const findActivity = async ({
   endDateFrom,
   endDateTo,
   participantGrade,
+  role,
   status,
   offset = 0,
   limit,
@@ -48,6 +51,7 @@ export const findActivity = async ({
 }: FindActivityParams): Promise<FindActivityPageResult> => {
   try {
     const whereClause: Prisma.ActivityWhereInput = {
+      ...(role && { achievement_submission_role: { in: role } }),
       ...(status && { status: { in: status } }),
       ...(name && {
         OR: [
@@ -108,13 +112,16 @@ export const findActivity = async ({
   }
 };
 
-export const getActivityById = async (
-  id: number
+export const getActivityByOid = async (
+  oid: number
 ): Promise<FindActivityResult | undefined> => {
   try {
+    if (oid === undefined) {
+      return undefined;
+    }
     const activities = await prisma.activity.findMany({
       where: {
-        oid: id,
+        oid: oid,
       },
       include: {
         category: true,
@@ -125,7 +132,7 @@ export const getActivityById = async (
       return { activity: { ...rest }, category: category };
     } else {
       console.log(
-        `getActivityById() - id = ${id}, number of result = ${activities.length}`
+        `getActivityByOid() - oid = ${oid}, number of result = ${activities.length}`
       );
       return undefined;
     }

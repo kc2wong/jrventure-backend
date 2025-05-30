@@ -3,23 +3,23 @@ import {
   ActivityGetById200ResponseDto,
   ActivityGetByIdPathDto,
 } from '../../dto-schema';
-import { getActivityById as getActivityByIdRepo } from '../../../repo/activity-repo';
+import { getActivityByOid as getActivityByOidRepo } from '../../../repo/activity-repo';
 import { entity2Dto } from '../../mapper/activity-mapper';
-import { safeParseInt } from '../../../util/string-util';
 import { ActivityNotFoundErrorDto } from '../error-not-found';
+import { safeParseInt } from '../../../util/string-util';
 
 export const getActivityById = async (
   req: Request<ActivityGetByIdPathDto, {}, {}, {}>,
   res: Response<ActivityGetById200ResponseDto>,
   next: NextFunction
 ) => {
-  const idRaw = req.params.id;
-  const id = safeParseInt(idRaw);
+  const id = req.params.id;
+  const oid = safeParseInt(id);
 
   try {
-    const result = id ? await getActivityByIdRepo(id) : undefined;
+    const result = oid ? await getActivityByOidRepo(oid) : undefined;
     if (!result) {
-      throw new ActivityNotFoundErrorDto(idRaw);
+      throw new ActivityNotFoundErrorDto(id);
     }
     res
       .status(200)

@@ -160,6 +160,75 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/achievements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search achievement by criteria */
+        get: operations["findAchievement"];
+        put?: never;
+        /** Create a new student achievement */
+        post: operations["createAchievement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/achievements/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update an existing achievement */
+        put: operations["updateAchievement"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/achievement-approvals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search achievement approval by criteria */
+        get: operations["findAchievementApproval"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/achievement-approvals/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update an existing achievement approval */
+        put: operations["updateAchievementApproval"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -183,6 +252,10 @@ export interface components {
         ActivityStatus: "Closed" | "Open" | "Scheduled" | "Cancelled";
         /** @enum {string} */
         AchievementSubmissionRole: "Teacher" | "Student" | "Both";
+        /** @enum {string} */
+        AchievementStatus: "Approved" | "Published";
+        /** @enum {string} */
+        AchievementApprovalStatus: "Pending" | "Rejected";
         AuditControl: {
             /** @description Id of the create user */
             createdBy: string;
@@ -304,6 +377,29 @@ export interface components {
         FindActivityOrderByField: "Name" | "StartDate" | "EndDate";
         FindActivityResult: {
             data: components["schemas"]["Activity"][];
+        } & components["schemas"]["Pagination"];
+        AchievementCreation: {
+            studentId: string;
+            activityId: string;
+            /** Format: int32 */
+            rating?: number;
+            comment: string;
+        };
+        Achievement: {
+            id: string;
+            submissionRole: components["schemas"]["AchievementSubmissionRole"];
+            status: components["schemas"]["AchievementStatus"];
+        } & components["schemas"]["AchievementCreation"];
+        AchievementApproval: {
+            id: string;
+            submissionRole: components["schemas"]["AchievementSubmissionRole"];
+            status: components["schemas"]["AchievementApprovalStatus"];
+        } & components["schemas"]["AchievementCreation"];
+        FindAchievementResult: {
+            data: components["schemas"]["Achievement"][];
+        } & components["schemas"]["Pagination"];
+        FindAchievementApprovalResult: {
+            data: components["schemas"]["AchievementApproval"][];
         } & components["schemas"]["Pagination"];
     };
     responses: never;
@@ -633,6 +729,7 @@ export interface operations {
                 endDateFrom?: string;
                 endDateTo?: string;
                 participantGrade?: number[];
+                role?: components["schemas"]["AchievementSubmissionRole"][];
                 status?: components["schemas"]["ActivityStatus"][];
                 offset?: number;
                 limit?: number;
@@ -786,6 +883,252 @@ export interface operations {
             };
             /** @description Validation error */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unexpected error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    findAchievement: {
+        parameters: {
+            query?: {
+                studentId?: string;
+                activityId?: string;
+                role?: components["schemas"]["AchievementSubmissionRole"];
+                createDateFrom?: string;
+                offset?: number;
+                limit?: number;
+                orderByDirection?: components["schemas"]["OrderByDirection"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FindAchievementResult"];
+                };
+            };
+            /** @description Unexpected error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    createAchievement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AchievementCreation"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Achievement"] | components["schemas"]["AchievementApproval"];
+                };
+            };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unexpected error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    updateAchievement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Achievement Id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AchievementCreation"] & {
+                    version: number;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Achievement"];
+                };
+            };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unexpected error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    findAchievementApproval: {
+        parameters: {
+            query?: {
+                studentId?: string;
+                activityId?: string;
+                role?: components["schemas"]["AchievementSubmissionRole"];
+                createDateFrom?: string;
+                offset?: number;
+                limit?: number;
+                orderByDirection?: components["schemas"]["OrderByDirection"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FindAchievementApprovalResult"];
+                };
+            };
+            /** @description Unexpected error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    updateAchievementApproval: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Achievement Id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AchievementCreation"] & {
+                    version: number;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AchievementApproval"];
+                };
+            };
+            /** @description Validation error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

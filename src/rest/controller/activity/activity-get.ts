@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import {
+  AchievementSubmissionRoleDto,
   ActivityGet200ResponseDto,
   ActivityGetQueryDto,
   ActivityStatusDto,
@@ -11,6 +12,7 @@ import {
   orderByFieldDto2Entity,
 } from '../../mapper/activity-mapper';
 import { dto2Entity as activityStatusDto2Entity } from '../../mapper/activity-status-dto-mapper';
+import { dto2Entity as submissionRoleDto2Entity } from '../../mapper/achievement-submission-role-dto-mapper';
 import { dto2Entity as orderByDirectionDto2Entity } from '../../mapper/order-by-direction-mapper';
 import { z } from 'zod';
 
@@ -61,6 +63,17 @@ export const activityQuerySchema = z.object({
     .optional()
     .transform((val) =>
       val === undefined ? undefined : Array.isArray(val) ? val : [val]
+    ),
+
+  role: z
+    .union([z.string(), z.array(z.string())])
+    .optional()
+    .transform((val) =>
+      val === undefined
+        ? undefined
+        : Array.isArray(val)
+        ? val.map((s) => submissionRoleDto2Entity(s as AchievementSubmissionRoleDto))
+        : [submissionRoleDto2Entity(val as AchievementSubmissionRoleDto)]
     ),
 
   status: z

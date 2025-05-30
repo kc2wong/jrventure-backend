@@ -17,7 +17,6 @@ export const userAuthenticationPost = async (
   try {
     const email = req.body.email;
     const password = req.body.password;
-
     const users = await findUser({
       email,
     });

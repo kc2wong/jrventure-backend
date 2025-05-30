@@ -12,7 +12,9 @@ tags:
   - name: Student
     description: Student and Class
   - name: Activity
-    description: Activity and Achievement
+    description: Activity
+  - name: Achievement
+    description: Student and Achievement
 
 servers:
   - url: http://localhost:4000
@@ -358,6 +360,12 @@ paths:
             items:
               type: number
         - in: query
+          name: role
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/AchievementSubmissionRole'
+        - in: query
           name: status
           schema:
             type: array
@@ -500,6 +508,252 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /achievements:
+    get:
+      summary: Search achievement by criteria
+      operationId: findAchievement
+      tags:
+        - Achievement
+      parameters:
+        - in: query
+          name: studentId
+          schema:
+            type: string
+        - in: query
+          name: activityId
+          schema:
+            type: string
+        - in: query
+          name: role
+          schema:
+            $ref: '#/components/schemas/AchievementSubmissionRole'
+        - in: query
+          name: createDateFrom
+          schema:
+            type: string
+            format: datetime
+        - in: query
+          name: offset
+          schema:
+            type: number
+        - in: query
+          name: limit
+          schema:
+            type: number
+        - in: query
+          name: orderByDirection
+          schema:
+            $ref: '#/components/schemas/OrderByDirection'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindAchievementResult'
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
+    post:
+      summary: Create a new student achievement
+      operationId: createAchievement
+      tags:
+        - Achievement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AchievementCreation'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Achievement'
+                  - $ref: '#/components/schemas/AchievementApproval'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /achievements/{id}:
+    put:
+      summary: Update an existing achievement
+      operationId: updateAchievement
+      tags:
+        - Achievement
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Achievement Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf:
+                - $ref: '#/components/schemas/AchievementCreation'
+                - type: object
+                  required:
+                    - version
+                  properties:
+                    version:
+                      type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Achievement'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /achievement-approvals:
+    get:
+      summary: Search achievement approval by criteria
+      operationId: findAchievementApproval
+      tags:
+        - Achievement
+      parameters:
+        - in: query
+          name: studentId
+          schema:
+            type: string
+        - in: query
+          name: activityId
+          schema:
+            type: string
+        - in: query
+          name: role
+          schema:
+            $ref: '#/components/schemas/AchievementSubmissionRole'
+        - in: query
+          name: createDateFrom
+          schema:
+            type: string
+            format: datetime
+        - in: query
+          name: offset
+          schema:
+            type: number
+        - in: query
+          name: limit
+          schema:
+            type: number
+        - in: query
+          name: orderByDirection
+          schema:
+            $ref: '#/components/schemas/OrderByDirection'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindAchievementApprovalResult'
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
+  /achievement-approvals/{id}:
+    put:
+      summary: Update an existing achievement approval
+      operationId: updateAchievementApproval
+      tags:
+        - Achievement
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Achievement Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf:
+                - $ref: '#/components/schemas/AchievementCreation'
+                - type: object
+                  required:
+                    - version
+                  properties:
+                    version:
+                      type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementApproval'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '500':
           description: Unexpected error
           content:
@@ -570,6 +824,16 @@ components:
         - Teacher
         - Student
         - Both
+    AchievementStatus:
+      type: string
+      enum:
+      - Approved
+      - Published
+    AchievementApprovalStatus:
+      type: string
+      enum:
+      - Pending
+      - Rejected
     AuditControl:
       type: object
       required:
@@ -834,4 +1098,77 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/Activity'
+        - $ref: '#/components/schemas/Pagination'
+    AchievementCreation:
+      type: object
+      required:
+        - studentId
+        - activityId
+        - comment
+        - status
+      properties:
+        studentId:
+          type: string
+        activityId:
+          type: string
+        rating:
+          type: number
+          format: int32
+        comment:
+          type: string
+    Achievement:
+      type: object
+      allOf:
+        - type: object
+          required:
+            - id
+            - submissionRole
+            - status
+          properties:
+            id:
+              type: string
+            submissionRole:
+              $ref: "#/components/schemas/AchievementSubmissionRole"
+            status:
+              $ref: "#/components/schemas/AchievementStatus"
+        - $ref: '#/components/schemas/AchievementCreation'
+    AchievementApproval:
+      type: object
+      allOf:
+        - type: object
+          required:
+            - id
+            - submissionRole
+            - status
+          properties:
+            id:
+              type: string
+            submissionRole:
+              $ref: "#/components/schemas/AchievementSubmissionRole"
+            status:
+              $ref: "#/components/schemas/AchievementApprovalStatus"
+        - $ref: '#/components/schemas/AchievementCreation'
+    FindAchievementResult:
+      type: object
+      allOf:
+        - type: object
+          required:
+            - data
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Achievement'
+        - $ref: '#/components/schemas/Pagination'
+    FindAchievementApprovalResult:
+      type: object
+      allOf:
+        - type: object
+          required:
+            - data
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/AchievementApproval'
         - $ref: '#/components/schemas/Pagination'

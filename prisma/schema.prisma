@@ -54,8 +54,10 @@ model Student {
   class_oid         Int
   student_number    Int
 
-  class            Class         @relation(fields: [class_oid], references: [oid])
-  entitled_by_user UserStudent[]
+  class               Class                 @relation(fields: [class_oid], references: [oid])
+  entitled_by_user    UserStudent[]
+  Achievement         Achievement[]
+  AchievementApproval AchievementApproval[]
 
   @@unique([class_oid, student_number])
   @@map("student")
@@ -144,7 +146,60 @@ model Activity {
   updated_at                  DateTime                  @updatedAt @db.Timestamptz(6)
   version                     Int
 
-  category ActivityCategory @relation(fields: [category_oid], references: [oid])
+  category            ActivityCategory      @relation(fields: [category_oid], references: [oid])
+  Achievement         Achievement[]
+  AchievementApproval AchievementApproval[]
 
   @@map("activity")
+}
+
+enum AchievementStatus {
+  Approved
+  Published
+}
+
+model Achievement {
+  oid                         Int                       @id @default(autoincrement())
+  activity_oid                Int
+  student_oid                 Int
+  achievement_submission_role AchievementSubmissionRole
+  comment                     String                    @db.Text
+  rating                      Int?
+  status AchievementStatus
+  created_by_user_oid         Int                       @map("created_by_user_id")
+  created_at                  DateTime                  @default(now()) @db.Timestamptz(6)
+  updated_by_user_oid         Int                       @map("updated_by_user_id")
+  updated_at                  DateTime                  @updatedAt @db.Timestamptz(6)
+  version                     Int
+
+  activity Activity @relation(fields: [activity_oid], references: [oid], onDelete: Cascade)
+  student  Student  @relation(fields: [student_oid], references: [oid], onDelete: Cascade)
+
+  @@map("achievement")
+}
+
+enum AchievementApprovalStatus {
+  Pending
+  Rejected
+}
+
+model AchievementApproval {
+  oid                         Int                       @id @default(autoincrement())
+  activity_oid                Int
+  student_oid                 Int
+  achievement_oid             Int?
+  achievement_submission_role AchievementSubmissionRole
+  comment                     String                    @db.Text
+  rating                      Int?
+  status AchievementApprovalStatus
+  created_by_user_oid         Int                       @map("created_by_user_id")
+  created_at                  DateTime                  @default(now()) @db.Timestamptz(6)
+  updated_by_user_oid         Int                       @map("updated_by_user_id")
+  updated_at                  DateTime                  @updatedAt @db.Timestamptz(6)
+  version                     Int
+
+  activity Activity @relation(fields: [activity_oid], references: [oid], onDelete: Cascade)
+  student  Student  @relation(fields: [student_oid], references: [oid], onDelete: Cascade)
+
+  @@map("achievement_approval")
 }

@@ -70,6 +70,40 @@ type ActivityPutRequestDto =
 type ActivityPut200ResponseDto =
   paths['/activities/{id}']['put']['responses']['200']['content']['application/json'];
 
+type AchievementPostRequestDto =
+  paths['/achievements']['post']['requestBody']['content']['application/json'];
+
+type AchievementPost201ResponseDto =
+  paths['/achievements']['post']['responses']['201']['content']['application/json'];
+
+type AchievementGetQueryDto = paths['/achievements']['get']['parameters']['query'];
+
+type AchievementGet200ResponseDto =
+  paths['/achievements']['get']['responses']['200']['content']['application/json'];
+
+type AchievementPutRequestPathDto =
+  paths['/achievements/{id}']['put']['parameters']['path'];
+
+type AchievementPutRequestDto =
+  paths['/achievements/{id}']['put']['requestBody']['content']['application/json'];
+
+type AchievementPut200ResponseDto =
+  paths['/achievements/{id}']['put']['responses']['200']['content']['application/json'];
+
+type AchievementApprovalGetQueryDto = paths['/achievement-approvals']['get']['parameters']['query'];
+
+type AchievementApprovalGet200ResponseDto =
+  paths['/achievement-approvals']['get']['responses']['200']['content']['application/json'];
+
+  type AchievementApprovalPutRequestPathDto =
+  paths['/achievement-approvals/{id}']['put']['parameters']['path'];
+
+type AchievementApprovalPutRequestDto =
+  paths['/achievement-approvals/{id}']['put']['requestBody']['content']['application/json'];
+
+type AchievementApprovalPut200ResponseDto =
+  paths['/achievement-approvals/{id}']['put']['responses']['200']['content']['application/json'];
+
 type ErrorDto = components['schemas']['Error'];
 
 type LanguageDto = components['schemas']['Language'];
@@ -102,9 +136,21 @@ type ActivityCategoryDto = components['schemas']['ActivityCategory'];
 
 type ActivityDto = components['schemas']['Activity'];
 
-type FindActivityOrderByFieldDto = components['schemas']['FindActivityOrderByField'];
+type FindActivityOrderByFieldDto =
+  components['schemas']['FindActivityOrderByField'];
 
 type ActivityPayloadDto = components['schemas']['ActivityPayload'];
+
+type AchievementStatusDto = components['schemas']['AchievementStatus'];
+
+type AchievementApprovalStatusDto =
+  components['schemas']['AchievementApprovalStatus'];
+
+type AchievementCreationDto = components['schemas']['AchievementCreation'];
+
+type AchievementDto = components['schemas']['Achievement'];
+
+type AchievementApprovalDto = components['schemas']['AchievementApproval'];
 
 export {
   GetClassesQueryDto,
@@ -129,6 +175,8 @@ export {
   ActivityGet200ResponseDto,
   ActivityGetByIdPathDto,
   ActivityGetById200ResponseDto,
+  AchievementPostRequestDto,
+  AchievementPost201ResponseDto,
   StudentDto,
   ErrorDto,
   LanguageDto,
@@ -142,13 +190,28 @@ export {
   ActivityDto,
   ActivityStatusDto,
   AchievementSubmissionRoleDto,
+  AchievementCreationDto,
+  AchievementStatusDto,
+  AchievementDto,
+  AchievementApprovalStatusDto,
+  AchievementApprovalDto,
   ActivityPayloadDto,
   ActivityPostRequestDto,
   ActivityPost201ResponseDto,
   ActivityPutRequestPathDto,
   ActivityPutRequestDto,
   ActivityPut200ResponseDto,
-  FindActivityOrderByFieldDto
+  AchievementPutRequestPathDto,
+  AchievementPutRequestDto,
+  AchievementPut200ResponseDto,
+  AchievementApprovalPutRequestPathDto,
+  AchievementApprovalPutRequestDto,
+  AchievementApprovalPut200ResponseDto,
+  FindActivityOrderByFieldDto,
+  AchievementGetQueryDto,
+  AchievementGet200ResponseDto,
+  AchievementApprovalGetQueryDto,
+  AchievementApprovalGet200ResponseDto
 };
 
 class BaseErrorDto extends Error {

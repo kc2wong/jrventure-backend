@@ -7,11 +7,7 @@ import {
 
 export class ZodValidationErrorDto extends BadRequestErrorDto {
   constructor(message: string, path: string, parameters: string[] = []) {
-    super(
-      message,
-      message,
-      [...parameters, path]
-    );
+    super(message, message, [...parameters, path]);
   }
 }
 
@@ -44,32 +40,36 @@ export class InvalidValueErrorDto extends BadRequestErrorDto {
 export class NotFoundErrorDto extends BadRequestErrorDto {
   constructor(objectName: string, fieldName: string, fieldValue: string) {
     super(
-      replaceParameters('Object ${1} with [${2}] = [${3}] is not found', [objectName, fieldName, fieldValue]),
+      replaceParameters('Object ${1} with [${2}] = [${3}] is not found', [
+        objectName,
+        fieldName,
+        fieldValue,
+      ]),
       'NOT_FOUND',
       [objectName, fieldName, fieldValue]
     );
   }
 }
 
-export class InvalidClassErrorDto extends BadRequestErrorDto {
-  constructor(classId: string) {
-    super(
-      replaceParameters('Invalid class id {1}', [classId]),
-      'INVALID_CLASS',
-      [classId]
-    );
-  }
-}
+// export class InvalidClassErrorDto extends BadRequestErrorDto {
+//   constructor(classId: string) {
+//     super(
+//       replaceParameters('Invalid class id {1}', [classId]),
+//       'INVALID_CLASS',
+//       [classId]
+//     );
+//   }
+// }
 
-export class ClassNotFoundErrorDto extends BadRequestErrorDto {
-  constructor(classId: string) {
-    super(
-      replaceParameters('Class {1} is not found', [classId]),
-      'CLASS_NOT_FOUND',
-      [classId]
-    );
-  }
-}
+// export class ClassNotFoundErrorDto extends BadRequestErrorDto {
+//   constructor(classId: string) {
+//     super(
+//       replaceParameters('Class {1} is not found', [classId]),
+//       'CLASS_NOT_FOUND',
+//       [classId]
+//     );
+//   }
+// }
 
 export class UserRegistrationNotPendingErrorDto extends BadRequestErrorDto {
   constructor(classId: string, studentNumber: number) {
@@ -97,15 +97,15 @@ export class UserRegistrationExistsErrorDto extends BadRequestErrorDto {
   }
 }
 
-export class StudentNotFoundByIdErrorDto extends BadRequestErrorDto {
-  constructor(studentId: string) {
-    super(
-      replaceParameters('Student with id {1} is not found', [studentId]),
-      'STUDENT_NOT_FOUND_BY_ID',
-      [studentId]
-    );
-  }
-}
+// export class StudentNotFoundByIdErrorDto extends BadRequestErrorDto {
+//   constructor(studentId: string) {
+//     super(
+//       replaceParameters('Student with id {1} is not found', [studentId]),
+//       'STUDENT_NOT_FOUND_BY_ID',
+//       [studentId]
+//     );
+//   }
+// }
 
 export class UserWithEmailExistsErrorDto extends BadRequestErrorDto {
   constructor(email: string) {
@@ -146,6 +146,33 @@ export class InvalidFieldErrorDto extends BadRequestErrorDto {
       ),
       'USER_REGISTRATION_EXISTS',
       [studentNumber.toString(), classId]
+    );
+  }
+}
+
+export class AchievementExistsErrorDto extends BadRequestErrorDto {
+  constructor(studentId: string, activityId: string) {
+    super(
+      replaceParameters(
+        'Achievement for student {1} and activity {2} already exists',
+        [studentId, activityId]
+      ),
+      'ACHIEVEMENT_EXISTS',
+      [studentId, activityId]
+    );
+  }
+}
+
+export class DataEntitlementErrorDto extends BadRequestErrorDto {
+  constructor(objectName: string, fieldName: string, fieldValue: string) {
+    super(
+      replaceParameters('Cannot operate object ${1} with [${2}] = [${3}]', [
+        objectName,
+        fieldName,
+        fieldValue,
+      ]),
+      'UNAUTHORIZED_DATA_ENTITLEMENT',
+      [objectName, fieldName, fieldValue]
     );
   }
 }
