@@ -76,7 +76,8 @@ type AchievementPostRequestDto =
 type AchievementPost201ResponseDto =
   paths['/achievements']['post']['responses']['201']['content']['application/json'];
 
-type AchievementGetQueryDto = paths['/achievements']['get']['parameters']['query'];
+type AchievementGetQueryDto =
+  paths['/achievements']['get']['parameters']['query'];
 
 type AchievementGet200ResponseDto =
   paths['/achievements']['get']['responses']['200']['content']['application/json'];
@@ -90,12 +91,19 @@ type AchievementPutRequestDto =
 type AchievementPut200ResponseDto =
   paths['/achievements/{id}']['put']['responses']['200']['content']['application/json'];
 
-type AchievementApprovalGetQueryDto = paths['/achievement-approvals']['get']['parameters']['query'];
+type AchievementApprovalGetQueryDto =
+  paths['/achievement-approvals']['get']['parameters']['query'];
 
 type AchievementApprovalGet200ResponseDto =
   paths['/achievement-approvals']['get']['responses']['200']['content']['application/json'];
 
-  type AchievementApprovalPutRequestPathDto =
+type AchievementApprovalGetByIdRequestPathDto =
+  paths['/achievement-approvals/{id}']['get']['parameters']['path'];
+
+type AchievementApprovalGetById200ResponseDto =
+  paths['/achievement-approvals/{id}']['get']['responses']['200']['content']['application/json'];
+
+type AchievementApprovalPutRequestPathDto =
   paths['/achievement-approvals/{id}']['put']['parameters']['path'];
 
 type AchievementApprovalPutRequestDto =
@@ -103,6 +111,9 @@ type AchievementApprovalPutRequestDto =
 
 type AchievementApprovalPut200ResponseDto =
   paths['/achievement-approvals/{id}']['put']['responses']['200']['content']['application/json'];
+
+type AchievementApprovalProfanityPostRequestPathDto =
+  paths['/achievement-approvals/{id}/profanity-check']['post']['parameters']['path'];
 
 type ErrorDto = components['schemas']['Error'];
 
@@ -152,6 +163,10 @@ type AchievementDto = components['schemas']['Achievement'];
 
 type AchievementApprovalDto = components['schemas']['AchievementApproval'];
 
+type AchievementApprovalReviewDto = components['schemas']['AchievementApprovalReview'];
+
+type AchievementApprovalDetailDto = components['schemas']['AchievementApprovalDetail'];
+
 export {
   GetClassesQueryDto,
   GetClasses200ResponseDto,
@@ -189,6 +204,8 @@ export {
   ActivityCategoryDto,
   ActivityDto,
   ActivityStatusDto,
+  AchievementApprovalReviewDto,
+  AchievementApprovalDetailDto,
   AchievementSubmissionRoleDto,
   AchievementCreationDto,
   AchievementStatusDto,
@@ -201,6 +218,8 @@ export {
   ActivityPutRequestPathDto,
   ActivityPutRequestDto,
   ActivityPut200ResponseDto,
+  AchievementApprovalGetByIdRequestPathDto,
+  AchievementApprovalGetById200ResponseDto,
   AchievementPutRequestPathDto,
   AchievementPutRequestDto,
   AchievementPut200ResponseDto,
@@ -211,7 +230,8 @@ export {
   AchievementGetQueryDto,
   AchievementGet200ResponseDto,
   AchievementApprovalGetQueryDto,
-  AchievementApprovalGet200ResponseDto
+  AchievementApprovalGet200ResponseDto,
+  AchievementApprovalProfanityPostRequestPathDto,
 };
 
 class BaseErrorDto extends Error {

@@ -11,6 +11,7 @@ import {
   User,
   UserRole,
   UserStatus,
+  AchievementApprovalReview,
 } from '@prisma/client';
 
 type UserCreationEntity = Omit<
@@ -56,11 +57,11 @@ type AchievementApprovalCreationEntity = Omit<
 >;
 
 export type PaginationResult<T> = {
-  offset: number,
-  total: number,
-  limit: number,
-  data: T[]
-}
+  offset: number;
+  total: number;
+  limit: number;
+  data: T[];
+};
 
 export type {
   Class as ClassEntity,
@@ -73,6 +74,7 @@ export type {
   Activity as ActivityEntity,
   Achievement as AchievementEntity,
   AchievementApproval as AchievementApprovalEntity,
+  AchievementApprovalReview as AchievementApprovalReviewEntity,
   ActivityCreationEntity,
   AchievementCreationEntity,
   AchievementApprovalCreationEntity,

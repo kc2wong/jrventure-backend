@@ -5,13 +5,12 @@ import {
   AchievementSubmissionRoleDto,
 } from '../../dto-schema';
 import { dto2Entity as datetimeDto2Entity } from '../../mapper/datetime-dto-mapper';
-import {
-  entity2Dto,
-} from '../../mapper/achievement-approval-mapper';
+import { entity2Dto } from '../../mapper/achievement-approval-mapper';
 import { dto2Entity as submissionRoleDto2Entity } from '../../mapper/achievement-submission-role-dto-mapper';
 import { dto2Entity as orderByDirectionDto2Entity } from '../../mapper/order-by-direction-mapper';
 import { z } from 'zod';
 import { findAchievementApprovalRepo } from '../../../repo/achievement-approval-repo';
+import { safeParseInt } from '../../../util/string-util';
 
 const querySchema = z.object({
   studentId: z.string().optional(),
@@ -39,21 +38,27 @@ export const findAchievementApproval = async (
   res: Response<AchievementApprovalGet200ResponseDto>,
   next: NextFunction
 ) => {
-  const query = querySchema.parse(req.query);
-  const orderByDirection = query.orderByDirection
-    ? orderByDirectionDto2Entity(query.orderByDirection)
+  const { activityId, ...rest } = querySchema.parse(req.query);
+  const orderByDirection = rest.orderByDirection
+    ? orderByDirectionDto2Entity(rest.orderByDirection)
     : undefined;
+  const activityOid = activityId ? safeParseInt(activityId) ?? -1 : undefined;
+
+  // console.log(`query = ${JSON.stringify(query)}`)
 
   try {
     const { total, offset, data } = await findAchievementApprovalRepo({
-      ...query,
+      activityOid,
+      ...rest,
       orderByDirection: orderByDirection,
     });
     res.status(200).json({
       total,
-      offset: offset ?? query.offset,
-      limit: query.limit,
-      data: data.map(({achievementApproval, student, activity}) => entity2Dto(achievementApproval, student, activity)),
+      offset: offset ?? rest.offset,
+      limit: rest.limit,
+      data: data.map(({ achievementApproval, student, activity }) =>
+        entity2Dto(achievementApproval, student, activity)
+      ),
     });
   } catch (error) {
     next(error);

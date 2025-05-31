@@ -219,10 +219,28 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Get an existing achievement approval */
+        get: operations["getAchievementApprovalById"];
         /** Update an existing achievement approval */
         put: operations["updateAchievementApproval"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/achievement-approvals/{id}/profanity-check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Perform profanity check on a pending record */
+        post: operations["checkAchievementApprovalProfanity"];
         delete?: never;
         options?: never;
         head?: never;
@@ -395,6 +413,13 @@ export interface components {
             submissionRole: components["schemas"]["AchievementSubmissionRole"];
             status: components["schemas"]["AchievementApprovalStatus"];
         } & components["schemas"]["AchievementCreation"];
+        AchievementApprovalReview: {
+            id: string;
+            comment: string;
+        } & components["schemas"]["AuditControl"];
+        AchievementApprovalDetail: {
+            review: components["schemas"]["AchievementApprovalReview"][];
+        } & components["schemas"]["AchievementApproval"];
         FindAchievementResult: {
             data: components["schemas"]["Achievement"][];
         } & components["schemas"]["Pagination"];
@@ -1091,6 +1116,47 @@ export interface operations {
             };
         };
     };
+    getAchievementApprovalById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Achievement Id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AchievementApprovalDetail"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unexpected error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
     updateAchievementApproval: {
         parameters: {
             query?: never;
@@ -1126,6 +1192,45 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Error"];
                 };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unexpected error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    checkAchievementApprovalProfanity: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Achievement Id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not found */
             404: {

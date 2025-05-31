@@ -1,4 +1,4 @@
-import { AchievementApprovalDto, AchievementCreationDto } from '../dto-schema';
+import { AchievementApprovalDetailDto, AchievementApprovalDto, AchievementCreationDto } from '../dto-schema';
 import {
   StudentEntity,
   ActivityEntity,
@@ -6,11 +6,11 @@ import {
   AchievementApprovalStatusEntity,
   AchievementApprovalEntity,
   AchievementSubmissionRoleEntity,
+  AchievementApprovalReviewEntity,
 } from '../../repo/entity/db_entity';
-import {
-  entity2Dto as achievementSubmissionRoleEntity2Dto,
-} from './achievement-submission-role-dto-mapper';
+import { entity2Dto as achievementSubmissionRoleEntity2Dto } from './achievement-submission-role-dto-mapper';
 import { dto2Entity as achievemenApprovalStatusDto2Entity } from './achievement-approval-status-mapper';
+import { entity2Dto as achievemenApprovalReviewEntity2Dto } from './achievement-approval-review-mapper';
 
 export const entity2Dto = (
   {
@@ -32,7 +32,33 @@ export const entity2Dto = (
       achievement_submission_role
     ),
     rating: rating ? rating : undefined,
+    comment: comment
+  };
+};
+
+export const detailEntity2Dto = (
+  {
+    oid,
+    status,
+    rating,
+    achievement_submission_role,
+    comment,
+  }: AchievementApprovalEntity,
+  student: StudentEntity,
+  activity: ActivityEntity,
+  review?: AchievementApprovalReviewEntity[]
+): AchievementApprovalDetailDto => {
+  return {
+    id: oid.toString(),
+    status: achievemenApprovalStatusDto2Entity(status),
+    studentId: student.id,
+    activityId: activity.oid.toString(),
+    submissionRole: achievementSubmissionRoleEntity2Dto(
+      achievement_submission_role
+    ),
+    rating: rating ? rating : undefined,
     comment: comment,
+    review: (review ?? []).map((r) => achievemenApprovalReviewEntity2Dto(r)),
   };
 };
 

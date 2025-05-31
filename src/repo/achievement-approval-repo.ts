@@ -1,5 +1,6 @@
 import {
   AchievementApproval,
+  AchievementApprovalReview,
   AchievementSubmissionRole,
   Activity,
   Prisma,
@@ -34,8 +35,10 @@ export const findAchievementApprovalRepo = async ({
   offset = 0,
   limit,
   orderByField,
-  orderByDirection
-}: FindAchievementParams): Promise<PaginationResult<FindAchievementApprovalResult>> => {
+  orderByDirection,
+}: FindAchievementParams): Promise<
+  PaginationResult<FindAchievementApprovalResult>
+> => {
   try {
     const whereClause: Prisma.AchievementApprovalWhereInput = {
       ...(role && { achievement_submission_role: { equals: role } }),
@@ -47,7 +50,7 @@ export const findAchievementApprovalRepo = async ({
       ...(studentOid && { student_oid: { equals: studentOid } }),
       ...(activityOid && { activity_oid: { equals: activityOid } }),
     };
-    
+
     const orderByClause: Prisma.AchievementApprovalFindManyArgs['orderBy'] = [
       ...(orderByField
         ? [
@@ -78,7 +81,6 @@ export const findAchievementApprovalRepo = async ({
         return { achievementApproval: rest, student, activity };
       }),
     };
-
   } catch (error) {
     console.error('Error fetching achievement approval:', error);
     throw error;
@@ -87,18 +89,41 @@ export const findAchievementApprovalRepo = async ({
 
 export const getAchievementApprovalByIdRepo = async (
   id: string
-): Promise<AchievementApproval | undefined> => {
+): Promise<
+  | (FindAchievementApprovalResult & { review: AchievementApprovalReview[] })
+  | undefined
+> => {
   const oid = safeParseInt(id);
   if (oid === undefined) {
     return undefined;
   }
   try {
-    const result = await prisma.achievementApproval.findFirst({
+    // const result = await prisma.achievementApproval.findFirst({
+    //   where: {
+    //     oid: oid,
+    //   },
+    // });
+    const result = await prisma.achievementApproval.findUnique({
       where: {
         oid: oid,
       },
+      include: {
+        activity: true,
+        student: true,
+        achievementApprovalReview: true,
+      },
     });
-    return result ?? undefined;
+    if (result) {
+      const { student, activity, achievementApprovalReview, ...rest } = result;
+      return {
+        achievementApproval: rest,
+        student,
+        activity,
+        review: achievementApprovalReview,
+      };
+    } else {
+      return undefined;
+    }
   } catch (error) {
     console.error('Error fetching achievement approval:', error);
     throw error;

@@ -52,7 +52,7 @@ export const updateAchievementApproval = async (
       submissionRole
     );
 
-    const achievement = await getAchievementApprovalByIdRepo(id);
+    const achievement = (await getAchievementApprovalByIdRepo(id))?.achievementApproval;
     if (achievement === undefined) {
       throw new NotFoundErrorDto('Achievement Approval', 'id', id);
     }

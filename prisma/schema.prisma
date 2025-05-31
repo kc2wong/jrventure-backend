@@ -56,8 +56,8 @@ model Student {
 
   class               Class                 @relation(fields: [class_oid], references: [oid])
   entitled_by_user    UserStudent[]
-  Achievement         Achievement[]
-  AchievementApproval AchievementApproval[]
+  achievement         Achievement[]
+  achievementApproval AchievementApproval[]
 
   @@unique([class_oid, student_number])
   @@map("student")
@@ -147,8 +147,8 @@ model Activity {
   version                     Int
 
   category            ActivityCategory      @relation(fields: [category_oid], references: [oid])
-  Achievement         Achievement[]
-  AchievementApproval AchievementApproval[]
+  achievement         Achievement[]
+  achievementApproval AchievementApproval[]
 
   @@map("activity")
 }
@@ -165,7 +165,7 @@ model Achievement {
   achievement_submission_role AchievementSubmissionRole
   comment                     String                    @db.Text
   rating                      Int?
-  status AchievementStatus
+  status                      AchievementStatus
   created_by_user_oid         Int                       @map("created_by_user_id")
   created_at                  DateTime                  @default(now()) @db.Timestamptz(6)
   updated_by_user_oid         Int                       @map("updated_by_user_id")
@@ -175,6 +175,7 @@ model Achievement {
   activity Activity @relation(fields: [activity_oid], references: [oid], onDelete: Cascade)
   student  Student  @relation(fields: [student_oid], references: [oid], onDelete: Cascade)
 
+  @@unique([activity_oid, student_oid, achievement_submission_role])
   @@map("achievement")
 }
 
@@ -191,7 +192,7 @@ model AchievementApproval {
   achievement_submission_role AchievementSubmissionRole
   comment                     String                    @db.Text
   rating                      Int?
-  status AchievementApprovalStatus
+  status                      AchievementApprovalStatus
   created_by_user_oid         Int                       @map("created_by_user_id")
   created_at                  DateTime                  @default(now()) @db.Timestamptz(6)
   updated_by_user_oid         Int                       @map("updated_by_user_id")
@@ -201,5 +202,23 @@ model AchievementApproval {
   activity Activity @relation(fields: [activity_oid], references: [oid], onDelete: Cascade)
   student  Student  @relation(fields: [student_oid], references: [oid], onDelete: Cascade)
 
+  achievementApprovalReview AchievementApprovalReview[]
+
+  @@unique([activity_oid, student_oid, achievement_submission_role])
   @@map("achievement_approval")
+}
+
+model AchievementApprovalReview {
+  oid                      Int      @id @default(autoincrement())
+  achievement_approval_oid Int
+  comment                  String   @db.Text
+  created_by_user_oid      Int      @map("created_by_user_id")
+  created_at               DateTime @default(now()) @db.Timestamptz(6)
+  updated_by_user_oid      Int      @map("updated_by_user_id")
+  updated_at               DateTime @updatedAt @db.Timestamptz(6)
+  version                  Int
+
+  achievementApproval AchievementApproval @relation(fields: [achievement_approval_oid], references: [oid], onDelete: Cascade)
+
+  @@map("achievement_approval_review")
 }

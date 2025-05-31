@@ -709,6 +709,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'  
   /achievement-approvals/{id}:
+    get:
+      summary: Get an existing achievement approval
+      operationId: getAchievementApprovalById
+      tags:
+        - Achievement
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Achievement Id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementApprovalDetail'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
     put:
       summary: Update an existing achievement approval
       operationId: updateAchievementApproval
@@ -760,6 +791,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /achievement-approvals/{id}/profanity-check:
+    post:
+      summary: Perform profanity check on a pending record
+      operationId: checkAchievementApprovalProfanity
+      tags:
+        - Achievement
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Achievement Id
+      responses:
+        '204':
+          description: OK
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1148,6 +1208,31 @@ components:
             status:
               $ref: "#/components/schemas/AchievementApprovalStatus"
         - $ref: '#/components/schemas/AchievementCreation'
+    AchievementApprovalReview:
+      type: object
+      allOf:
+      - type: object
+        required:
+          - id
+          - comment
+        properties:
+          id:
+            type: string
+          comment:
+            type: string
+      - $ref: '#/components/schemas/AuditControl'
+    AchievementApprovalDetail:
+      type: object
+      allOf:
+        - type: object
+          required:
+            - review
+          properties:
+            review:
+              type: array
+              items:
+                $ref: '#/components/schemas/AchievementApprovalReview'
+        - $ref: '#/components/schemas/AchievementApproval'
     FindAchievementResult:
       type: object
       allOf:
