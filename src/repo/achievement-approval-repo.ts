@@ -1,5 +1,6 @@
 import {
   AchievementApproval,
+  AchievementApprovalAttachment,
   AchievementApprovalReview,
   AchievementSubmissionRole,
   Activity,
@@ -90,7 +91,7 @@ export const findAchievementApprovalRepo = async ({
 export const getAchievementApprovalByIdRepo = async (
   id: string
 ): Promise<
-  | (FindAchievementApprovalResult & { review: AchievementApprovalReview[] })
+  | (FindAchievementApprovalResult & { review: AchievementApprovalReview[] } & { attachment: AchievementApprovalAttachment[] })
   | undefined
 > => {
   const oid = safeParseInt(id);
@@ -98,11 +99,6 @@ export const getAchievementApprovalByIdRepo = async (
     return undefined;
   }
   try {
-    // const result = await prisma.achievementApproval.findFirst({
-    //   where: {
-    //     oid: oid,
-    //   },
-    // });
     const result = await prisma.achievementApproval.findUnique({
       where: {
         oid: oid,
@@ -110,16 +106,18 @@ export const getAchievementApprovalByIdRepo = async (
       include: {
         activity: true,
         student: true,
-        achievementApprovalReview: true,
+        review: true,
+        attachment: true,
       },
     });
     if (result) {
-      const { student, activity, achievementApprovalReview, ...rest } = result;
+      const { student, activity, review, attachment, ...rest } = result;
       return {
         achievementApproval: rest,
         student,
         activity,
-        review: achievementApprovalReview,
+        review,
+        attachment
       };
     } else {
       return undefined;
@@ -131,12 +129,25 @@ export const getAchievementApprovalByIdRepo = async (
 };
 
 export const createAchievementApproval = async (
-  achievement: Omit<AchievementApproval, 'oid'>
+  achievement: Omit<AchievementApproval, 'oid'>,
+  attachments: Omit<AchievementApprovalAttachment, 'oid' | 'achievement_approval_oid'>[]
 ): Promise<AchievementApproval> => {
   try {
     return await prisma.achievementApproval.create({
       data: {
         ...achievement,
+        attachment:
+          attachments.length > 0
+            ? {
+                create: attachments.map(
+                  ({ object_key, file_name, file_size }) => ({
+                    object_key,
+                    file_name,
+                    file_size,
+                  })
+                ),
+              }
+            : undefined,
       },
     });
   } catch (error) {

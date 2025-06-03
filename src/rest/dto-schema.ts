@@ -161,6 +161,8 @@ type AchievementCreationDto = components['schemas']['AchievementCreation'];
 
 type AchievementDto = components['schemas']['Achievement'];
 
+type AchievementAttachmentDto = components['schemas']['AchievementAttachment'];
+
 type AchievementApprovalDto = components['schemas']['AchievementApproval'];
 
 type AchievementApprovalReviewDto = components['schemas']['AchievementApprovalReview'];
@@ -210,6 +212,7 @@ export {
   AchievementCreationDto,
   AchievementStatusDto,
   AchievementDto,
+  AchievementAttachmentDto,
   AchievementApprovalStatusDto,
   AchievementApprovalDto,
   ActivityPayloadDto,

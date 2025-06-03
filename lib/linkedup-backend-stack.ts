@@ -1,12 +1,34 @@
-import { Duration, Stack, StackProps } from 'aws-cdk-lib';
+import { Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambdaNodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 
 export class LinkedupBackendStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
+
+    new s3.Bucket(this, 'JrVentureMediaApprovalBucket', {
+      bucketName: 'jr-venture-media-approval-bucket',
+      lifecycleRules: [
+        {
+          expiration: Duration.days(30),
+          enabled: true,
+        },
+      ],
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: RemovalPolicy.DESTROY, // For dev/test only
+      autoDeleteObjects: true, // Needs permissions for destroy
+    });
+
+    new s3.Bucket(this, 'JrVentureMediaPublicBucket', {
+      bucketName: 'jr-venture-media-public-bucket',
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+      publicReadAccess: true,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS, // ⚡ allow public access (required for static hosting)
+    });
 
     const linkedupLambda = new lambdaNodejs.NodejsFunction(
       this,

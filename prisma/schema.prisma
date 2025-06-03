@@ -140,9 +140,9 @@ model Activity {
   e_coin                      Int
   achievement_submission_role AchievementSubmissionRole
   status                      ActivityStatus
-  created_by_user_oid         Int                       @map("created_by_user_id")
+  created_by_user_oid         Int
   created_at                  DateTime                  @default(now()) @db.Timestamptz(6)
-  updated_by_user_oid         Int                       @map("updated_by_user_id")
+  updated_by_user_oid         Int
   updated_at                  DateTime                  @updatedAt @db.Timestamptz(6)
   version                     Int
 
@@ -166,9 +166,9 @@ model Achievement {
   comment                     String                    @db.Text
   rating                      Int?
   status                      AchievementStatus
-  created_by_user_oid         Int                       @map("created_by_user_id")
+  created_by_user_oid         Int
   created_at                  DateTime                  @default(now()) @db.Timestamptz(6)
-  updated_by_user_oid         Int                       @map("updated_by_user_id")
+  updated_by_user_oid         Int
   updated_at                  DateTime                  @updatedAt @db.Timestamptz(6)
   version                     Int
 
@@ -193,16 +193,17 @@ model AchievementApproval {
   comment                     String                    @db.Text
   rating                      Int?
   status                      AchievementApprovalStatus
-  created_by_user_oid         Int                       @map("created_by_user_id")
+  created_by_user_oid         Int
   created_at                  DateTime                  @default(now()) @db.Timestamptz(6)
-  updated_by_user_oid         Int                       @map("updated_by_user_id")
+  updated_by_user_oid         Int
   updated_at                  DateTime                  @updatedAt @db.Timestamptz(6)
   version                     Int
 
   activity Activity @relation(fields: [activity_oid], references: [oid], onDelete: Cascade)
   student  Student  @relation(fields: [student_oid], references: [oid], onDelete: Cascade)
 
-  achievementApprovalReview AchievementApprovalReview[]
+  review     AchievementApprovalReview[]
+  attachment AchievementApprovalAttachment[]
 
   @@unique([activity_oid, student_oid, achievement_submission_role])
   @@map("achievement_approval")
@@ -212,13 +213,25 @@ model AchievementApprovalReview {
   oid                      Int      @id @default(autoincrement())
   achievement_approval_oid Int
   comment                  String   @db.Text
-  created_by_user_oid      Int      @map("created_by_user_id")
+  created_by_user_oid      Int
   created_at               DateTime @default(now()) @db.Timestamptz(6)
-  updated_by_user_oid      Int      @map("updated_by_user_id")
+  updated_by_user_oid      Int
   updated_at               DateTime @updatedAt @db.Timestamptz(6)
   version                  Int
 
   achievementApproval AchievementApproval @relation(fields: [achievement_approval_oid], references: [oid], onDelete: Cascade)
 
   @@map("achievement_approval_review")
+}
+
+model AchievementApprovalAttachment {
+  oid                      Int    @id @default(autoincrement())
+  achievement_approval_oid Int
+  object_key               String @db.VarChar(200)
+  file_name                String @db.VarChar(200)
+  file_size                Int
+
+  achievementApproval AchievementApproval @relation(fields: [achievement_approval_oid], references: [oid], onDelete: Cascade)
+
+  @@map("achievement_approval_attachment")
 }

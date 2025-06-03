@@ -396,6 +396,13 @@ export interface components {
         FindActivityResult: {
             data: components["schemas"]["Activity"][];
         } & components["schemas"]["Pagination"];
+        AchievementAttachmentCreation: {
+            fileName: string;
+            objectKey: string;
+        };
+        AchievementAttachment: components["schemas"]["AchievementAttachmentCreation"] & {
+            getUrl: string;
+        };
         AchievementCreation: {
             studentId: string;
             activityId: string;
@@ -419,6 +426,7 @@ export interface components {
         } & components["schemas"]["AuditControl"];
         AchievementApprovalDetail: {
             review: components["schemas"]["AchievementApprovalReview"][];
+            attachment: components["schemas"]["AchievementAttachment"][];
         } & components["schemas"]["AchievementApproval"];
         FindAchievementResult: {
             data: components["schemas"]["Achievement"][];
@@ -981,7 +989,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["AchievementCreation"];
+                "application/json": components["schemas"]["AchievementCreation"] & {
+                    attachment: components["schemas"]["AchievementAttachmentCreation"][];
+                };
             };
         };
         responses: {

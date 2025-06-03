@@ -28,8 +28,8 @@ import {
   validateField,
   validateStudent,
   validateActivity,
-  validateExistingAchievement,
 } from './achievement-validation';
+import { approvalBucketName, copyObject } from '../../../util/s3-util';
 
 export const createAchievement = async (
   req: Request<{}, {}, AchievementPostRequestDto>,
@@ -73,6 +73,18 @@ export const createAchievement = async (
       offset: 0,
       limit: 1,
     };
+
+    const prefix = `activity/${achievementCreationDto.activityId}/student/${achievementCreationDto.studentId}`
+    const attachmentsPromise = achievementCreationDto.attachment.map(async (atch) => {
+      const key = `${prefix}/${atch.objectKey.split('/').pop()}`;
+      const fileSize = await copyObject(approvalBucketName, atch.objectKey, key);
+      return {
+        file_name: atch.fileName,
+        object_key: key,
+        file_size: fileSize
+      }
+    });
+    const attachments = await Promise.all(attachmentsPromise);
 
     if (withApprovalRight) {
       const existingAchievement = (
@@ -118,7 +130,7 @@ export const createAchievement = async (
             updated_by_user_oid: authenticatedUser.oid,
             updated_at: now,
             version: 1,
-          });
+          }, attachments);
       res
         .status(201)
         .json(approvalEntity2Dto(newAchievementApproval, student, activity));

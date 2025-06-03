@@ -12,6 +12,7 @@ import {
   UserRole,
   UserStatus,
   AchievementApprovalReview,
+  AchievementApprovalAttachment,
 } from '@prisma/client';
 
 type UserCreationEntity = Omit<
@@ -75,6 +76,7 @@ export type {
   Achievement as AchievementEntity,
   AchievementApproval as AchievementApprovalEntity,
   AchievementApprovalReview as AchievementApprovalReviewEntity,
+  AchievementApprovalAttachment as AchievementApprovalAttachmentEntity,
   ActivityCreationEntity,
   AchievementCreationEntity,
   AchievementApprovalCreationEntity,

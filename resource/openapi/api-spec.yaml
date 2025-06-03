@@ -579,7 +579,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AchievementCreation'
+              allOf:
+                - $ref: "#/components/schemas/AchievementCreation"
+                - type: object
+                  required:
+                    - attachment
+                  properties:
+                    attachment:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/AchievementAttachmentCreation"
       responses:
         '201':
           description: OK
@@ -1159,13 +1168,32 @@ components:
               items:
                 $ref: '#/components/schemas/Activity'
         - $ref: '#/components/schemas/Pagination'
+    AchievementAttachmentCreation:
+      type: object
+      required:
+        - fileName
+        - objectKey
+      properties:
+        fileName:
+          type: string
+        objectKey:
+          type: string
+    AchievementAttachment:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/AchievementAttachmentCreation"
+        - type: object
+          required:
+            - getUrl
+          properties:
+            getUrl:
+              type: string
     AchievementCreation:
       type: object
       required:
         - studentId
         - activityId
         - comment
-        - status
       properties:
         studentId:
           type: string
@@ -1227,11 +1255,16 @@ components:
         - type: object
           required:
             - review
+            - attachment
           properties:
             review:
               type: array
               items:
                 $ref: '#/components/schemas/AchievementApprovalReview'
+            attachment:
+              type: array
+              items:
+                $ref: '#/components/schemas/AchievementAttachment'
         - $ref: '#/components/schemas/AchievementApproval'
     FindAchievementResult:
       type: object

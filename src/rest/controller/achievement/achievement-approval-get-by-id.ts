@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { approvalBucketName, s3client } from '../../../util/s3-util';
 import {
   AchievementApprovalGetById200ResponseDto,
   AchievementApprovalGetByIdRequestPathDto,
@@ -6,6 +8,7 @@ import {
 import { detailEntity2Dto } from '../../mapper/achievement-approval-mapper';
 import { getAchievementApprovalByIdRepo } from '../../../repo/achievement-approval-repo';
 import { NotFoundErrorDto } from '../error-validation';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
 
 export const getAchievementApprovalById = async (
   req: Request<AchievementApprovalGetByIdRequestPathDto, {}, {}, {}>,
@@ -19,10 +22,38 @@ export const getAchievementApprovalById = async (
       throw new NotFoundErrorDto('Achievement Approval', 'id', id);
     }
 
-    const { achievementApproval, review, student, activity } = result;
+    const {
+      achievementApproval,
+      attachment: attachmentEntity,
+      review,
+      student,
+      activity,
+    } = result;
+    const attachmentPromise = Promise.all(
+      attachmentEntity.map(async (atch) => {
+        const getObjectCommand = new GetObjectCommand({
+          Bucket: approvalBucketName,
+          Key: atch.object_key,
+        });
+        const getUrl = await getSignedUrl(s3client, getObjectCommand, {
+          // 1 hr
+          expiresIn: 3600,
+        });
+        return { ...atch, getUrl };
+      })
+    );
+    const attachment = await attachmentPromise;
     res
       .status(200)
-      .json(detailEntity2Dto(achievementApproval, student, activity, review));
+      .json(
+        detailEntity2Dto(
+          achievementApproval,
+          student,
+          activity,
+          attachment,
+          review
+        )
+      );
   } catch (error) {
     next(error);
   }

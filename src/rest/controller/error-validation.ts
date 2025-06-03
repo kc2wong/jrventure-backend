@@ -166,7 +166,7 @@ export class AchievementExistsErrorDto extends BadRequestErrorDto {
 export class DataEntitlementErrorDto extends BadRequestErrorDto {
   constructor(objectName: string, fieldName: string, fieldValue: string) {
     super(
-      replaceParameters('Cannot operate object ${1} with [${2}] = [${3}]', [
+      replaceParameters('Cannot operate object {1} with [{2}] = [{3}]', [
         objectName,
         fieldName,
         fieldValue,

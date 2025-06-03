@@ -44,8 +44,6 @@ export const findAchievementApproval = async (
     : undefined;
   const activityOid = activityId ? safeParseInt(activityId) ?? -1 : undefined;
 
-  // console.log(`query = ${JSON.stringify(query)}`)
-
   try {
     const { total, offset, data } = await findAchievementApprovalRepo({
       activityOid,
