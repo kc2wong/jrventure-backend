@@ -15,7 +15,11 @@ import {
   validateStudent,
 } from './achievement-validation';
 import { NotFoundErrorDto } from '../error-validation';
-import {  getAchievementByIdRepo, updateAchievementRepo } from '../../../repo/achievement-repo';
+import {
+  getAchievementByIdRepo,
+  updateAchievementRepo,
+} from '../../../repo/achievement-repo';
+import { findByAchievementOidRepo as findAchvAtchByAchievementOidRepo } from '../../../repo/achievement-attachment-repo';
 
 export const updateAchievement = async (
   req: Request<AchievementPutRequestPathDto, {}, AchievementPutRequestDto>,
@@ -49,17 +53,23 @@ export const updateAchievement = async (
     if (achievement === undefined) {
       throw new NotFoundErrorDto('Achievement', 'id', id);
     }
+    const existingAttachments = await findAchvAtchByAchievementOidRepo(
+      achievement.oid
+    );
 
     const now = currentDatetime();
-    const updatedAchievement = await updateAchievementRepo({
-      ...payload,
-      oid: achievement.oid,
-      created_by_user_oid: achievement.created_by_user_oid,
-      created_at: achievement.created_at,
-      updated_by_user_oid: authenticatedUser.oid,
-      updated_at: now,
-      version: version,
-    });
+    const updatedAchievement = await updateAchievementRepo(
+      {
+        ...payload,
+        oid: achievement.oid,
+        created_by_user_oid: achievement.created_by_user_oid,
+        created_at: achievement.created_at,
+        updated_by_user_oid: authenticatedUser.oid,
+        updated_at: now,
+        version: version,
+      },
+      existingAttachments
+    );
 
     res.status(200).json(entity2Dto(updatedAchievement, student, activity));
   } catch (error) {

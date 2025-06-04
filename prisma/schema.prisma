@@ -75,9 +75,9 @@ model User {
   password_expiry_datetime DateTime?  @db.Timestamptz(6)
   with_approval_right      Boolean
   last_login_datetime      DateTime?  @db.Timestamptz(6)
-  created_by_user_oid      Int        @map("created_by_user_id")
+  created_by_user_oid      Int        
   created_at               DateTime   @default(now()) @db.Timestamptz(6)
-  updated_by_user_oid      Int        @map("updated_by_user_id")
+  updated_by_user_oid      Int        
   updated_at               DateTime   @updatedAt @db.Timestamptz(6)
   version                  Int
 
@@ -172,11 +172,25 @@ model Achievement {
   updated_at                  DateTime                  @updatedAt @db.Timestamptz(6)
   version                     Int
 
-  activity Activity @relation(fields: [activity_oid], references: [oid], onDelete: Cascade)
-  student  Student  @relation(fields: [student_oid], references: [oid], onDelete: Cascade)
+  activity   Activity                @relation(fields: [activity_oid], references: [oid], onDelete: Cascade)
+  student    Student                 @relation(fields: [student_oid], references: [oid], onDelete: Cascade)
+  attachment AchievementAttachment[]
 
   @@unique([activity_oid, student_oid, achievement_submission_role])
   @@map("achievement")
+}
+
+model AchievementAttachment {
+  oid             Int    @id @default(autoincrement())
+  achievement_oid Int
+  bucket_name     String @db.VarChar(50)
+  object_key      String @db.VarChar(200)
+  file_name       String @db.VarChar(200)
+  file_size       Int
+
+  achievement Achievement @relation(fields: [achievement_oid], references: [oid], onDelete: Cascade)
+
+  @@map("achievement_attachment")
 }
 
 enum AchievementApprovalStatus {
@@ -227,6 +241,7 @@ model AchievementApprovalReview {
 model AchievementApprovalAttachment {
   oid                      Int    @id @default(autoincrement())
   achievement_approval_oid Int
+  bucket_name              String @db.VarChar(50)
   object_key               String @db.VarChar(200)
   file_name                String @db.VarChar(200)
   file_size                Int

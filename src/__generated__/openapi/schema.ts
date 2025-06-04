@@ -398,6 +398,8 @@ export interface components {
         } & components["schemas"]["Pagination"];
         AchievementAttachmentCreation: {
             fileName: string;
+            /** @description Optional bucket name, should provide a value if the file is a newly uploaded one */
+            bucketName?: string;
             objectKey: string;
         };
         AchievementAttachment: components["schemas"]["AchievementAttachmentCreation"] & {

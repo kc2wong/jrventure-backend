@@ -19,6 +19,7 @@ import {
   getAchievementApprovalByIdRepo,
   updateAchievementApprovalRepo,
 } from '../../../repo/achievement-approval-repo';
+import { findByAchievementApprovalOidRepo as findAchvApprAtchByAchievementApprovalOidRepo } from '../../../repo/achievement-approval-attachment-repo';
 
 export const updateAchievementApproval = async (
   req: Request<
@@ -52,23 +53,29 @@ export const updateAchievementApproval = async (
       submissionRole
     );
 
-    const achievement = (await getAchievementApprovalByIdRepo(id))?.achievementApproval;
+    const achievement = (await getAchievementApprovalByIdRepo(id))
+      ?.achievementApproval;
     if (achievement === undefined) {
       throw new NotFoundErrorDto('Achievement Approval', 'id', id);
     }
+    const existingAttachments =
+      await findAchvApprAtchByAchievementApprovalOidRepo(achievement.oid);
 
     const now = currentDatetime();
-    const updatedAchievement = await updateAchievementApprovalRepo({
-      ...payload,
-      status: 'Pending',
-      oid: achievement.oid,
-      achievement_oid: achievement.achievement_oid,
-      created_by_user_oid: achievement.created_by_user_oid,
-      created_at: achievement.created_at,
-      updated_by_user_oid: authenticatedUser.oid,
-      updated_at: now,
-      version: version,
-    });
+    const updatedAchievement = await updateAchievementApprovalRepo(
+      {
+        ...payload,
+        status: 'Pending',
+        oid: achievement.oid,
+        achievement_oid: achievement.achievement_oid,
+        created_by_user_oid: achievement.created_by_user_oid,
+        created_at: achievement.created_at,
+        updated_by_user_oid: authenticatedUser.oid,
+        updated_at: now,
+        version: version,
+      },
+      existingAttachments
+    );
 
     res.status(200).json(entity2Dto(updatedAchievement, student, activity));
   } catch (error) {

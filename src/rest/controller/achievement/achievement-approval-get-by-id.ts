@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { approvalBucketName, s3client } from '../../../util/s3-util';
+import {
+  approvalBucketName,
+  publicBucketName,
+  s3client,
+} from '../../../util/s3-util';
 import {
   AchievementApprovalGetById200ResponseDto,
   AchievementApprovalGetByIdRequestPathDto,
@@ -21,7 +25,6 @@ export const getAchievementApprovalById = async (
     if (result === undefined) {
       throw new NotFoundErrorDto('Achievement Approval', 'id', id);
     }
-
     const {
       achievementApproval,
       attachment: attachmentEntity,
@@ -32,13 +35,18 @@ export const getAchievementApprovalById = async (
     const attachmentPromise = Promise.all(
       attachmentEntity.map(async (atch) => {
         const getObjectCommand = new GetObjectCommand({
-          Bucket: approvalBucketName,
+          Bucket: atch.bucket_name,
           Key: atch.object_key,
         });
-        const getUrl = await getSignedUrl(s3client, getObjectCommand, {
-          // 1 hr
-          expiresIn: 3600,
-        });
+        const getUrl =
+          atch.bucket_name === publicBucketName
+            ? `https://${atch.bucket_name}.s3.${
+                s3client.config.region
+              }.amazonaws.com/${encodeURIComponent(atch.object_key)}`
+            : await getSignedUrl(s3client, getObjectCommand, {
+                // 1 hr
+                expiresIn: 3600,
+              });
         return { ...atch, getUrl };
       })
     );

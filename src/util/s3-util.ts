@@ -8,6 +8,7 @@ import {
 export const s3client = new S3Client({});
 
 export const approvalBucketName = 'jr-venture-media-approval-bucket';
+export const publicBucketName = 'jr-venture-media-public-bucket';
 
 export const doesFileExist = async (
   bucket: string,
@@ -43,25 +44,11 @@ export const copyObject = async (
   return head.ContentLength ?? 0;
 };
 
-export const renameObject = async (
-  bucket: string,
-  oldKey: string,
-  newKey: string
-) => {
-  // 1. Copy the object
-  await s3client.send(
-    new CopyObjectCommand({
-      Bucket: bucket,
-      CopySource: `${bucket}/${oldKey}`, // source bucket/key
-      Key: newKey, // new key
-    })
-  );
-
-  // 2. Delete the original
+export const deleteObject = async (bucket: string, key: string) => {
   await s3client.send(
     new DeleteObjectCommand({
       Bucket: bucket,
-      Key: oldKey,
+      Key: key,
     })
   );
 };

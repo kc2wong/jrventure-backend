@@ -1176,6 +1176,9 @@ components:
       properties:
         fileName:
           type: string
+        bucketName:
+          type: string
+          description: Optional bucket name, should provide a value if the file is a newly uploaded one
         objectKey:
           type: string
     AchievementAttachment:

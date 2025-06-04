@@ -4,6 +4,7 @@ import {
   Prisma,
   Student,
   Activity,
+  AchievementAttachment,
 } from '@prisma/client';
 import prisma from './db';
 import { PaginationResult } from './entity/db_entity';
@@ -108,12 +109,26 @@ export const getAchievementByIdRepo = async (
 };
 
 export const createAchievementRepo = async (
-  achievement: Omit<Achievement, 'oid'>
+  achievement: Omit<Achievement, 'oid'>,
+  attachments: Omit<AchievementAttachment, 'oid' | 'achievement_oid'>[]
 ): Promise<Achievement> => {
   try {
     return await prisma.achievement.create({
       data: {
         ...achievement,
+        attachment:
+          attachments.length > 0
+            ? {
+                create: attachments.map(
+                  ({ object_key, file_name, file_size, bucket_name }) => ({
+                    object_key,
+                    file_name,
+                    file_size,
+                    bucket_name,
+                  })
+                ),
+              }
+            : undefined,
       },
     });
   } catch (error) {
@@ -123,14 +138,32 @@ export const createAchievementRepo = async (
 };
 
 export const updateAchievementRepo = async (
-  achievement: Achievement
+  achievement: Achievement,
+  attachments: Omit<AchievementAttachment, 'oid' | 'achievement_oid'>[]
 ): Promise<Achievement> => {
   try {
     const { oid, version, ...rest } = achievement; // separate controlled fields
 
     return await prisma.achievement.update({
       where: { oid, version },
-      data: { ...rest, version: { increment: 1 } },
+      data: {
+        ...rest,
+        attachment:
+          attachments.length > 0
+            ? {
+                deleteMany: {},
+                create: attachments.map(
+                  ({ object_key, file_name, file_size, bucket_name }) => ({
+                    object_key,
+                    file_name,
+                    file_size,
+                    bucket_name,
+                  })
+                ),
+              }
+            : undefined,
+        version: { increment: 1 },
+      },
     });
   } catch (error) {
     console.error('Error updating achievement:', error);

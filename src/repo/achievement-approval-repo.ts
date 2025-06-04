@@ -91,7 +91,9 @@ export const findAchievementApprovalRepo = async ({
 export const getAchievementApprovalByIdRepo = async (
   id: string
 ): Promise<
-  | (FindAchievementApprovalResult & { review: AchievementApprovalReview[] } & { attachment: AchievementApprovalAttachment[] })
+  | (FindAchievementApprovalResult & { review: AchievementApprovalReview[] } & {
+      attachment: AchievementApprovalAttachment[];
+    })
   | undefined
 > => {
   const oid = safeParseInt(id);
@@ -117,7 +119,7 @@ export const getAchievementApprovalByIdRepo = async (
         student,
         activity,
         review,
-        attachment
+        attachment,
       };
     } else {
       return undefined;
@@ -130,7 +132,10 @@ export const getAchievementApprovalByIdRepo = async (
 
 export const createAchievementApproval = async (
   achievement: Omit<AchievementApproval, 'oid'>,
-  attachments: Omit<AchievementApprovalAttachment, 'oid' | 'achievement_approval_oid'>[]
+  attachments: Omit<
+    AchievementApprovalAttachment,
+    'oid' | 'achievement_approval_oid'
+  >[]
 ): Promise<AchievementApproval> => {
   try {
     return await prisma.achievementApproval.create({
@@ -140,10 +145,11 @@ export const createAchievementApproval = async (
           attachments.length > 0
             ? {
                 create: attachments.map(
-                  ({ object_key, file_name, file_size }) => ({
+                  ({ object_key, file_name, file_size, bucket_name }) => ({
                     object_key,
                     file_name,
                     file_size,
+                    bucket_name,
                   })
                 ),
               }
@@ -157,14 +163,35 @@ export const createAchievementApproval = async (
 };
 
 export const updateAchievementApprovalRepo = async (
-  achievement: AchievementApproval
+  achievement: AchievementApproval,
+  attachments: Omit<
+    AchievementApprovalAttachment,
+    'oid' | 'achievement_approval_oid'
+  >[]
 ): Promise<AchievementApproval> => {
   try {
     const { oid, version, ...rest } = achievement; // separate controlled fields
 
     return await prisma.achievementApproval.update({
       where: { oid, version },
-      data: { ...rest, version: { increment: 1 } },
+      data: {
+        ...rest,
+        attachment:
+          attachments.length > 0
+            ? {
+                deleteMany: {},
+                create: attachments.map(
+                  ({ object_key, file_name, file_size, bucket_name }) => ({
+                    object_key,
+                    file_name,
+                    file_size,
+                    bucket_name,
+                  })
+                ),
+              }
+            : undefined,
+        version: { increment: 1 },
+      },
     });
   } catch (error) {
     console.error('Error updating achievementApproval1:', error);

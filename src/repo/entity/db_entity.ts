@@ -1,5 +1,6 @@
 import {
   Achievement,
+  AchievementAttachment,
   AchievementStatus,
   AchievementApproval,
   AchievementApprovalStatus,
@@ -74,6 +75,7 @@ export type {
   ActivityCategory as ActivityCategoryEntity,
   Activity as ActivityEntity,
   Achievement as AchievementEntity,
+  AchievementAttachment as AchievementAttachmentEntity,
   AchievementApproval as AchievementApprovalEntity,
   AchievementApprovalReview as AchievementApprovalReviewEntity,
   AchievementApprovalAttachment as AchievementApprovalAttachmentEntity,
