@@ -75,9 +75,9 @@ model User {
   password_expiry_datetime DateTime?  @db.Timestamptz(6)
   with_approval_right      Boolean
   last_login_datetime      DateTime?  @db.Timestamptz(6)
-  created_by_user_oid      Int        
+  created_by_user_oid      Int
   created_at               DateTime   @default(now()) @db.Timestamptz(6)
-  updated_by_user_oid      Int        
+  updated_by_user_oid      Int
   updated_at               DateTime   @updatedAt @db.Timestamptz(6)
   version                  Int
 
@@ -166,6 +166,7 @@ model Achievement {
   comment                     String                    @db.Text
   rating                      Int?
   status                      AchievementStatus
+  num_of_attachment           Int
   created_by_user_oid         Int
   created_at                  DateTime                  @default(now()) @db.Timestamptz(6)
   updated_by_user_oid         Int
@@ -207,6 +208,7 @@ model AchievementApproval {
   comment                     String                    @db.Text
   rating                      Int?
   status                      AchievementApprovalStatus
+  num_of_attachment           Int                       @default(0)
   created_by_user_oid         Int
   created_at                  DateTime                  @default(now()) @db.Timestamptz(6)
   updated_by_user_oid         Int
@@ -223,14 +225,21 @@ model AchievementApproval {
   @@map("achievement_approval")
 }
 
+enum ApprovalCommentType {
+  Conversation
+  Rejection
+  Approval
+}
+
 model AchievementApprovalReview {
-  oid                      Int      @id @default(autoincrement())
+  oid                      Int                 @id @default(autoincrement())
   achievement_approval_oid Int
-  comment                  String   @db.Text
+  comment_type             ApprovalCommentType
+  comment                  String              @db.Text
   created_by_user_oid      Int
-  created_at               DateTime @default(now()) @db.Timestamptz(6)
+  created_at               DateTime            @default(now()) @db.Timestamptz(6)
   updated_by_user_oid      Int
-  updated_at               DateTime @updatedAt @db.Timestamptz(6)
+  updated_at               DateTime            @updatedAt @db.Timestamptz(6)
   version                  Int
 
   achievementApproval AchievementApproval @relation(fields: [achievement_approval_oid], references: [oid], onDelete: Cascade)

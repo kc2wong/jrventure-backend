@@ -2,6 +2,7 @@ import {
   AchievementApproval,
   AchievementApprovalAttachment,
   AchievementApprovalReview,
+  AchievementApprovalStatus,
   AchievementSubmissionRole,
   Activity,
   Prisma,
@@ -15,6 +16,7 @@ type FindAchievementParams = {
   studentId?: string;
   studentOid?: number;
   activityOid?: number;
+  status?: AchievementApprovalStatus;
   role?: AchievementSubmissionRole;
   offset?: number;
   limit?: number;
@@ -32,6 +34,7 @@ export const findAchievementApprovalRepo = async ({
   studentId,
   studentOid,
   activityOid,
+  status,
   role,
   offset = 0,
   limit,
@@ -42,6 +45,7 @@ export const findAchievementApprovalRepo = async ({
 > => {
   try {
     const whereClause: Prisma.AchievementApprovalWhereInput = {
+      ...(status && { status: { equals: status } }),
       ...(role && { achievement_submission_role: { equals: role } }),
       ...(studentId && {
         student: {
@@ -164,37 +168,65 @@ export const createAchievementApproval = async (
 
 export const updateAchievementApprovalRepo = async (
   achievement: AchievementApproval,
-  attachments: Omit<
+  attachments?: Omit<
     AchievementApprovalAttachment,
     'oid' | 'achievement_approval_oid'
   >[]
 ): Promise<AchievementApproval> => {
   try {
-    const { oid, version, ...rest } = achievement; // separate controlled fields
+    const { oid, version, ...rest } = achievement;
 
     return await prisma.achievementApproval.update({
       where: { oid, version },
       data: {
         ...rest,
-        attachment:
-          attachments.length > 0
-            ? {
-                deleteMany: {},
-                create: attachments.map(
-                  ({ object_key, file_name, file_size, bucket_name }) => ({
-                    object_key,
-                    file_name,
-                    file_size,
-                    bucket_name,
-                  })
-                ),
-              }
-            : undefined,
+        ...(attachments !== undefined && {
+          attachment: {
+            deleteMany: {},
+            create: attachments.map(
+              ({ object_key, file_name, file_size, bucket_name }) => ({
+                object_key,
+                file_name,
+                file_size,
+                bucket_name,
+              })
+            ),
+          },
+        }),
         version: { increment: 1 },
       },
     });
   } catch (error) {
     console.error('Error updating achievementApproval1:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2025') {
+        throw new Error(
+          'Optimistic Locking Failed: The record was modified by another process.'
+        );
+      }
+    }
+    throw error;
+  }
+};
+
+export const deleteAchievementApprovalRepo = async (
+  oid: number,
+  version: number
+): Promise<void> => {
+  try {
+    await prisma.$transaction([
+      prisma.achievementApprovalReview.deleteMany({
+        where: { achievement_approval_oid: oid },
+      }),
+      prisma.achievementApprovalAttachment.deleteMany({
+        where: { achievement_approval_oid: oid },
+      }),
+      prisma.achievementApproval.delete({
+        where: { oid, version }, // Use composite if needed
+      }),
+    ]);
+  } catch (error) {
+    console.error('Error delete achievementApproval1:', error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === 'P2025') {
         throw new Error(

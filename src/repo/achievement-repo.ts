@@ -90,18 +90,38 @@ export const findAchievementRepo = async ({
 
 export const getAchievementByIdRepo = async (
   id: string
-): Promise<Achievement | undefined> => {
+): Promise<
+  | (FindAchievementResult & {
+      attachment: AchievementAttachment[];
+    })
+  | undefined
+> => {
   const oid = safeParseInt(id);
   if (oid === undefined) {
     return undefined;
   }
   try {
-    const result = await prisma.achievement.findFirst({
+    const result = await prisma.achievement.findUnique({
       where: {
         oid: oid,
       },
+      include: {
+        activity: true,
+        student: true,
+        attachment: true,
+      },
     });
-    return result ?? undefined;
+    if (result) {
+      const { student, activity, attachment, ...rest } = result;
+      return {
+        achievement: rest,
+        student,
+        activity,
+        attachment,
+      };
+    } else {
+      return undefined;
+    }
   } catch (error) {
     console.error('Error fetching achievement:', error);
     throw error;

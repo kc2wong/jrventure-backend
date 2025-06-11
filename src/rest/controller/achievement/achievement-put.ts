@@ -42,19 +42,21 @@ export const updateAchievement = async (
       authenticatedUser
     );
 
+    const result = await getAchievementByIdRepo(id);
+    if (result === undefined) {
+      throw new NotFoundErrorDto('Achievement', 'id', id);
+    }
+    const achievement = result.achievement;
+    const existingAttachments = await findAchvAtchByAchievementOidRepo(
+      achievement.oid
+    );
+
     const payload = creationDto2Entity(
       achievementUpdateDto,
       student,
       activity,
-      submissionRole
-    );
-
-    const achievement = await getAchievementByIdRepo(id);
-    if (achievement === undefined) {
-      throw new NotFoundErrorDto('Achievement', 'id', id);
-    }
-    const existingAttachments = await findAchvAtchByAchievementOidRepo(
-      achievement.oid
+      submissionRole,
+      existingAttachments.length,
     );
 
     const now = currentDatetime();

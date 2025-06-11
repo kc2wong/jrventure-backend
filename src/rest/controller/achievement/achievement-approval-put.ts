@@ -46,13 +46,6 @@ export const updateAchievementApproval = async (
       authenticatedUser
     );
 
-    const payload = creationDto2Entity(
-      achievementUpdateDto,
-      student,
-      activity,
-      submissionRole
-    );
-
     const achievement = (await getAchievementApprovalByIdRepo(id))
       ?.achievementApproval;
     if (achievement === undefined) {
@@ -60,6 +53,15 @@ export const updateAchievementApproval = async (
     }
     const existingAttachments =
       await findAchvApprAtchByAchievementApprovalOidRepo(achievement.oid);
+
+    const payload = creationDto2Entity(
+      achievementUpdateDto,
+      student,
+      activity,
+      submissionRole,
+      existingAttachments.length,
+    );
+
 
     const now = currentDatetime();
     const updatedAchievement = await updateAchievementApprovalRepo(

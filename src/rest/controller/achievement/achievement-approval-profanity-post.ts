@@ -6,9 +6,10 @@ import * as OpenCC from 'opencc-js';
 
 import { AchievementApprovalProfanityPostRequestPathDto } from '../../dto-schema';
 import { getAchievementApprovalByIdRepo } from '../../../repo/achievement-approval-repo';
-import { createAchievementApprovalReview } from '../../../repo/achievement-approval-review-repo';
+import { createAchievementApprovalReviewRepo } from '../../../repo/achievement-approval-review-repo';
 import { NotFoundErrorDto } from '../error-validation';
 import { replaceParameters } from '../../../util/string-util';
+import { dto2Entity as contentTypeDto2Entity } from '../../mapper/achievement-comment-type-mapper';
 
 const perspective = new Perspective({
   apiKey: process.env.PERSPECTIVE_API_KEY!,
@@ -230,7 +231,8 @@ export const checkAchievementApprovalProfanity = async (
         ? replaceParameters(profanityMessage, [blockedWordFound.join(',')])
         : '');
 
-    createAchievementApprovalReview({
+    await createAchievementApprovalReviewRepo({
+      comment_type: contentTypeDto2Entity('Conversation'),
       comment,
       created_by_user_oid: 1,
       created_at: now,

@@ -185,7 +185,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Get an existing achievement detail by id */
+        get: operations["getAchievementById"];
         /** Update an existing achievement */
         put: operations["updateAchievement"];
         post?: never;
@@ -224,6 +225,40 @@ export interface paths {
         /** Update an existing achievement approval */
         put: operations["updateAchievementApproval"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/achievement-approvals/{id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a review to a pending achievement.  If type is Rejected, the approval record will be rejected also */
+        post: operations["createAchievementApprovalReview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/achievement-approvals/{id}/approval": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve a pending achievement */
+        post: operations["approveAchievementApproval"];
         delete?: never;
         options?: never;
         head?: never;
@@ -274,6 +309,8 @@ export interface components {
         AchievementStatus: "Approved" | "Published";
         /** @enum {string} */
         AchievementApprovalStatus: "Pending" | "Rejected";
+        /** @enum {string} */
+        ApprovalCommentType: "Conversation" | "Rejection";
         AuditControl: {
             /** @description Id of the create user */
             createdBy: string;
@@ -416,16 +453,24 @@ export interface components {
             id: string;
             submissionRole: components["schemas"]["AchievementSubmissionRole"];
             status: components["schemas"]["AchievementStatus"];
+            numberOfAttachment: number;
         } & components["schemas"]["AchievementCreation"];
+        AchievementDetail: {
+            attachment: components["schemas"]["AchievementAttachment"][];
+        } & components["schemas"]["Achievement"];
         AchievementApproval: {
             id: string;
             submissionRole: components["schemas"]["AchievementSubmissionRole"];
             status: components["schemas"]["AchievementApprovalStatus"];
-        } & components["schemas"]["AchievementCreation"];
+            numberOfAttachment: number;
+        } & components["schemas"]["AchievementCreation"] & components["schemas"]["AuditControl"];
+        AchievementApprovalReviewCreation: {
+            commentType: components["schemas"]["ApprovalCommentType"];
+            comment: string;
+        };
         AchievementApprovalReview: {
             id: string;
-            comment: string;
-        } & components["schemas"]["AuditControl"];
+        } & components["schemas"]["AchievementApprovalReviewCreation"] & components["schemas"]["AuditControl"];
         AchievementApprovalDetail: {
             review: components["schemas"]["AchievementApprovalReview"][];
             attachment: components["schemas"]["AchievementAttachment"][];
@@ -757,6 +802,7 @@ export interface operations {
     findActivity: {
         parameters: {
             query?: {
+                id?: string[];
                 categoryCode?: string[];
                 name?: string;
                 startDateFrom?: string;
@@ -1035,6 +1081,47 @@ export interface operations {
             };
         };
     };
+    getAchievementById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Achievement Id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AchievementDetail"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unexpected error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
     updateAchievement: {
         parameters: {
             query?: never;
@@ -1097,6 +1184,7 @@ export interface operations {
                 studentId?: string;
                 activityId?: string;
                 role?: components["schemas"]["AchievementSubmissionRole"];
+                status?: components["schemas"]["AchievementApprovalStatus"];
                 createDateFrom?: string;
                 offset?: number;
                 limit?: number;
@@ -1203,6 +1291,92 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unexpected error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    createAchievementApprovalReview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Achievement Id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AchievementApprovalReviewCreation"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AchievementApprovalDetail"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unexpected error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    approveAchievementApproval: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Achievement Id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AchievementDetail"];
                 };
             };
             /** @description Not found */

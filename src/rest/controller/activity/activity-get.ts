@@ -22,6 +22,16 @@ const querySchema = z.object({
 });
 
 export const activityQuerySchema = z.object({
+  id: z
+    .union([
+      z.coerce.number(),
+      z.array(z.any()).transform((arr) => arr.map((val) => Number(val))),
+    ])
+    .optional()
+    .transform((val) =>
+      val === undefined ? undefined : Array.isArray(val) ? val : [val]
+    ),
+
   categoryCode: z
     .union([z.string(), z.array(z.string())])
     .optional()
@@ -72,7 +82,9 @@ export const activityQuerySchema = z.object({
       val === undefined
         ? undefined
         : Array.isArray(val)
-        ? val.map((s) => submissionRoleDto2Entity(s as AchievementSubmissionRoleDto))
+        ? val.map((s) =>
+            submissionRoleDto2Entity(s as AchievementSubmissionRoleDto)
+          )
         : [submissionRoleDto2Entity(val as AchievementSubmissionRoleDto)]
     ),
 
@@ -103,6 +115,7 @@ export const findActivity = async (
   next: NextFunction
 ) => {
   const query = activityQuerySchema.parse(req.query);
+  const oid = query.id;
   const orderByDirection = query.orderByDirection
     ? orderByDirectionDto2Entity(query.orderByDirection)
     : undefined;
@@ -113,6 +126,7 @@ export const findActivity = async (
   try {
     const { total, offset, data } = await findActivityRepo({
       ...query,
+      oid,
       orderByField: orderByField,
       orderByDirection: orderByDirection,
     });

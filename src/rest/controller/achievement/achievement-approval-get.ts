@@ -2,11 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import {
   AchievementApprovalGet200ResponseDto,
   AchievementApprovalGetQueryDto,
+  AchievementApprovalStatusDto,
   AchievementSubmissionRoleDto,
 } from '../../dto-schema';
 import { dto2Entity as datetimeDto2Entity } from '../../mapper/datetime-dto-mapper';
 import { entity2Dto } from '../../mapper/achievement-approval-mapper';
 import { dto2Entity as submissionRoleDto2Entity } from '../../mapper/achievement-submission-role-dto-mapper';
+import { dto2Entity as statusDto2Entity } from '../../mapper/achievement-approval-status-mapper';
 import { dto2Entity as orderByDirectionDto2Entity } from '../../mapper/order-by-direction-mapper';
 import { z } from 'zod';
 import { findAchievementApprovalRepo } from '../../../repo/achievement-approval-repo';
@@ -15,6 +17,12 @@ import { safeParseInt } from '../../../util/string-util';
 const querySchema = z.object({
   studentId: z.string().optional(),
   activityId: z.string().optional(),
+  status: z
+    .union([z.string(), z.array(z.string())])
+    .optional()
+    .transform((val) =>
+      statusDto2Entity(val as AchievementApprovalStatusDto)
+    ),
   role: z
     .union([z.string(), z.array(z.string())])
     .optional()

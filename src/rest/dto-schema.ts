@@ -82,6 +82,12 @@ type AchievementGetQueryDto =
 type AchievementGet200ResponseDto =
   paths['/achievements']['get']['responses']['200']['content']['application/json'];
 
+type AchievementGetByIdRequestPathDto =
+  paths['/achievements/{id}']['get']['parameters']['path'];
+
+type AchievementGetById200ResponseDto =
+  paths['/achievements/{id}']['get']['responses']['200']['content']['application/json'];
+
 type AchievementPutRequestPathDto =
   paths['/achievements/{id}']['put']['parameters']['path'];
 
@@ -114,6 +120,21 @@ type AchievementApprovalPut200ResponseDto =
 
 type AchievementApprovalProfanityPostRequestPathDto =
   paths['/achievement-approvals/{id}/profanity-check']['post']['parameters']['path'];
+
+type AchievementApprovalReviewPostRequestPathDto =
+  paths['/achievement-approvals/{id}/review']['post']['parameters']['path'];
+
+type AchievementApprovalReviewPostRequestDto =
+  paths['/achievement-approvals/{id}/review']['post']['requestBody']['content']['application/json'];
+
+type AchievementApprovalReviewPost201ResponseDto =
+  paths['/achievement-approvals/{id}/review']['post']['responses']['201']['content']['application/json'];
+
+type AchievementApprovalApprovalPostRequestPathDto =
+  paths['/achievement-approvals/{id}/approval']['post']['parameters']['path'];
+
+type AchievementApprovalApprovalPost201ResponseDto =
+  paths['/achievement-approvals/{id}/approval']['post']['responses']['201']['content']['application/json'];
 
 type ErrorDto = components['schemas']['Error'];
 
@@ -157,9 +178,14 @@ type AchievementStatusDto = components['schemas']['AchievementStatus'];
 type AchievementApprovalStatusDto =
   components['schemas']['AchievementApprovalStatus'];
 
+  type ApprovalCommentTypeDto =
+  components['schemas']['ApprovalCommentType'];
+
 type AchievementCreationDto = components['schemas']['AchievementCreation'];
 
 type AchievementDto = components['schemas']['Achievement'];
+
+type AchievementDetailDto = components['schemas']['AchievementDetail'];
 
 type AchievementAttachmentDto = components['schemas']['AchievementAttachment'];
 
@@ -212,8 +238,10 @@ export {
   AchievementCreationDto,
   AchievementStatusDto,
   AchievementDto,
+  AchievementDetailDto,
   AchievementAttachmentDto,
   AchievementApprovalStatusDto,
+  ApprovalCommentTypeDto,
   AchievementApprovalDto,
   ActivityPayloadDto,
   ActivityPostRequestDto,
@@ -221,6 +249,8 @@ export {
   ActivityPutRequestPathDto,
   ActivityPutRequestDto,
   ActivityPut200ResponseDto,
+  AchievementGetByIdRequestPathDto,
+  AchievementGetById200ResponseDto,
   AchievementApprovalGetByIdRequestPathDto,
   AchievementApprovalGetById200ResponseDto,
   AchievementPutRequestPathDto,
@@ -235,6 +265,11 @@ export {
   AchievementApprovalGetQueryDto,
   AchievementApprovalGet200ResponseDto,
   AchievementApprovalProfanityPostRequestPathDto,
+  AchievementApprovalReviewPostRequestPathDto,
+  AchievementApprovalReviewPostRequestDto,
+  AchievementApprovalReviewPost201ResponseDto,
+  AchievementApprovalApprovalPostRequestPathDto,
+  AchievementApprovalApprovalPost201ResponseDto
 };
 
 class BaseErrorDto extends Error {

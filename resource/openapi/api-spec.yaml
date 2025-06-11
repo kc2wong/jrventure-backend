@@ -324,6 +324,12 @@ paths:
         - Activity
       parameters:
         - in: query
+          name: id
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
           name: categoryCode
           schema:
             type: array
@@ -617,6 +623,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
   /achievements/{id}:
+    get:
+      summary: Get an existing achievement detail by id
+      operationId: getAchievementById
+      tags:
+        - Achievement
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Achievement Id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementDetail'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
     put:
       summary: Update an existing achievement
       operationId: updateAchievement
@@ -687,6 +724,10 @@ paths:
           name: role
           schema:
             $ref: '#/components/schemas/AchievementSubmissionRole'
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/AchievementApprovalStatus'
         - in: query
           name: createDateFrom
           schema:
@@ -800,6 +841,76 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /achievement-approvals/{id}/review:
+    post:
+      summary: Add a review to a pending achievement.  If type is Rejected, the approval record will be rejected also
+      operationId: createAchievementApprovalReview
+      tags:
+        - Achievement
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Achievement Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AchievementApprovalReviewCreation'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementApprovalDetail'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /achievement-approvals/{id}/approval:
+    post:
+      summary: Approve a pending achievement
+      operationId: approveAchievementApproval
+      tags:
+        - Achievement
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Achievement Id
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementDetail'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /achievement-approvals/{id}/profanity-check:
     post:
       summary: Perform profanity check on a pending record
@@ -897,12 +1008,17 @@ components:
       type: string
       enum:
       - Approved
-      - Published
+      - Published      
     AchievementApprovalStatus:
       type: string
       enum:
       - Pending
       - Rejected
+    ApprovalCommentType:
+      type: string
+      enum:
+      - Conversation
+      - Rejection
     AuditControl:
       type: object
       required:
@@ -1215,6 +1331,7 @@ components:
             - id
             - submissionRole
             - status
+            - numberOfAttachment
           properties:
             id:
               type: string
@@ -1222,7 +1339,22 @@ components:
               $ref: "#/components/schemas/AchievementSubmissionRole"
             status:
               $ref: "#/components/schemas/AchievementStatus"
+            numberOfAttachment:
+              type: number
         - $ref: '#/components/schemas/AchievementCreation'
+    AchievementDetail:
+      type: object
+      allOf:
+        - type: object
+          required:
+            - review
+            - attachment
+          properties:
+            attachment:
+              type: array
+              items:
+                $ref: '#/components/schemas/AchievementAttachment'
+        - $ref: '#/components/schemas/Achievement'        
     AchievementApproval:
       type: object
       allOf:
@@ -1231,6 +1363,7 @@ components:
             - id
             - submissionRole
             - status
+            - numberOfAttachment
           properties:
             id:
               type: string
@@ -1238,19 +1371,32 @@ components:
               $ref: "#/components/schemas/AchievementSubmissionRole"
             status:
               $ref: "#/components/schemas/AchievementApprovalStatus"
+            numberOfAttachment:
+              type: number
         - $ref: '#/components/schemas/AchievementCreation'
+        - $ref: '#/components/schemas/AuditControl'
+    AchievementApprovalReviewCreation:
+      type: object
+      allOf:
+      - type: object
+        required:
+          - commentType
+          - comment
+        properties:
+          commentType:
+            $ref: '#/components/schemas/ApprovalCommentType'
+          comment:
+            type: string
     AchievementApprovalReview:
       type: object
       allOf:
       - type: object
         required:
           - id
-          - comment
         properties:
           id:
             type: string
-          comment:
-            type: string
+      - $ref: '#/components/schemas/AchievementApprovalReviewCreation'
       - $ref: '#/components/schemas/AuditControl'
     AchievementApprovalDetail:
       type: object

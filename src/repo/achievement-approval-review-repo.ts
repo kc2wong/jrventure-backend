@@ -3,7 +3,7 @@ import {
 } from '@prisma/client';
 import prisma from './db';
 
-export const createAchievementApprovalReview = async (
+export const createAchievementApprovalReviewRepo = async (
   review: Omit<AchievementApprovalReview, 'oid'>
 ): Promise<AchievementApprovalReview> => {
   try {

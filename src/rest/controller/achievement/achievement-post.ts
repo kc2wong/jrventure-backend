@@ -61,18 +61,21 @@ export const createAchievement = async (
       authenticatedUser
     );
 
+    
     // Map DTOs to entities
     const achievementEntity = creationDto2Entity(
       dto,
       student,
       activity,
-      submissionRole
+      achievementSubmissionRoleDto2Entity(submissionRole),
+      dto.attachment.length,
     );
     const approvalEntity = creationDto2ApprovalEntity(
       dto,
       student,
       activity,
-      achievementSubmissionRoleDto2Entity(submissionRole)
+      achievementSubmissionRoleDto2Entity(submissionRole),
+      dto.attachment.length,
     );
 
     const findQuery = {

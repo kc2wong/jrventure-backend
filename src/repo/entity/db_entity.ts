@@ -12,6 +12,7 @@ import {
   User,
   UserRole,
   UserStatus,
+  ApprovalCommentType,
   AchievementApprovalReview,
   AchievementApprovalAttachment,
 } from '@prisma/client';
@@ -89,4 +90,5 @@ export {
   AchievementStatus as AchievementStatusEntity,
   AchievementSubmissionRole as AchievementSubmissionRoleEntity,
   AchievementApprovalStatus as AchievementApprovalStatusEntity,
+  ApprovalCommentType as ApprovalCommentTypeEntity,
 };

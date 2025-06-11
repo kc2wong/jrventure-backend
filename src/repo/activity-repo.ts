@@ -8,6 +8,7 @@ import {
 import prisma from './db';
 
 type FindActivityParams = {
+  oid?: number[];
   categoryCode?: string[];
   name?: string;
   startDateFrom?: Date;
@@ -35,6 +36,7 @@ type FindActivityPageResult = {
 };
 
 export const findActivity = async ({
+  oid,
   categoryCode,
   name,
   startDateFrom,
@@ -51,6 +53,7 @@ export const findActivity = async ({
 }: FindActivityParams): Promise<FindActivityPageResult> => {
   try {
     const whereClause: Prisma.ActivityWhereInput = {
+      ...(oid && { oid: { in: oid } }),
       ...(role && { achievement_submission_role: { in: role } }),
       ...(status && { status: { in: status } }),
       ...(name && {

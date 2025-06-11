@@ -1,34 +1,32 @@
 import { Request, Response, NextFunction } from 'express';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import {
-  approvalBucketName,
   publicBucketName,
   s3client,
 } from '../../../util/s3-util';
 import {
-  AchievementApprovalGetById200ResponseDto,
-  AchievementApprovalGetByIdRequestPathDto,
+  AchievementGetById200ResponseDto,
+  AchievementGetByIdRequestPathDto,
 } from '../../dto-schema';
-import { approvalDetailEntity2Dto } from '../../mapper/achievement-approval-mapper';
-import { getAchievementApprovalByIdRepo } from '../../../repo/achievement-approval-repo';
+import { detailEntity2Dto } from '../../mapper/achievement-mapper';
 import { NotFoundErrorDto } from '../error-validation';
 import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { getAchievementByIdRepo } from '../../../repo/achievement-repo';
 
-export const getAchievementApprovalById = async (
-  req: Request<AchievementApprovalGetByIdRequestPathDto, {}, {}, {}>,
-  res: Response<AchievementApprovalGetById200ResponseDto>,
+export const getAchievementById = async (
+  req: Request<AchievementGetByIdRequestPathDto, {}, {}, {}>,
+  res: Response<AchievementGetById200ResponseDto>,
   next: NextFunction
 ) => {
   const id = req.params.id;
   try {
-    const result = await getAchievementApprovalByIdRepo(id);
+    const result = await getAchievementByIdRepo(id);
     if (result === undefined) {
-      throw new NotFoundErrorDto('Achievement Approval', 'id', id);
+      throw new NotFoundErrorDto('Achievement', 'id', id);
     }
     const {
-      achievementApproval,
+      achievement,
       attachment: attachmentEntity,
-      review,
       student,
       activity,
     } = result;
@@ -54,12 +52,11 @@ export const getAchievementApprovalById = async (
     res
       .status(200)
       .json(
-        approvalDetailEntity2Dto(
-          achievementApproval,
+        detailEntity2Dto(
+          achievement,
           student,
           activity,
           attachment,
-          review
         )
       );
   } catch (error) {
