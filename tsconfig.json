@@ -23,7 +23,19 @@
     "strictPropertyInitialization": false,
     "typeRoots": [
       "./type", "./node_modules/@types"
-    ]
+    ],
+    "baseUrl": "./src",
+    "paths": {
+      "@api/*": ["api/*"],
+      "@openapi/*": ["__generated__/openapi/*"],
+      "@service/*": ["service/*"],
+      "@repo/*": ["repo/*"],
+      "@db/*": ["db/*"],
+      "@middlewares/*": ["middlewares/*"],
+      "@shared/*": ["shared/*"],
+      "@type/*": ["type/*"],
+      "@util/*": ["util/*"]
+    }    
   },
   "exclude": [
     "node_modules",

@@ -1136,6 +1136,7 @@ export interface operations {
             content: {
                 "application/json": components["schemas"]["AchievementCreation"] & {
                     version: number;
+                    attachment: components["schemas"]["AchievementAttachmentCreation"][];
                 };
             };
         };

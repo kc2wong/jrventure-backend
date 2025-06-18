@@ -44,8 +44,27 @@ export class LinkedupBackendStack extends Stack {
           DATABASE_URL: process.env.DATABASE_URL!, // 👈 inject your Supabase DB URL
           GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID!,
         },
+        // bundling: {
+        //   nodeModules: ['prisma', '@prisma/client'],
+        //   commandHooks: {
+        //     beforeBundling(_inputDir: string, _outputDir: string): string[] {
+        //       return [];
+        //     },
+        //     beforeInstall(inputDir: string, outputDir: string) {
+        //       return [`cp -r ${inputDir}/prisma ${outputDir}`];
+        //     },
+        //     afterBundling(inputDir: string, outputDir: string): string[] {
+        //       return [
+        //         'yarn install', // Reinstall to ensure all dependencies are bundled
+        //         'yarn prisma generate', // Regenerate Prisma Client in the bundled directory
+        //       ];
+        //       // return [];
+        //     },
+        //   },
+        // },
         bundling: {
           nodeModules: ['prisma', '@prisma/client'],
+          tsconfig: 'tsconfig.json', // 👈 Required to resolve path aliases like @api/*
           commandHooks: {
             beforeBundling(_inputDir: string, _outputDir: string): string[] {
               return [];
@@ -54,11 +73,7 @@ export class LinkedupBackendStack extends Stack {
               return [`cp -r ${inputDir}/prisma ${outputDir}`];
             },
             afterBundling(inputDir: string, outputDir: string): string[] {
-              return [
-                'yarn install', // Reinstall to ensure all dependencies are bundled
-                'yarn prisma generate', // Regenerate Prisma Client in the bundled directory
-              ];
-              // return [];
+              return ['yarn install', 'yarn prisma generate'];
             },
           },
         },

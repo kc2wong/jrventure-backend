@@ -9,10 +9,10 @@
     "openapi:generate": "openapi-typescript ./resource/openapi/api-spec.yaml -o src/__generated__/openapi/schema.ts",
     "db:migrate": "prisma migrate dev",
     "db:seed": "ts-node prisma/seed.ts",
-    "dev": "ts-node src/index.ts",
+    "dev": "ts-node-dev --respawn -r tsconfig-paths/register src/index.ts",
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "jest",
+    "test": "vitest",
     "cdk": "cdk"
   },
   "devDependencies": {
@@ -27,7 +27,10 @@
     "rimraf": "^6.0.1",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "~5.6.3"
+    "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "~5.6.3",
+    "vitest": "^3.2.3"
   },
   "dependencies": {
     "@2toad/profanity": "^3.1.1",

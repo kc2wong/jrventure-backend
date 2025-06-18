@@ -677,9 +677,14 @@ paths:
                 - type: object
                   required:
                     - version
+                    - attachment
                   properties:
                     version:
                       type: number
+                    attachment:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/AchievementAttachmentCreation"
       responses:
         '200':
           description: OK
@@ -790,57 +795,57 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'  
-    put:
-      summary: Update an existing achievement approval
-      operationId: updateAchievementApproval
-      tags:
-        - Achievement
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-          description: Achievement Id
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              allOf:
-                - $ref: '#/components/schemas/AchievementCreation'
-                - type: object
-                  required:
-                    - version
-                  properties:
-                    version:
-                      type: number
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AchievementApproval'
-        '400':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+    # put:
+    #   summary: Update an existing achievement approval
+    #   operationId: updateAchievementApproval
+    #   tags:
+    #     - Achievement
+    #   parameters:
+    #     - in: path
+    #       name: id
+    #       required: true
+    #       schema:
+    #         type: string
+    #       description: Achievement Id
+    #   requestBody:
+    #     required: true
+    #     content:
+    #       application/json:
+    #         schema:
+    #           type: object
+    #           allOf:
+    #             - $ref: '#/components/schemas/AchievementCreation'
+    #             - type: object
+    #               required:
+    #                 - version
+    #               properties:
+    #                 version:
+    #                   type: number
+    #   responses:
+    #     '200':
+    #       description: OK
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: '#/components/schemas/AchievementApproval'
+    #     '400':
+    #       description: Validation error
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: '#/components/schemas/Error'
+    #     '404':
+    #       description: Not found
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: '#/components/schemas/Error'
+    #     '500':
+    #       description: Unexpected error
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: '#/components/schemas/Error'
   /achievement-approvals/{id}/review:
     post:
       summary: Add a review to a pending achievement.  If type is Rejected, the approval record will be rejected also
@@ -1292,11 +1297,14 @@ components:
       properties:
         fileName:
           type: string
+          maxLength: 50
         bucketName:
           type: string
           description: Optional bucket name, should provide a value if the file is a newly uploaded one
+          maxLength: 50
         objectKey:
           type: string
+          maxLength: 200
     AchievementAttachment:
       type: object
       allOf:
