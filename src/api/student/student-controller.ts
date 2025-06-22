@@ -8,7 +8,7 @@ export const findStudentApi = async (
   next: NextFunction
 ) => {
   try {
-    const students = await findStudentService(req.params);
+    const students = await findStudentService(req.query);
     res.status(200).json(students);
   } catch (error) {
     next(error);

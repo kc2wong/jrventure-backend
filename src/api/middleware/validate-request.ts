@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { z, ZodIssue, ZodSchema, ZodTypeAny } from 'zod';
+import { z, ZodIssue, ZodSchema } from 'zod';
 
 const errorSchema = z.object({
   code: z.string(),
@@ -10,14 +10,17 @@ const errorSchema = z.object({
 export const validateQuery = (schema: ZodSchema) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     const result = schema.safeParse(req.query);
-
     if (!result.success) {
       const error = zodIssue2Error(result.error.issues[0]);
       res.status(400).json({ ...error });
       return; // ✅ Ensure you explicitly return
     }
-
-    Object.assign(req.query, result.data);
+    Object.defineProperty(req, 'query', {
+      value: result.data,
+      writable: true,
+      configurable: true,
+      enumerable: true,
+    });
     next(); // ✅ Make sure this is the final call
   };
 };
@@ -32,7 +35,12 @@ export const validateRequest = (schema: ZodSchema) => {
       return;
     }
 
-    Object.assign(req.body, result.data);
+    Object.defineProperty(req, 'body', {
+      value: result.data,
+      writable: true,
+      configurable: true,
+      enumerable: true,
+    });
     next();
   };
 };

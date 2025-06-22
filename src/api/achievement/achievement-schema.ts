@@ -9,6 +9,7 @@ import {
   zodOptionalString,
   zodString,
 } from '@type/zod';
+import { asArray } from '@util/array-util';
 import { z } from 'zod';
 
 export const findAchievementQuerySchema = paginationQuerySchema.extend({
@@ -19,12 +20,14 @@ export const findAchievementQuerySchema = paginationQuerySchema.extend({
       achievementSubmissionRoleSchema,
       z.array(achievementSubmissionRoleSchema),
     ])
-    .optional(),
+    .optional()
+    .transform((val) => asArray(val)),
   createDateFrom: zodOptionalDate(),
   offset: zodNumber({ min: 0 }).default(0),
   limit: zodNumber({ max: 100 }),
-  orderByDirection: zodOptionalEnum(['Ascending', 'Descending'])
-    .default('Ascending'),
+  orderByDirection: zodOptionalEnum(['Ascending', 'Descending']).default(
+    'Ascending'
+  ),
 });
 
 const achievementAttachmentSchema = z.object({

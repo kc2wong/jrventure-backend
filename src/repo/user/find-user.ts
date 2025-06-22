@@ -1,10 +1,4 @@
-import {
-  Class,
-  Student,
-  User,
-  UserRole,
-  UserStatus,
-} from '@prisma/client';
+import { Class, Student, User, UserRole, UserStatus } from '@prisma/client';
 import prisma from '@repo/db';
 
 type FindUserParams = {
@@ -21,14 +15,14 @@ type FindUserResult = {
   studentWithClass: { student: Student; clazz: Class }[];
 };
 
-export const findUserRepo = async ({
-  id,
-  name,
-  email,
-  status,
-  role,
-  studentId,
-}: FindUserParams): Promise<FindUserResult[]> => {
+  export const findUserRepo = async ({
+    id,
+    name,
+    email,
+    status,
+    role,
+    studentId,
+  }: FindUserParams): Promise<FindUserResult[]> => {
   try {
     const users = await prisma.user.findMany({
       where: {
@@ -47,8 +41,6 @@ export const findUserRepo = async ({
           entitled_students: {
             some: {
               student: {
-                // class_oid: studentId[0],
-                // student_number: studentId[1],
                 id: studentId,
               },
             },

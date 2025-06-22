@@ -1,4 +1,16 @@
 import { components, paths } from '@openapi/schema';
+import { zodOptionalString, zodString } from '@type/zod';
+import { asArray } from '@util/array-util';
+import { z } from 'zod';
+
+export const findStudentQuerySchema = z.object({
+  id: z
+    .union([zodString(), z.array(zodString())])
+    .optional()
+    .transform((val) => asArray(val)),
+  classId: zodOptionalString(),
+  name: zodOptionalString(),
+});
 
 export type ClassDto = components['schemas']['Class'];
 export type StudentDto = components['schemas']['Student'];

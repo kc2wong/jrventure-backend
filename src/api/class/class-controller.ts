@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import { FindStudent200ResponseDto, FindStudentQueryDto } from '@api/student/student-schema';
 import { findClassService } from '@service/class/find-class';
 import { FindClassQueryDto, FindClass200ResponseDto } from '@api/class/class-schema';
 
