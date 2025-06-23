@@ -36,7 +36,7 @@ export class UnAuthorizedErrorDto extends Error {
 export class NotFoundErrorDto extends BadRequestErrorDto {
   constructor(objectName: string, fieldName: string, fieldValue: string) {
     super(
-      replaceParameters('Object ${1} with [${2}] = [${3}] is not found', [
+      replaceParameters('Object {1} with [{2}] = [{3}] is not found', [
         objectName,
         fieldName,
         fieldValue,

@@ -16,6 +16,7 @@ export const getAchievementApprovalByIdService = async (
     const {
       achievementApproval,
       attachment: attachmentEntity,
+      review,
       student,
       activity,
     } = result;
@@ -42,7 +43,8 @@ export const getAchievementApprovalByIdService = async (
       achievementApproval,
       student,
       activity,
-      attachment
+      attachment,
+      review
     );
   }
   else {
