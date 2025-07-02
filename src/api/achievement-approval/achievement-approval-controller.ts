@@ -31,7 +31,7 @@ export const findAchievementApprovalApi = async (
   next: NextFunction
 ) => {
   try {
-    const result = await findAchievementApprovalService(req.params);
+    const result = await findAchievementApprovalService(req.query);
     res.status(200).json(result);
   } catch (error) {
     next(error);

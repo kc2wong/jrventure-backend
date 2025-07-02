@@ -222,8 +222,7 @@ export interface paths {
         };
         /** Get an existing achievement approval */
         get: operations["getAchievementApprovalById"];
-        /** Update an existing achievement approval */
-        put: operations["updateAchievementApproval"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -744,8 +743,10 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    /** @description Id token returned from Google */
-                    accessToken: string;
+                    /** @enum {string} */
+                    type: "Web" | "Android" | "iOS";
+                    /** @description Access token or Id token returned from Google */
+                    token: string;
                 };
             };
         };
@@ -1236,62 +1237,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AchievementApprovalDetail"];
-                };
-            };
-            /** @description Not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Unexpected error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    updateAchievementApproval: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Achievement Id */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AchievementCreation"] & {
-                    version: number;
-                };
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AchievementApproval"];
-                };
-            };
-            /** @description Validation error */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
                 };
             };
             /** @description Not found */

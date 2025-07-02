@@ -10,6 +10,7 @@ import {
   zodOptionalString,
   zodString,
 } from '@type/zod';
+import { asArray } from '@util/array-util';
 
 export const userRoleSchema = zodEnum([
   'Student',
@@ -19,6 +20,34 @@ export const userRoleSchema = zodEnum([
   'Alumni',
 ]);
 export const userStatusSchema = zodEnum(['Active', 'Inactive', 'Suspend']);
+
+export const findUserQuerySchema = z.object({
+  id: z
+    .union([
+      zodString(),
+      z.array(zodString()),
+    ])
+    .optional()
+    .transform((val) => asArray(val)),
+  email: zodOptionalString(),
+  name: zodOptionalString(),
+  studentId: zodOptionalString(),
+  role: z
+    .union([
+      userRoleSchema,
+      z.array(userRoleSchema),
+    ])
+    .optional()
+    .transform((val) => asArray(val)),
+  status: z
+    .union([
+      userStatusSchema,
+      z.array(userStatusSchema),
+    ])
+    .optional()
+    .transform((val) => asArray(val)),
+});
+
 
 const userBaseSchema = z.object({
   email: zodEmail(),

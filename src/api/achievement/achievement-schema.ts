@@ -15,13 +15,14 @@ import { z } from 'zod';
 export const findAchievementQuerySchema = paginationQuerySchema.extend({
   studentId: zodOptionalString(),
   activityId: zodOptionalString(),
-  role: z
-    .union([
-      achievementSubmissionRoleSchema,
-      z.array(achievementSubmissionRoleSchema),
-    ])
-    .optional()
-    .transform((val) => asArray(val)),
+  role: achievementSubmissionRoleSchema.optional(),
+  // role: z
+  //   .union([
+  //     achievementSubmissionRoleSchema,
+  //     z.array(achievementSubmissionRoleSchema),
+  //   ])
+  //   .optional()
+  //   .transform((val) => asArray(val)),
   createDateFrom: zodOptionalDate(),
   offset: zodNumber({ min: 0 }).default(0),
   limit: zodNumber({ max: 100 }),

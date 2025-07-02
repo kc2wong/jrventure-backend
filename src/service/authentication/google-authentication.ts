@@ -13,14 +13,23 @@ import { OAuth2Client } from 'google-auth-library';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
+const GOOGLE_IOS_CLIENT_ID = process.env.GOOGLE_IOS_CLIENT_ID;
+const iosOauth2Client = new OAuth2Client(GOOGLE_IOS_CLIENT_ID);
+
+const GOOGLE_ANDROID_CLIENT_ID = process.env.GOOGLE_ANDROID_CLIENT_ID;
+const androidOauth2Client = new OAuth2Client(GOOGLE_ANDROID_CLIENT_ID);
+
 export const googleAuthenticationService = async (
   requestDto: GoogleAuthenticationRequestDto
 ): Promise<GoogleAuthentication200ResponseDto> => {
-  const { accessToken } = requestDto;
+  const { type, token } = requestDto;
 
-  // Verify the idToken
-  const tokenInfo = await oauth2Client.getTokenInfo(accessToken);
-  const email = tokenInfo.email;
+  const email =
+    type === 'Web'
+      ? await verifyWebIdToken(token)
+      : type === 'iOS'
+      ? await verifyIosIdToken(token)
+      : await verifyAndroidIdToken(token);
   const users = await findUserRepo({
     email,
   });
@@ -47,4 +56,31 @@ export const googleAuthenticationService = async (
     ),
     status: 'Success',
   };
+};
+
+const verifyWebIdToken = async (
+  accessToken: string
+): Promise<string | undefined> => {
+  const tokenInfo = await oauth2Client.getTokenInfo(accessToken);
+  return tokenInfo.email;
+};
+
+const verifyIosIdToken = async (
+  idToken: string
+): Promise<string | undefined> => {
+  const ticket = await iosOauth2Client.verifyIdToken({
+    idToken,
+    audience: GOOGLE_IOS_CLIENT_ID,
+  });
+  return ticket.getPayload()?.email;
+};
+
+const verifyAndroidIdToken = async (
+  idToken: string
+): Promise<string | undefined> => {
+  const ticket = await androidOauth2Client.verifyIdToken({
+    idToken,
+    audience: GOOGLE_ANDROID_CLIENT_ID,
+  });
+  return ticket.getPayload()?.email;
 };

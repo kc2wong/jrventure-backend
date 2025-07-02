@@ -15,16 +15,18 @@ export const jwtHandler = (
   const path = req.path;
   const jwt = req.headers.authorization;
   if (jwt) {
-    const decodedJwt = jwtDecode(jwt) as any;
-    const user = decodedJwt.user;
-    const role = user.role;
-    res.locals.authenticatedUser = {
-      oid: safeParseInt(user.id)!,
-      entitledStudentId: user.entitledStudentId as string[],
-      entitledAllStudent: role === 'Teacher',
-      withApprovalRight: user.withApprovalRight,
-      userRole: user.role,
-    };
+    if (!unauthenticatedPath.includes(path)) {
+      const decodedJwt = jwtDecode(jwt) as any;
+      const user = decodedJwt.user;
+      const role = user.role;
+      res.locals.authenticatedUser = {
+        oid: safeParseInt(user.id)!,
+        entitledStudentId: user.entitledStudentId as string[],
+        entitledAllStudent: role === 'Teacher',
+        withApprovalRight: user.withApprovalRight,
+        userRole: user.role,
+      };
+    }
     next();
   } else {
     if (!unauthenticatedPath.includes(path)) {

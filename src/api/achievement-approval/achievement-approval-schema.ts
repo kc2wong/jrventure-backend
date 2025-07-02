@@ -21,12 +21,13 @@ export const findAchievementApprovalQuerySchema = z.object({
       z.array(achievementApprovalStatusSchema),
     ])
     .optional(),
-  role: z
-    .union([
-      achievementSubmissionRoleSchema,
-      z.array(achievementSubmissionRoleSchema),
-    ])
-    .optional(),
+  role: achievementSubmissionRoleSchema.optional(),
+  // role: z
+  //   .union([
+  //     achievementSubmissionRoleSchema,
+  //     z.array(achievementSubmissionRoleSchema),
+  //   ])
+  //   .optional(),
   createDateFrom: zodOptionalDate(),
   orderByDirection: zodOptionalEnum(['Ascending', 'Descending']).default(
     'Ascending'

@@ -10,7 +10,7 @@ import prisma from '@repo/db';
 import { PaginationResult } from '@repo/entity/db_entity';
 
 type FindAchievementParams = {
-  attachmentOid?: number;
+  achievementOid?: number;
   studentId?: string;
   studentOid?: number;
   activityOid?: number;
@@ -29,7 +29,7 @@ type FindAchievementApprovalResult = {
 };
 
 export const findAchievementApprovalRepo = async ({
-  attachmentOid,
+  achievementOid,
   studentId,
   studentOid,
   activityOid,
@@ -51,7 +51,7 @@ export const findAchievementApprovalRepo = async ({
           id: { equals: studentId },
         },
       }),
-      ...(attachmentOid && { achievement_oid: { equals: attachmentOid } }),
+      ...(achievementOid && { achievement_oid: { equals: achievementOid } }),
       ...(studentOid && { student_oid: { equals: studentOid } }),
       ...(activityOid && { activity_oid: { equals: activityOid } }),
     };

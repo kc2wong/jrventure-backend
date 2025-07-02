@@ -19,7 +19,7 @@ export const findUserApi = async (
   next: NextFunction
 ) => {
   try {
-    const users = await findUserService(req.params);
+    const users = await findUserService(req.query);
     res.status(200).json(users);
   } catch (error) {
     next(error);

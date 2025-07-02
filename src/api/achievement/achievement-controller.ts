@@ -23,7 +23,7 @@ export const findAchievementApi = async (
   next: NextFunction
 ) => {
   try {
-    const result = await findAchievementService(req.params);
+    const result = await findAchievementService(req.query);
     res.status(200).json(result);
   } catch (error) {
     next(error);
