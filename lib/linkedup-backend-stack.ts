@@ -43,6 +43,7 @@ export class LinkedupBackendStack extends Stack {
           PORT: '3000', // not really needed, but some ORMs require PORT
           DATABASE_URL: process.env.DATABASE_URL!, // 👈 inject your Supabase DB URL
           GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID!,
+          PERSPECTIVE_API_KEY: process.env.PERSPECTIVE_API_KEY!,
         },
         // bundling: {
         //   nodeModules: ['prisma', '@prisma/client'],
