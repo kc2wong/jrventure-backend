@@ -25,14 +25,18 @@ export const getAchievementByIdService = async (
   const attachmentPromise = Promise.all(
     attachmentEntity.map(async (atch) => {
       const getObjectCommand = new GetObjectCommand({
-        Bucket: atch.bucket_name,
-        Key: atch.object_key,
+        // Bucket: atch.bucket_name,
+        // Key: atch.object_key,
+        Bucket: atch.bucketName,
+        Key: atch.objectKey,
       });
       const getUrl =
-        atch.bucket_name === publicBucketName
-          ? `https://${atch.bucket_name}.s3.${
+        // atch.bucket_name === publicBucketName
+        atch.bucketName === publicBucketName
+          ? `https://${atch.bucketName}.s3.${
               s3client.config.region
-            }.amazonaws.com/${encodeURIComponent(atch.object_key)}`
+            // }.amazonaws.com/${encodeURIComponent(atch.object_key)}`
+            }.amazonaws.com/${encodeURIComponent(atch.objectKey)}`
           : await getSignedUrl(s3client, getObjectCommand, {
               // 1 hr
               expiresIn: 3600,

@@ -1,6 +1,3 @@
-import {
-  UserStatus,
-} from '@prisma/client';
 import { currentDatetime } from '@util/datetime-util';
 import {
   UserAuthentication200ResponseDto,
@@ -10,6 +7,7 @@ import { findUserRepo } from '@repo/user/find-user';
 import { InvalidEmailOrPasswordErrorDto } from '@api/shared/error-schema';
 import { updateUserRepo } from '@repo/user/update-user';
 import { entity2Dto as userEntity2Dto } from '@service/user/mapper/user-mapper';
+import { UserStatus } from '@repo/db';
 
 export const userAuthenticationService = async (
   requestDto: UserAuthenticationRequestDto
@@ -24,7 +22,8 @@ export const userAuthenticationService = async (
   }
 
   const u = users[0].user;
-  const lastLoginDatetime = u.last_login_datetime;
+  // const lastLoginDatetime = u.last_login_datetime;
+  const lastLoginDatetime = u.lastLoginDatetime;
   const studentWithClass = users[0].studentWithClass;
 
   if (u.status != UserStatus.active) {
@@ -33,12 +32,14 @@ export const userAuthenticationService = async (
     throw new InvalidEmailOrPasswordErrorDto(email);
   }
 
-  u.last_login_datetime = currentDatetime();
+  // u.last_login_datetime = currentDatetime();
+  u.lastLoginDatetime = currentDatetime();
   updateUserRepo(u);
 
   return {
     user: userEntity2Dto(
-      { ...u, last_login_datetime: lastLoginDatetime },
+      // { ...u, last_login_datetime: lastLoginDatetime },
+      { ...u, lastLoginDatetime: lastLoginDatetime },
       studentWithClass.map(({ student, clazz }) => [student, clazz])
     ),
     status: 'Success',

@@ -6,23 +6,20 @@ import {
 import { AuthenticatedUser } from '@type/authentication';
 import { currentDatetime } from '@util/datetime-util';
 import { dto2Entity as userRoleDto2Entity } from '@service/user/mapper/user-role-mapper';
-import { dto2Entity as achievementSubmissionRoleDto2Entity } from '@service/activity/mapper/achievement-submission-role-mapper';
 import {
   creationDto2Entity as creationDto2ApprovalEntity,
   entity2Dto as approvalEntity2Dto,
 } from '@service/achievement-approval/mapper/achievement-approval-mapper';
 
 import { approvalBucketName, copyObject } from '@util/s3-util';
-import {
-  deleteAchievementApprovalRepo,
-  findAchievementApprovalRepo,
-} from '@repo/achievement-approval-repo';
-import { AchievementApprovalStatus } from '@prisma/client';
 import { createAchievementApprovalRepo } from '@repo/achievement-approval/create-achievement-approval';
 import { findAchievementAttachmentByAchievementOidRepo } from '@repo/achievement/find-achievement-attachment';
-import { findAchievementRepo } from '@repo/achievement-repo';
 import { AchievementApprovalDto } from '@api/achievement-approval/achievement-approval-schema';
 import { findAchievementApprovalReviewByAchievementApprovalOidRepo } from '@repo/achievement-approval/find-achievement-approval-review';
+import { AchievementApprovalStatus } from '@repo/db';
+import { deleteAchievementApprovalRepo } from '@repo/achievement-approval/delete-achievement-approval';
+import { findAchievementApprovalRepo } from '@repo/achievement-approval/find-achievement-approval';
+import { findAchievementRepo } from '@repo/achievement/find-achievement';
 
 export const createAchievementApprovalService = async (
   authenticatedUser: AuthenticatedUser,
@@ -46,7 +43,7 @@ export const createAchievementApprovalService = async (
     achievementCreationDto,
     student,
     activity,
-    achievementSubmissionRoleDto2Entity(submissionRole),
+    submissionRole,
     achievementCreationDto.attachment.length
   );
 
@@ -60,7 +57,7 @@ export const createAchievementApprovalService = async (
   };
   const existingApproval = (await findAchievementApprovalRepo(findQuery))
     .data[0]?.achievementApproval;
-  approvalEntity.achievement_oid = existingApproval?.oid;
+  approvalEntity.achievementOid = existingApproval?.oid;
 
   const existingReview = existingApproval
     ? await findAchievementApprovalReviewByAchievementApprovalOidRepo(
@@ -70,7 +67,7 @@ export const createAchievementApprovalService = async (
   if (existingApproval !== undefined) {
     if (deleteExisting) {
       deleteAchievementApprovalRepo(
-        existingApproval.achievement_oid!,
+        existingApproval.achievementOid!,
         existingApproval.version!
       );
     } else {
@@ -86,7 +83,7 @@ export const createAchievementApprovalService = async (
       )
     : [];
   const existingAttachmentMap = new Map(
-    existingAttachment.map((atch) => [atch.object_key, atch])
+    existingAttachment.map((atch) => [atch.objectKey, atch])
   );
 
   const prefix = `activity/${achievementCreationDto.activityId}/student/${achievementCreationDto.studentId}`;
@@ -104,17 +101,17 @@ export const createAchievementApprovalService = async (
           objectKey
         );
         return {
-          file_name: a.fileName,
-          bucket_name: approvalBucketName,
-          object_key: objectKey,
-          file_size: fileSize,
+          bucketName: approvalBucketName,
+          objectKey: objectKey,
+          fileName: a.fileName,
+          fileSize: fileSize,
         };
       } else {
         return {
-          file_name: a.fileName,
-          object_key: a.objectKey,
-          bucket_name: existingAtch.bucket_name,
-          file_size: existingAtch.file_size,
+          bucketName: existingAtch.bucketName,
+          objectKey: a.objectKey,
+          fileName: a.fileName,
+          fileSize: existingAtch.fileSize,
         };
       }
     })
@@ -122,16 +119,16 @@ export const createAchievementApprovalService = async (
 
   const payload = {
     ...approvalEntity,
-    status: 'Pending' as AchievementApprovalStatus,
-    updated_by_user_oid: authenticatedUser.oid,
-    updated_at: now,
+    status: AchievementApprovalStatus.pending,
+    updatedByUserOid: authenticatedUser.oid,
+    updatedAt: now,
   };
 
   const result = await createAchievementApprovalRepo(
     {
       ...payload,
-      created_by_user_oid: authenticatedUser.oid,
-      created_at: now,
+      createdByUserOid: authenticatedUser.oid,
+      createdAt: now,
       version: 1,
     },
     attachments,

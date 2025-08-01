@@ -1,11 +1,24 @@
 import {
+  eq,
+  and,
+  or,
+  gte,
+  lte,
+  ilike,
+  inArray,
+  sql,
+  desc,
+  asc,
+  SQL,
+} from 'drizzle-orm';
+import {
   AchievementSubmissionRole,
   Activity,
   ActivityCategory,
   ActivityStatus,
-  Prisma,
-} from '@prisma/client';
-import prisma from '@repo/db';
+  db,
+} from '@repo/db';
+import { activities, activityCategories } from '@db/drizzle-schema';
 
 type FindActivityParams = {
   oid?: number[];
@@ -35,6 +48,12 @@ type FindActivityPageResult = {
   total: number;
 };
 
+const orderableFields = {
+  name_en: activities.nameEnUpCase,
+  start_date: activities.startDate,
+  end_date: activities.endDate,
+};
+
 export const findActivityRepo = async ({
   oid,
   categoryCode,
@@ -52,62 +71,84 @@ export const findActivityRepo = async ({
   orderByDirection,
 }: FindActivityParams): Promise<FindActivityPageResult> => {
   try {
-    const whereClause: Prisma.ActivityWhereInput = {
-      ...(oid && { oid: { in: oid } }),
-      ...(role && { achievement_submission_role: { in: role } }),
-      ...(status && { status: { in: status } }),
-      ...(name && {
-        OR: [
-          { name_en_up_case: { contains: name } },
-          { name_zh_hans: { contains: name } },
-          { name_zh_hant: { contains: name } },
-        ],
-      }),
-      ...(startDateFrom && { start_date: { gte: startDateFrom } }),
-      ...(startDateTo && { start_date: { lte: startDateTo } }),
-      ...(endDateFrom && { end_date: { gte: endDateFrom } }),
-      ...(endDateTo && { end_date: { lte: endDateTo } }),
-      ...(participantGrade &&
-        participantGrade.length > 0 && {
-          participant_grade: {
-            in: getMatchingBitmaskValues(participantGrade),
-          },
-        }),
-      ...(categoryCode && {
-        category: {
-          code: { in: categoryCode },
-        },
-      }),
-    };
+    const conditions = [];
 
-    const orderByClause: Prisma.ActivityFindManyArgs['orderBy'] = [
-      ...(orderByField
-        ? [
-            {
-              [orderByField]: orderByDirection,
-            },
-          ]
-        : []),
-      { oid: 'asc' }, // secondary sort to ensure consistent order
-    ];
-    const [total, items] = await prisma.$transaction([
-      prisma.activity.count({ where: whereClause }),
-      prisma.activity.findMany({
-        where: whereClause,
-        include: { category: true },
-        skip: offset,
-        take: limit,
-        orderBy: orderByClause,
-      }),
+    if (oid?.length) conditions.push(inArray(activities.oid, oid));
+    if (role?.length)
+      conditions.push(inArray(activities.achievementSubmissionRole, role));
+    if (status?.length) conditions.push(inArray(activities.status, status));
+
+    if (name) {
+      conditions.push(
+        or(
+          ilike(activities.nameEnUpCase, `%${name}%`),
+          ilike(activities.nameZhHans, `%${name}%`),
+          ilike(activities.nameZhHant, `%${name}%`)
+        )
+      );
+    }
+
+    if (startDateFrom)
+      conditions.push(gte(activities.startDate, startDateFrom));
+    if (startDateTo) conditions.push(lte(activities.startDate, startDateTo));
+    if (endDateFrom) conditions.push(gte(activities.endDate, endDateFrom));
+    if (endDateTo) conditions.push(lte(activities.endDate, endDateTo));
+
+    if (participantGrade?.length) {
+      conditions.push(
+        inArray(
+          activities.participantGrade,
+          getMatchingBitmaskValues(participantGrade)
+        )
+      );
+    }
+
+    const categoryJoin = eq(activities.categoryOid, activityCategories.oid);
+    if (categoryCode?.length) {
+      // push condition on category.code after join
+      conditions.push(inArray(activityCategories.code, categoryCode));
+    }
+
+    const where = conditions.length ? and(...conditions) : undefined;
+
+    const orderBy: SQL[] = [];
+    if (orderByField && orderableFields[orderByField]) {
+      const field =
+        orderableFields[orderByField as keyof typeof orderableFields];
+      if (orderByDirection === 'desc') {
+        orderBy.push(desc(field));
+      } else {
+        orderBy.push(asc(field));
+      }
+    }
+    // Always add a secondary sort for deterministic order
+    orderBy.push(asc(activities.oid));
+
+    const [total, data] = await Promise.all([
+      db
+        .select({ count: sql<number>`count(*)` })
+        .from(activities)
+        .innerJoin(activityCategories, categoryJoin)
+        .where(where)
+        .then((res) => Number(res[0]?.count || 0)),
+
+      db
+        .select({
+          activity: activities,
+          category: activityCategories,
+        })
+        .from(activities)
+        .innerJoin(activityCategories, categoryJoin)
+        .where(where)
+        .orderBy(...orderBy)
+        .limit(limit ?? 50)
+        .offset(offset),
     ]);
 
     return {
       offset,
       total,
-      data: items.map(({ category, ...rest }) => ({
-        activity: rest,
-        category,
-      })),
+      data,
     };
   } catch (error) {
     console.error('Error fetching activity:', error);

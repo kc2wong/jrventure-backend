@@ -8,7 +8,7 @@ import { NotFoundErrorDto } from '@api/shared/error-schema';
 import { getAchievementApprovalByOidRepo } from '@repo/achievement-approval/get-achievement-approval';
 import { replaceParameters, safeParseInt } from '@util/string-util';
 import { createAchievementApprovalReviewRepo } from '@repo/achievement-approval/create-achievement-approval-review';
-import { dto2Entity as contentTypeDto2Entity } from '@service/achievement-approval/mapper/achievement-approval-comment-type-mapper';
+import { ApprovalCommentType } from '@repo/db';
 
 const perspective = new Perspective({
   apiKey: process.env.PERSPECTIVE_API_KEY!,
@@ -228,14 +228,20 @@ export const createAchievementApprovaProfanityChecklService = async (
       : '');
 
   await createAchievementApprovalReviewRepo({
-    comment_type: contentTypeDto2Entity('Conversation'),
+    // comment_type: contentTypeDto2Entity('Conversation'),
+    commentType: ApprovalCommentType.conversation,
     comment,
-    created_by_user_oid: 1,
-    created_at: now,
-    updated_by_user_oid: 1,
-    updated_at: now,
+    // created_by_user_oid: 1,
+    // created_at: now,
+    // updated_by_user_oid: 1,
+    // updated_at: now,
+    createdByUserOid: 1,
+    createdAt: now,
+    updatedByUserOid: 1,
+    updatedAt: now,
     version: 1,
-    achievement_approval_oid: achievementApproval.oid,
+    // achievement_approval_oid: achievementApproval.oid,
+    achievementApprovalOid: achievementApproval.oid,
   });
 };
 

@@ -1,8 +1,9 @@
 import {
   User as UserEntity,
-  Student as StudentEntity,
   Class as ClassEntity,
-} from '@prisma/client';
+  Student as StudentEntity,
+  CreateUserEntity,
+} from '@repo/db';
 import { CreateUserDto, UpdateUserDto, UserDto } from '@api/user/user-schema';
 import {
   entity2Dto as roleEntity2Dto,
@@ -14,7 +15,6 @@ import {
 } from '@service/user/mapper/user-status-mapper';
 import { entity2Dto as datetimeEntity2Dto } from '@shared/mapper/datetime-mapper';
 import { removeNilValues } from '@util/string-util';
-import { CreateUserEntity } from '@repo/user/user-entity';
 
 export const creationDto2Entity = ({
   email,
@@ -25,17 +25,17 @@ export const creationDto2Entity = ({
 }: CreateUserDto): CreateUserEntity => {
   return {
     email,
-    name_en: name.English ? (name.English as string) : null,
-    name_zh_hant: name.TraditionalChinese
+    nameEn: name.English ? (name.English as string) : null,
+    nameZhHant: name.TraditionalChinese
       ? (name.TraditionalChinese as string)
       : null,
-    name_zh_hans: name.SimplifiedChinese
+    nameZhHans: name.SimplifiedChinese
       ? (name.SimplifiedChinese as string)
       : null,
     role: roleDto2Entity(role),
     status: statusDto2Entity(status),
-    last_login_datetime: null,
-    with_approval_right: withApprovalRight,
+    lastLoginDatetime: null,
+    withApprovalRight,
   };
 };
 
@@ -46,11 +46,11 @@ export const updateDto2Entity = (
   return {
     ...user,
     email,
-    name_en: name.English ? (name.English as string) : null,
-    name_zh_hant: name.TraditionalChinese
+    nameEn: name.English ? (name.English as string) : null,
+    nameZhHant: name.TraditionalChinese
       ? (name.TraditionalChinese as string)
       : null,
-    name_zh_hans: name.SimplifiedChinese
+    nameZhHans: name.SimplifiedChinese
       ? (name.SimplifiedChinese as string)
       : null,
     role: roleDto2Entity(role),
@@ -63,26 +63,42 @@ export const entity2Dto = (
   src: UserEntity,
   entitledSutdent: [StudentEntity, ClassEntity][]
 ): UserDto => {
+  const {
+    oid,
+    email,
+    nameEn,
+    nameZhHant,
+    nameZhHans,
+    role,
+    status,
+    withApprovalRight,
+    lastLoginDatetime,
+    passwordExpiryDatetime,
+    createdByUserOid,
+    createdAt,
+    updatedByUserOid,
+    updatedAt,
+  } = src;
   return {
-    id: src.oid.toString(),
+    id: oid.toString(),
     name: removeNilValues({
-      English: src.name_en,
-      TraditionalChinese: src.name_zh_hant,
-      SimplifiedChinese: src.name_zh_hans,
+      English: nameEn,
+      TraditionalChinese: nameZhHant,
+      SimplifiedChinese: nameZhHans,
     }),
-    email: src.email,
+    email: email,
     entitledStudentId: entitledSutdent
       ? entitledSutdent.map((item) => item[0].id)
       : [],
-    role: roleEntity2Dto(src.role),
-    status: statusEntity2Dto(src.status),
-    lastLoginDatetime: datetimeEntity2Dto(src.last_login_datetime),
-    passwordExpiryDatetime: datetimeEntity2Dto(src.password_expiry_datetime),
-    withApprovalRight: src.with_approval_right,
-    createdBy: src.created_by_user_oid.toString(),
-    createdAt: datetimeEntity2Dto(src.created_at)!,
-    updatedBy: src.updated_by_user_oid.toString(),
-    updatedAt: datetimeEntity2Dto(src.updated_at)!,
+    role: roleEntity2Dto(role),
+    status: statusEntity2Dto(status),
+    lastLoginDatetime: datetimeEntity2Dto(lastLoginDatetime),
+    passwordExpiryDatetime: datetimeEntity2Dto(passwordExpiryDatetime),
+    withApprovalRight,
+    createdBy: createdByUserOid.toString(),
+    createdAt: datetimeEntity2Dto(createdAt)!,
+    updatedBy: updatedByUserOid.toString(),
+    updatedAt: datetimeEntity2Dto(updatedAt)!,
     version: src.version,
   };
 };

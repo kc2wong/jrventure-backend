@@ -1,9 +1,11 @@
-import { ActivityCategory } from '@prisma/client';
-import prisma from '@repo/db';
+import { ActivityCategory, db } from '@repo/db';
+import { activityCategories } from '@db/drizzle-schema';
 
-export const listActivityCategoryRepo = async (): Promise<ActivityCategory[]> => {
+export const listActivityCategoryRepo = async (): Promise<
+  ActivityCategory[]
+> => {
   try {
-    return await prisma.activityCategory.findMany({});
+    return await db.select().from(activityCategories);
   } catch (error) {
     console.error('Error fetching activity category:', error);
     throw error;

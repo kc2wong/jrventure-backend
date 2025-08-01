@@ -1,11 +1,11 @@
 import { ActivityStatusDto } from '@api/activity/activity-schema';
-import { ActivityStatus } from '@prisma/client';
+import { ActivityStatus } from '@repo/db';
 
 const statusDto2EntityMap: Record<ActivityStatusDto, ActivityStatus> = {
-  Open: ActivityStatus.Open,
-  Closed: ActivityStatus.Closed,
-  Cancelled: ActivityStatus.Cancelled,
-  Scheduled: ActivityStatus.Scheduled,
+  Open: ActivityStatus.open,
+  Closed: ActivityStatus.closed,
+  Cancelled: ActivityStatus.cancelled,
+  Scheduled: ActivityStatus.scheduled,
 };
 
 const statusEntity2DtoMap: Record<ActivityStatus, ActivityStatusDto> =

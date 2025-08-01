@@ -1,19 +1,17 @@
-import { Class } from '@prisma/client';
+import { Class } from '@repo/db';
 import { ClassDto } from '@api/student/student-schema';
 import { safeParseInt } from '@util/string-util';
 
-export const entity2DtoId = (
-  grade: number,
-  class_number: string
-): string => {
+export const entity2DtoId = (grade: number, class_number: string): string => {
   return `${grade}${class_number}`;
 };
 
 export const entity2Dto = (src: Class): ClassDto => {
+  const { grade, classNumber } = src;
   return {
-    id: entity2DtoId(src.grade, src.class_number),
-    grade: src.grade,
-    classNumber: src.class_number,
+    id: entity2DtoId(grade, classNumber),
+    grade,
+    classNumber,
   };
 };
 

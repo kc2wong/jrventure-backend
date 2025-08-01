@@ -1,18 +1,28 @@
-import { Class } from '@prisma/client';
-import prisma from '@repo/db';
+import { classes } from '@db/drizzle-schema';
+import { and, eq } from 'drizzle-orm';
+import { db, Class } from '@repo/db';
 
 export const findClassRepo = async (
   grade?: number,
-  class_number?: string
+  classNumber?: string
 ): Promise<Class[]> => {
   try {
-    const classes = await prisma.class.findMany({
-      where: {
-        ...(grade && { grade }), // Add grade_number condition if it's provided
-        ...(class_number && { class_number }), // Add class_number condition if it's provided
-      },
-    });
-    return classes;
+    const whereClauses = [];
+
+    if (grade !== undefined) {
+      whereClauses.push(eq(classes.grade, grade));
+    }
+
+    if (classNumber !== undefined) {
+      whereClauses.push(eq(classes.classNumber, classNumber));
+    }
+
+    const result = await db
+      .select()
+      .from(classes)
+      .where(whereClauses.length > 0 ? and(...whereClauses) : undefined);
+
+    return result;
   } catch (error) {
     console.error('Error fetching classes:', error);
     throw error;

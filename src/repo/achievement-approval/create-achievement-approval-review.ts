@@ -1,15 +1,15 @@
-import { AchievementApprovalReview } from '@prisma/client';
-import prisma from '@repo/db';
+import { achievementApprovalReviews } from '@db/drizzle-schema';
+import { db, AchievementApprovalReview } from '@repo/db';
 
 export const createAchievementApprovalReviewRepo = async (
   review: Omit<AchievementApprovalReview, 'oid'>
 ): Promise<AchievementApprovalReview> => {
   try {
-    return await prisma.achievementApprovalReview.create({
-      data: {
-        ...review,
-      },
-    });
+    const [created] = await db
+      .insert(achievementApprovalReviews)
+      .values(review)
+      .returning();
+    return created;
   } catch (error) {
     console.error('Error creating achievement approval review :', error);
     throw error;

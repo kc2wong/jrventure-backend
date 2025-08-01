@@ -9,13 +9,13 @@ import {
   validateUserUniqueness,
 } from '@service/user/shared/user-validation';
 import {
-  UserRole,
   Class as ClassEntity,
   Student as StudentEntity,
-} from '@prisma/client';
+} from '@repo/db';
 import { currentDatetime } from '@util/datetime-util';
 import { createUserRepo } from '@repo/user/create-user';
 import { AuthenticatedUser } from '@type/authentication';
+import { UserRoleEnum } from '@db/drizzle-schema';
 
 export const createUserService = async (
   currentUser: AuthenticatedUser,
@@ -33,7 +33,7 @@ export const createUserService = async (
   );
 
   await validateUserUniqueness(userCreationEntity.email);
-  if (userCreationEntity.role === UserRole.student) {
+  if (userCreationEntity.role === UserRoleEnum.student) {
     await validateStudentUserUniqueness(studentMap);
   }
 
@@ -44,12 +44,18 @@ export const createUserService = async (
     {
       ...userCreationEntity,
       password: '123456',
-      password_expiry_datetime: now,
-      last_login_datetime: null,
-      created_by_user_oid: createUserOid,
-      created_at: now,
-      updated_by_user_oid: createUserOid,
-      updated_at: now,
+      // password_expiry_datetime: now,
+      // last_login_datetime: null,
+      // created_by_user_oid: createUserOid,
+      // created_at: now,
+      // updated_by_user_oid: createUserOid,
+      // updated_at: now,
+      passwordExpiryDatetime: now,
+      lastLoginDatetime: null,
+      createdByUserOid: createUserOid,
+      createdAt: now,
+      updatedByUserOid: createUserOid,
+      updatedAt: now,
       version: 1,
     },
     Array.from(studentMap.values())

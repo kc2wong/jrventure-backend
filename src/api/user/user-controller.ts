@@ -31,9 +31,11 @@ export const createUserApi = async (
   res: Response<CreateUser201ResponseDto>,
   next: NextFunction
 ) => {
+  console.log('createUserApi called hih = ');
   const authenticatedUser = res.locals.authenticatedUser;
   const userCreationDto = req.body;
   const isSignUpWithGoogle = 'accessToken' in userCreationDto;
+  console.log('createUserApi called, isSignUpWithGoogle = ', isSignUpWithGoogle);
   try {
     const newUser = isSignUpWithGoogle
       ? await registerUserService(userCreationDto)

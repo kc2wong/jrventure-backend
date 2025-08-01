@@ -1,13 +1,13 @@
 import { AchievementSubmissionRoleDto } from '@api/achievement/achievement-schema';
-import { AchievementSubmissionRole } from '@prisma/client';
+import { AchievementSubmissionRole } from '@repo/db';
 
 const statusDto2EntityMap: Record<
   AchievementSubmissionRoleDto,
   AchievementSubmissionRole
 > = {
-  Student: AchievementSubmissionRole.Student,
-  Teacher: AchievementSubmissionRole.Teacher,
-  Both: AchievementSubmissionRole.Both,
+  Student: AchievementSubmissionRole.student,
+  Teacher: AchievementSubmissionRole.teacher,
+  Both: AchievementSubmissionRole.both,
 };
 
 const statusEntity2DtoMap: Record<

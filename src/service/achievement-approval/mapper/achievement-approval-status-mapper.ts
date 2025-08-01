@@ -1,12 +1,12 @@
 import { AchievementApprovalStatusDto } from '@api/achievement-approval/achievement-approval-schema';
-import { AchievementApprovalStatus } from '@prisma/client';
+import { AchievementApprovalStatus } from '@repo/db';
 
 const statusDto2EntityMap: Record<
   AchievementApprovalStatusDto,
   AchievementApprovalStatus
 > = {
-  Pending: AchievementApprovalStatus.Pending,
-  Rejected: AchievementApprovalStatus.Rejected,
+  Pending: AchievementApprovalStatus.pending,
+  Rejected: AchievementApprovalStatus.rejected,
 };
 
 const statusEntity2DtoMap: Record<

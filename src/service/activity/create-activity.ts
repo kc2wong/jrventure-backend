@@ -23,12 +23,21 @@ export const createActivityService = async (
 
   const now = currentDatetime();
 
+  // const newActivity = await createActivityRepo({
+  //   ...activityCreation,
+  //   created_by_user_oid: currentUser.oid,
+  //   created_at: now,
+  //   updated_by_user_oid: currentUser.oid,
+  //   updated_at: now,
+  //   version: 1,
+  // });
+
   const newActivity = await createActivityRepo({
     ...activityCreation,
-    created_by_user_oid: currentUser.oid,
-    created_at: now,
-    updated_by_user_oid: currentUser.oid,
-    updated_at: now,
+    createdByUserOid: currentUser.oid,
+    createdAt: now,
+    updatedByUserOid: currentUser.oid,
+    updatedAt: now,
     version: 1,
   });
 

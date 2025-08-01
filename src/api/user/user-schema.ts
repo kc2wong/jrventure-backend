@@ -48,6 +48,11 @@ export const findUserQuerySchema = z.object({
     .transform((val) => asArray(val)),
 });
 
+const userRegistrationchema = z.object({
+  accessToken: zodString(),
+  studentId: zodString(),
+  studentName: zodString(),
+});
 
 const userBaseSchema = z.object({
   email: zodEmail(),
@@ -97,7 +102,8 @@ const withRefinements = <T extends z.ZodTypeAny>(schema: T): T =>
     ) as unknown as T;
 
 export const createUserSchema = withRefinements(
-  userBaseSchema.omit({ version: true })
+  // if email is not provided, it will be got from input jwt
+  userBaseSchema.omit({ version: true, email: true })
 );
 export const updateUserSchema = withRefinements(userBaseSchema);
 

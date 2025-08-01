@@ -1,30 +1,32 @@
-import { entity2Dto as achievementStatusEntity2Dto } from './achievement-status-mapper';
-import { entity2Dto as achievementSubmissionRoleEntity2Dto } from '@service/activity/mapper/achievement-submission-role-mapper';
-import { entity2Dto as achievemenAttachmentEntity2Dto } from '@service/achievement/mapper/achievement-attachment-mapper';
-import { entity2Dto as achievemenStatusEntity2Dto } from './achievement-status-mapper';
+import { entity2Dto as achievementStatusEntity2Dto } from '@service/achievement/mapper/achievement-status-mapper';
 import {
-  Activity,
-  Achievement,
-  Student,
-  AchievementSubmissionRole,
-  AchievementStatus,
-  AchievementAttachment,
-} from '@prisma/client';
-import { AchievementCreationEntity } from '@repo/entity/db_entity';
+  entity2Dto as achievementSubmissionRoleEntity2Dto,
+  dto2Entity as achievementSubmissionRoleDto2Entity,
+} from '@service/activity/mapper/achievement-submission-role-mapper';
+import { entity2Dto as achievemenAttachmentEntity2Dto } from '@service/achievement/mapper/achievement-attachment-mapper';
 import {
   AchievementDetailDto,
   AchievementDto,
+  AchievementSubmissionRoleDto,
   CreateAchievementDto,
 } from '@api/achievement/achievement-schema';
+import {
+  Achievement,
+  AchievementAttachment,
+  AchievementCreationEntity,
+  AchievementStatus,
+  Activity,
+  Student,
+} from '@repo/db';
 
 export const entity2Dto = (
   {
     oid,
     status,
     rating,
-    achievement_submission_role,
+    achievementSubmissionRole,
     comment,
-    num_of_attachment,
+    numOfAttachment,
   }: Achievement,
   student: Student,
   activity: Activity
@@ -35,11 +37,11 @@ export const entity2Dto = (
     studentId: student.id,
     activityId: activity.oid.toString(),
     submissionRole: achievementSubmissionRoleEntity2Dto(
-      achievement_submission_role
+      achievementSubmissionRole
     ),
     rating: rating ? rating : undefined,
     comment: comment,
-    numberOfAttachment: num_of_attachment,
+    numberOfAttachment: numOfAttachment,
   };
 };
 
@@ -48,9 +50,9 @@ export const detailEntity2Dto = (
     oid,
     status,
     rating,
-    achievement_submission_role,
+    achievementSubmissionRole,
     comment,
-    num_of_attachment,
+    numOfAttachment,
   }: Achievement,
   student: Student,
   activity: Activity,
@@ -58,15 +60,15 @@ export const detailEntity2Dto = (
 ): AchievementDetailDto => {
   return {
     id: oid.toString(),
-    status: achievemenStatusEntity2Dto(status),
+    status: achievementStatusEntity2Dto(status),
     studentId: student.id,
     activityId: activity.oid.toString(),
     submissionRole: achievementSubmissionRoleEntity2Dto(
-      achievement_submission_role
+      achievementSubmissionRole
     ),
     rating: rating ? rating : undefined,
     comment: comment,
-    numberOfAttachment: num_of_attachment,
+    numberOfAttachment: numOfAttachment,
     attachment: attachment.map((atch) => achievemenAttachmentEntity2Dto(atch)),
   };
 };
@@ -75,16 +77,17 @@ export const creationDto2Entity = (
   { rating, comment }: CreateAchievementDto,
   student: Student,
   activity: Activity,
-  submissionRole: AchievementSubmissionRole,
+  submissionRole: AchievementSubmissionRoleDto,
   numOfAttachment: number
 ): AchievementCreationEntity => {
   return {
-    student_oid: student.oid,
-    activity_oid: activity.oid,
+    studentOid: student.oid,
+    activityOid: activity.oid,
     rating: rating !== undefined ? rating : null,
     comment,
-    achievement_submission_role: submissionRole,
-    num_of_attachment: numOfAttachment,
-    status: AchievementStatus.Approved,
+    achievementSubmissionRole:
+      achievementSubmissionRoleDto2Entity(submissionRole),
+    numOfAttachment,
+    status: AchievementStatus.approved,
   };
 };

@@ -1,5 +1,6 @@
-import { Class, Student } from '@prisma/client';
-import prisma from '@repo/db';
+import { eq, ilike, inArray, and, or } from 'drizzle-orm';
+import { classes, students } from '@db/drizzle-schema';
+import { db, Class, Student } from '@repo/db';
 
 export const findStudentRepo = async (
   id?: string[],
@@ -7,26 +8,37 @@ export const findStudentRepo = async (
   classOid?: number,
   studentNumber?: number
 ): Promise<[Student, Class][]> => {
-  try {
-    const result = await prisma.student.findMany({
-      where: {
-        ...(id && { id: { in: id } }),
-        ...(classOid && { class_oid: classOid }),
-        ...(studentNumber && { student_number: studentNumber }),
-        ...(name && {
-          OR: [
-            { name_en: { contains: name, mode: 'insensitive' } },
-            { name_zh_hans: { contains: name, mode: 'insensitive' } },
-            { name_zh_hant: { contains: name, mode: 'insensitive' } },
-          ],
-        }),
-      },
-      include: {
-        class: true,
-      },
-    });
-    return result.map((item) => [item, item.class]);
-  } catch (error) {
-    throw error;
+  let whereClauses = [];
+
+  if (id) {
+    whereClauses.push(inArray(students.id, id));
   }
+  if (classOid) {
+    whereClauses.push(eq(students.classOid, classOid));
+  }
+  if (studentNumber) {
+    whereClauses.push(eq(students.studentNumber, studentNumber));
+  }
+
+  if (name) {
+    whereClauses.push(
+      or(
+        ilike(students.nameEn, `%${name}%`),
+        ilike(students.nameZhHans, `%${name}%`),
+        ilike(students.nameZhHant, `%${name}%`)
+      )
+    );
+  }
+
+  const result = await db
+    .select({
+      student: students,
+      class: classes,
+    })
+    .from(students)
+    .innerJoin(classes, eq(classes.oid, students.classOid))
+    .where(whereClauses.length > 0 ? and(...whereClauses) : undefined);
+
+  return result.map((row) => [row.student, row.class]);
 };
+

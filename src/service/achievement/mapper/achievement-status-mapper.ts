@@ -1,9 +1,9 @@
 import { AchievementStatusDto } from '@api/achievement/achievement-schema';
-import { AchievementStatus } from '@prisma/client';
+import { AchievementStatus } from '@repo/db';
 
 const statusDto2EntityMap: Record<AchievementStatusDto, AchievementStatus> = {
-  Approved: AchievementStatus.Approved,
-  Published: AchievementStatus.Published,
+  Approved: AchievementStatus.approved,
+  Published: AchievementStatus.published,
 };
 
 const statusEntity2DtoMap: Record<AchievementStatus, AchievementStatusDto> =

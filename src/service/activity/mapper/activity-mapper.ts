@@ -1,4 +1,3 @@
-import { Activity, ActivityCategory } from '@prisma/client';
 import {
   CreateActivityDto,
   ActivityDto,
@@ -17,9 +16,9 @@ import {
   entity2Dto as achievementSubmissionRoleEntity2Dto,
   dto2Entity as achievementSubmissionRoleDto2Entity,
 } from '@service/activity/mapper/achievement-submission-role-mapper';
-import { ActivityCreationEntity } from '@repo/entity/db_entity';
 
 import { removeNilValues } from '@util/string-util';
+import { Activity, ActivityCategory, ActivityCreationEntity } from '@repo/db';
 
 const bitmaskToArray = (bitmask: number): number[] => {
   const enabledBits: number[] = [];
@@ -44,32 +43,52 @@ const arrayToBitmask = (value: number[]): number => {
 };
 
 export const entity2Dto = (
-  src: Activity,
+  // src: Activity,
+  {
+    oid,
+    nameEn,
+    nameZhHans,
+    nameZhHant,
+    description,
+    startDate,
+    endDate,
+    status,
+    participantGrade,
+    sharable,
+    ratable,
+    eCoin,
+    achievementSubmissionRole,
+    createdByUserOid,
+    createdAt,
+    updatedByUserOid,
+    updatedAt,
+    version,
+  }: Activity,
   category: ActivityCategory
 ): ActivityDto => {
   return {
-    id: src.oid.toString(),
+    id: oid.toString(),
     categoryCode: category.code,
     name: removeNilValues({
-      English: src.name_en,
-      TraditionalChinese: src.name_zh_hant,
-      SimplifiedChinese: src.name_zh_hans,
+      English: nameEn,
+      TraditionalChinese: nameZhHant,
+      SimplifiedChinese: nameZhHans,
     }),
-    description: src.description,
-    startDate: datetimeEntity2Dto(src.start_date),
-    endDate: datetimeEntity2Dto(src.end_date),
-    status: activityStatusEntity2Dto(src.status),
-    participantGrade: bitmaskToArray(src.participant_grade),
-    sharable: src.sharable,
-    ratable: src.ratable,
-    eCoin: src.e_coin,
-    createdBy: src.created_by_user_oid.toString(),
-    createdAt: datetimeEntity2Dto(src.created_at),
-    updatedBy: src.updated_by_user_oid.toString(),
-    updatedAt: datetimeEntity2Dto(src.updated_at),
-    version: src.version,
+    description: description,
+    startDate: datetimeEntity2Dto(startDate),
+    endDate: datetimeEntity2Dto(endDate),
+    status: activityStatusEntity2Dto(status),
+    participantGrade: bitmaskToArray(participantGrade),
+    sharable: sharable,
+    ratable: ratable,
+    eCoin: eCoin,
+    createdBy: createdByUserOid.toString(),
+    createdAt: datetimeEntity2Dto(createdAt),
+    updatedBy: updatedByUserOid.toString(),
+    updatedAt: datetimeEntity2Dto(updatedAt),
+    version: version,
     achievementSubmissionRole: achievementSubmissionRoleEntity2Dto(
-      src.achievement_submission_role
+      achievementSubmissionRole
     ),
   };
 };
@@ -91,24 +110,24 @@ export const creationDto2Entity = (
 ): ActivityCreationEntity => {
   const nameEn = name.English ? (name.English as string) : null;
   return {
-    name_en: nameEn,
-    name_en_up_case: nameEn ? nameEn.toUpperCase() : null,
-    name_zh_hant: name.TraditionalChinese
+    nameEn,
+    nameEnUpCase: nameEn ? nameEn.toUpperCase() : null,
+    nameZhHant: name.TraditionalChinese
       ? (name.TraditionalChinese as string)
       : null,
-    name_zh_hans: name.SimplifiedChinese
+    nameZhHans: name.SimplifiedChinese
       ? (name.SimplifiedChinese as string)
       : null,
     description,
-    start_date: datetimeDto2Entity(startDate),
-    end_date: datetimeDto2Entity(endDate),
-    participant_grade: arrayToBitmask(participantGrade),
-    e_coin: eCoin,
-    achievement_submission_role: achievementSubmissionRoleDto2Entity(
+    startDate: datetimeDto2Entity(startDate),
+    endDate: datetimeDto2Entity(endDate),
+    participantGrade: arrayToBitmask(participantGrade),
+    eCoin,
+    achievementSubmissionRole: achievementSubmissionRoleDto2Entity(
       achievementSubmissionRole
     ),
     status: activityStatusDto2Entity(status),
-    category_oid: category.oid,
+    categoryOid: category.oid,
     sharable,
     ratable,
   };

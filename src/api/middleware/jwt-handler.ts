@@ -5,6 +5,7 @@ import { safeParseInt } from '@util/string-util';
 const unauthenticatedPath = [
   '/user-authentications',
   '/google-authentications',
+  '/health'
 ];
 
 export const jwtHandler = (

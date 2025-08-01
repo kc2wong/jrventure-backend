@@ -1,11 +1,11 @@
 import { AchievementDetailDto } from '@api/achievement/achievement-schema';
 import { NotFoundErrorDto } from '@api/shared/error-schema';
-import { Achievement } from '@prisma/client';
 import { deleteAchievementApprovalRepo } from '@repo/achievement-approval/delete-achievement-approval';
 import { getAchievementApprovalByOidRepo } from '@repo/achievement-approval/get-achievement-approval';
 import { createAchievementRepo } from '@repo/achievement/create-achievement';
 import { getAchievementByOidRepo } from '@repo/achievement/get-achievement';
 import { updateAchievementRepo } from '@repo/achievement/update-achievement';
+import { Achievement, AchievementStatus } from '@repo/db';
 import { detailEntity2Dto } from '@service/achievement/mapper/achievement-mapper';
 import { AuthenticatedUser } from '@type/authentication';
 import { currentDatetime } from '@util/datetime-util';
@@ -34,29 +34,29 @@ export const approveAchievementApprovalService = async (
   // 🔄 Handle attachment copying
   const newAttachments = await Promise.all(
     attachment.map(async (atch) => {
-      const { oid, bucket_name, object_key, file_name, file_size } = atch;
-      if (bucket_name !== publicBucketName) {
+      const { oid, bucketName, objectKey, fileName, fileSize } = atch;
+      if (bucketName !== publicBucketName) {
         await copyObject(
           publicBucketName,
-          `${bucket_name}/${object_key}`,
-          object_key
+          `${bucketName}/${objectKey}`,
+          objectKey
         );
       }
       return {
         oid,
-        bucket_name: publicBucketName,
-        object_key,
-        file_name,
-        file_size,
+        bucketName: publicBucketName,
+        objectKey,
+        fileName,
+        fileSize,
         getUrl: `https://${publicBucketName}.s3.${
           s3client.config.region
-        }.amazonaws.com/${encodeURIComponent(object_key)}`,
+        }.amazonaws.com/${encodeURIComponent(objectKey)}`,
       };
     })
   );
 
-  const existingAchievement = achievementApproval.achievement_oid
-    ? (await getAchievementByOidRepo(achievementApproval.achievement_oid))
+  const existingAchievement = achievementApproval.achievementOid
+    ? (await getAchievementByOidRepo(achievementApproval.achievementOid))
         ?.achievement
     : undefined;
 
@@ -65,11 +65,11 @@ export const approveAchievementApprovalService = async (
     const {
       oid,
       version,
-      created_at,
-      created_by_user_oid,
-      activity_oid,
-      student_oid,
-      achievement_submission_role,
+      createdAt,
+      createdByUserOid,
+      activityOid,
+      studentOid,
+      achievementSubmissionRole,
       rating,
       comment,
     } = existingAchievement;
@@ -78,43 +78,43 @@ export const approveAchievementApprovalService = async (
       {
         oid,
         version,
-        created_by_user_oid,
-        created_at,
-        updated_by_user_oid: authenticatedUser.oid,
-        updated_at: now,
+        createdByUserOid,
+        createdAt,
+        updatedByUserOid: authenticatedUser.oid,
+        updatedAt: now,
         comment,
-        activity_oid,
-        student_oid,
-        achievement_submission_role,
+        activityOid,
+        studentOid,
+        achievementSubmissionRole,
         rating,
-        status: 'Approved',
-        num_of_attachment: newAttachments.length,
+        status: AchievementStatus.approved,
+        numOfAttachment: newAttachments.length,
       },
       newAttachments
     );
   } else {
     const {
-      activity_oid,
-      student_oid,
-      achievement_submission_role,
+      activityOid,
+      studentOid,
+      achievementSubmissionRole,
       rating,
       comment,
     } = achievementApproval;
 
     achievement = await createAchievementRepo(
       {
-        created_by_user_oid: authenticatedUser.oid,
-        created_at: now,
+        createdByUserOid: authenticatedUser.oid,
+        createdAt: now,
         version: 1,
-        updated_by_user_oid: authenticatedUser.oid,
-        updated_at: now,
+        updatedByUserOid: authenticatedUser.oid,
+        updatedAt: now,
         comment,
-        activity_oid,
-        student_oid,
-        achievement_submission_role,
+        activityOid,
+        studentOid,
+        achievementSubmissionRole,
         rating,
-        status: 'Approved',
-        num_of_attachment: newAttachments.length,
+        status: AchievementStatus.approved,
+        numOfAttachment: newAttachments.length,
       },
       newAttachments
     );
@@ -126,9 +126,9 @@ export const approveAchievementApprovalService = async (
     achievementApproval.version
   );
   await Promise.all(
-    attachment.map(async ({ bucket_name, object_key }) => {
-      if (bucket_name === approvalBucketName) {
-        await deleteObject(bucket_name, object_key);
+    attachment.map(async ({ bucketName, objectKey }) => {
+      if (bucketName === approvalBucketName) {
+        await deleteObject(bucketName, objectKey);
       }
     })
   );
@@ -138,7 +138,7 @@ export const approveAchievementApprovalService = async (
     student,
     activity,
     newAttachments.map((atch) => {
-      return { ...atch, achievement_oid: achievement.oid };
+      return { ...atch, achievementOid: achievement.oid };
     })
   );
 };

@@ -1,8 +1,6 @@
-import {
-  Activity,
-  ActivityCategory,
-} from '@prisma/client';
-import prisma from '@repo/db';
+import { eq } from 'drizzle-orm';
+import { Activity, ActivityCategory, db } from '@repo/db';
+import { activities, activityCategories } from '@db/drizzle-schema';
 
 type FindActivityResult = {
   activity: Activity;
@@ -16,20 +14,22 @@ export const getActivityByOidRepo = async (
     if (oid === undefined) {
       return undefined;
     }
-    const activities = await prisma.activity.findMany({
-      where: {
-        oid: oid,
-      },
-      include: {
-        category: true,
-      },
-    });
-    if (activities.length === 1) {
-      const { category, ...rest } = activities[0];
-      return { activity: { ...rest }, category: category };
+    
+    const categoryJoin = eq(activities.categoryOid, activityCategories.oid);
+    const result = await db
+      .select({
+        activity: activities,
+        category: activityCategories,
+      })
+      .from(activities)
+      .innerJoin(activityCategories, categoryJoin)
+      .where(eq(activities.oid, oid));
+
+    if (result.length === 1) {
+      return result[0];
     } else {
       console.log(
-        `getActivityByOid() - oid = ${oid}, number of result = ${activities.length}`
+        `getActivityByOid() - oid = ${oid}, number of result = ${result.length}`
       );
       return undefined;
     }

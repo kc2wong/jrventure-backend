@@ -1,47 +1,49 @@
-import {
-  Achievement,
-  Prisma,
-  AchievementAttachment,
-} from '@prisma/client';
-import prisma from '@repo/db';
+import { achievementAttachments, achievements } from "@db/drizzle-schema";
+import { db, Achievement, AchievementAttachment } from "@repo/db";
+import { and, eq } from "drizzle-orm";
 
 export const updateAchievementRepo = async (
   achievement: Achievement,
-  attachments: Omit<AchievementAttachment, 'oid' | 'achievement_oid'>[]
+  attachments: Omit<AchievementAttachment, 'oid' | 'achievementOid'>[]
 ): Promise<Achievement> => {
-  try {
-    const { oid, version, ...rest } = achievement; // separate controlled fields
+  const { oid, version, ...rest } = achievement;
 
-    return await prisma.achievement.update({
-      where: { oid, version },
-      data: {
+  try {
+    // 1. Optimistic update with version check
+    const [updated] = await db
+      .update(achievements)
+      .set({
         ...rest,
-        attachment:
-          attachments.length > 0
-            ? {
-                deleteMany: {},
-                create: attachments.map(
-                  ({ object_key, file_name, file_size, bucket_name }) => ({
-                    object_key,
-                    file_name,
-                    file_size,
-                    bucket_name,
-                  })
-                ),
-              }
-            : undefined,
-        version: { increment: 1 },
-      },
-    });
+        version: version + 1,
+      })
+      .where(and(eq(achievements.oid, oid), eq(achievements.version, version)))
+      .returning();
+
+    if (!updated) {
+      throw new Error(
+        'Optimistic Locking Failed: The record was modified by another process.'
+      );
+    }
+
+    // 2. If attachments exist, replace them
+    if (attachments.length > 0) {
+      // Delete existing attachments for the achievement
+      await db
+        .delete(achievementAttachments)
+        .where(eq(achievementAttachments.achievementOid, oid));
+
+      // Insert new attachments
+      await db.insert(achievementAttachments).values(
+        attachments.map((a) => ({
+          ...a,
+          achievementOid: oid,
+        }))
+      );
+    }
+
+    return updated;
   } catch (error) {
     console.error('Error updating achievement:', error);
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === 'P2025') {
-        throw new Error(
-          'Optimistic Locking Failed: The record was modified by another process.'
-        );
-      }
-    }
     throw error;
   }
 };

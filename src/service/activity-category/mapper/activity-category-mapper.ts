@@ -1,13 +1,14 @@
 import { ActivityCategoryDto } from '@api/activity-category/activity-category-schema';
-import { ActivityCategory } from '@prisma/client';
+import { ActivityCategory } from '@repo/db';
 
 export const entity2Dto = (src: ActivityCategory): ActivityCategoryDto => {
+  const { code, nameEn, nameZhHans, nameZhHant } = src;
   return {
-    code: src.code,
+    code: code,
     name: {
-      English: src.name_en,
-      TraditionalChinese: src.name_zh_hant,
-      SimplifiedChinese: src.name_zh_hans,
+      English: nameEn,
+      TraditionalChinese: nameZhHant,
+      SimplifiedChinese: nameZhHans,
     },
   };
 };

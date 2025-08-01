@@ -9,17 +9,17 @@ import {
 import { AuthenticatedUser } from '@type/authentication';
 import { currentDatetime } from '@util/datetime-util';
 import { dto2Entity as userRoleDto2Entity } from '@service/user/mapper/user-role-mapper';
+import { entity2Dto as submissionRoleEntity2Dto } from '@service/activity/mapper/achievement-submission-role-mapper';
 import {
   creationDto2Entity,
   entity2Dto,
 } from '@service/achievement/mapper/achievement-mapper';
 
-import {
-  getAchievementByIdRepo,
-  updateAchievementRepo,
-} from '@repo/achievement-repo';
 import { NotFoundErrorDto } from '@api/shared/error-schema';
 import { findAchievementApprovalAttachmentByAchievementApprovalOidRepo } from '@repo/achievement-approval/find-achievement-approval-attachment';
+import { updateAchievementRepo } from '@repo/achievement/update-achievement';
+import { getAchievementByOidRepo } from '@repo/achievement/get-achievement';
+import { safeParseInt } from '@util/string-util';
 
 export const updateAchievementService = async (
   authenticatedUser: AuthenticatedUser,
@@ -37,7 +37,8 @@ export const updateAchievementService = async (
     { userRole: userRoleDto2Entity(authenticatedUser.userRole) }
   );
 
-  const result = await getAchievementByIdRepo(id);
+  const oid = safeParseInt(id);
+  const result = oid ? await getAchievementByOidRepo(oid) : undefined;
   if (result === undefined) {
     throw new NotFoundErrorDto('Achievement', 'id', id);
   }
@@ -51,7 +52,7 @@ export const updateAchievementService = async (
     achievementUpdateDto,
     student,
     activity,
-    submissionRole,
+    submissionRoleEntity2Dto(submissionRole),
     existingAttachments.length
   );
 
@@ -60,10 +61,10 @@ export const updateAchievementService = async (
     {
       ...payload,
       oid: achievement.oid,
-      created_by_user_oid: achievement.created_by_user_oid,
-      created_at: achievement.created_at,
-      updated_by_user_oid: authenticatedUser.oid,
-      updated_at: now,
+      createdByUserOid: achievement.createdByUserOid,
+      createdAt: achievement.createdAt,
+      updatedByUserOid: authenticatedUser.oid,
+      updatedAt: now,
       version: version,
     },
     existingAttachments

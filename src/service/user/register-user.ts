@@ -9,7 +9,7 @@ import {
   UserRole,
   Class as ClassEntity,
   Student as StudentEntity,
-} from '@prisma/client';
+} from '@repo/db';
 import { currentDatetime } from '@util/datetime-util';
 import { createUserRepo } from '@repo/user/create-user';
 import { OAuth2Client } from 'google-auth-library';
@@ -27,25 +27,25 @@ export const registerUserService = async (
   const role = 'Student';
   const status = 'Active';
   // no approval right for student self registratiom
-  const withApprovalRight = false;
+  const withApprovalRight= false;
 
   const studentClassMap = await validateStudentIds([studentId]);
 
   const matchedStudentEntry = Array.from(studentClassMap.values()).find(
     ({ student }) =>
-      (student.name_en &&
-        student.name_en.toLowerCase().includes(studentName.toLowerCase()) &&
-        studentName.length >= student.name_en.length / 2) ||
-      (student.name_zh_hant &&
-        student.name_zh_hant
+      (student.nameEn &&
+        student.nameEn.toLowerCase().includes(studentName.toLowerCase()) &&
+        studentName.length >= student.nameEn.length / 2) ||
+      (student.firstnameZhHant &&
+        student.firstnameZhHant
           .toLowerCase()
           .includes(studentName.toLowerCase()) &&
-        studentName.length >= student.name_zh_hant.length / 2) ||
-      (student.name_zh_hans &&
-        student.name_zh_hans
+        studentName.length >= student.firstnameZhHant.length / 2) ||
+      (student.nameZhHans &&
+        student.nameZhHans
           .toLowerCase()
           .includes(studentName.toLowerCase()) &&
-        studentName.length >= student.name_zh_hans.length / 2)
+        studentName.length >= student.nameZhHans.length / 2)
   );
 
   if (!matchedStudentEntry) {
@@ -61,9 +61,9 @@ export const registerUserService = async (
     status: status,
     role: role,
     name: {
-      English: matchedStudentEntry.student.name_en ?? undefined,
-      TraditionalChinese: matchedStudentEntry.student.name_zh_hant ?? undefined,
-      SimplifiedChinese: matchedStudentEntry.student.name_zh_hans ?? undefined,
+      English: matchedStudentEntry.student.nameEn ?? undefined,
+      TraditionalChinese: matchedStudentEntry.student.nameZhHant ?? undefined,
+      SimplifiedChinese: matchedStudentEntry.student.firstnameZhHans ?? undefined,
     },
     entitledStudentId: [studentId],
     withApprovalRight,
@@ -87,12 +87,12 @@ export const registerUserService = async (
     {
       ...userCreationEntity,
       password: '123456',
-      password_expiry_datetime: now,
-      last_login_datetime: null,
-      created_by_user_oid: createUserOid,
-      created_at: now,
-      updated_by_user_oid: createUserOid,
-      updated_at: now,
+      passwordExpiryDatetime: now,
+      lastLoginDatetime: null,
+      createdByUserOid: createUserOid,
+      createdAt: now,
+      updatedByUserOid: createUserOid,
+      updatedAt: now,
       version: 1,
     },
     Array.from(studentMap.values())

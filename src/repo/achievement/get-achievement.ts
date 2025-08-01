@@ -1,11 +1,17 @@
+import { eq } from 'drizzle-orm';
 import {
+  achievementAttachments,
+  achievements,
+  activities,
+  students,
+} from '@db/drizzle-schema';
+import {
+  db,
   Achievement,
-  Student,
-  Activity,
   AchievementAttachment,
-} from '@prisma/client';
-import prisma from '@repo/db';
-import { safeParseInt } from '@util/string-util';
+  Activity,
+  Student,
+} from '@repo/db';
 
 type GetAchievementResult = {
   achievement: Achievement;
@@ -18,25 +24,43 @@ export const getAchievementByOidRepo = async (
   oid: number
 ): Promise<GetAchievementResult | undefined> => {
   try {
-    const result = await prisma.achievement.findUnique({
-      where: {
-        oid: oid,
-      },
-      include: {
-        activity: true,
-        student: true,
-        attachment: true,
-      },
-    });
-    if (result) {
-      const { student, activity, attachment, ...rest } = result;
+    const activityJoin = eq(achievements.activityOid, activities.oid);
+    const studentJoin = eq(achievements.studentOid, students.oid);
+    const attachmentJoin = eq(
+      achievementAttachments.achievementOid,
+      achievements.oid
+    );
+
+    const result = await db
+      .select({
+        achievement: achievements,
+        student: students,
+        activity: activities,
+        attachment: achievementAttachments,
+      })
+      .from(achievements)
+      .innerJoin(activities, activityJoin)
+      .innerJoin(students, studentJoin)
+      .leftJoin(achievementAttachments, attachmentJoin)
+      .where(eq(achievements.oid, oid));
+
+    if (result.length > 0) {
+      // Group attachments and extract student/activity from the first row
+      const { achievement, student, activity } = result[0];
+      const attachments: AchievementAttachment[] = result
+        .map((r) => r.attachment)
+        .filter((a) => a !== null && a !== undefined);
+
       return {
-        achievement: rest,
+        achievement,
         student,
         activity,
-        attachment,
+        attachment: attachments,
       };
     } else {
+      console.log(
+        `getActivityByOid() - oid = ${oid}, number of result = ${result.length}`
+      );
       return undefined;
     }
   } catch (error) {

@@ -1,17 +1,25 @@
-import { AchievementAttachment } from '@prisma/client';
-import prisma from '@repo/db';
+import { eq } from 'drizzle-orm';
+import { db, AchievementAttachment } from '@repo/db';
+import { achievementAttachments } from '@db/drizzle-schema';
 
 export const findAchievementAttachmentByAchievementOidRepo = async (
   achievementOid: number
 ): Promise<AchievementAttachment[]> => {
   try {
-    return await prisma.achievementAttachment.findMany({
-      where: {
-        achievement_oid: achievementOid,
-      },
-    });
+    const result = await db
+      .select({
+        attachment: achievementAttachments,
+      })
+      .from(achievementAttachments)
+      .where(eq(achievementAttachments.achievementOid, achievementOid));
+
+    if (result.length > 0) {
+      return result.map((a) => a.attachment);
+    } else {
+      return [];
+    }
   } catch (error) {
-    console.error('Error creating achievement attachment :', error);
+    console.error('Error finding achievement attachment :', error);
     throw error;
   }
 };

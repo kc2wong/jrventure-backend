@@ -5,7 +5,10 @@ import {
   validateStudentUserUniqueness,
   validateUserUniqueness,
 } from '@service/user/shared/user-validation';
-import { Class as ClassEntity, Student as StudentEntity } from '@prisma/client';
+import {
+  Class as ClassEntity,
+  Student as StudentEntity,
+} from '@repo/db';
 import { currentDatetime } from '@util/datetime-util';
 import { NotFoundErrorDto } from '@api/shared/error-schema';
 import { safeParseInt } from '@util/string-util';
@@ -41,8 +44,10 @@ export const updateUserService = async (
   const updatedUser = await updateUserRepo(
     {
       ...userUpdate,
-      updated_at: currentDatetime(),
-      updated_by_user_oid: currentUser.oid,
+      // updated_at: currentDatetime(),
+      // updated_by_user_oid: currentUser.oid,
+      updatedAt: currentDatetime(),
+      updatedByUserOid: currentUser.oid,
     },
     Array.from(studentMap.values())
   );

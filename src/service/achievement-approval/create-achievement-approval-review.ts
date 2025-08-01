@@ -1,9 +1,9 @@
 import { CreateAchievementApprovalReviewDto } from '@api/achievement-approval/achievement-approval-schema';
 import { NotFoundErrorDto } from '@api/shared/error-schema';
-import { AchievementApprovalReview } from '@prisma/client';
 import { createAchievementApprovalReviewRepo } from '@repo/achievement-approval/create-achievement-approval-review';
 import { getAchievementApprovalByOidRepo } from '@repo/achievement-approval/get-achievement-approval';
 import { updateAchievementApprovalRepo } from '@repo/achievement-approval/update-achievement-approval';
+import { AchievementApprovalReview, AchievementApprovalStatus } from '@repo/db';
 import { dto2Entity as contentTypeDto2Entity } from '@service/achievement-approval/mapper/achievement-approval-comment-type-mapper';
 
 import { AuthenticatedUser } from '@type/authentication';
@@ -27,18 +27,18 @@ export const createAchievementApprovalReviewService = async (
   if (commentType === 'Rejection') {
     await updateAchievementApprovalRepo({
       ...achievementApproval,
-      status: 'Rejected',
+      status: AchievementApprovalStatus.rejected,
     });
   }
 
   return await createAchievementApprovalReviewRepo({
-    comment_type: contentTypeDto2Entity(commentType),
+    commentType: contentTypeDto2Entity(commentType),
     comment,
-    created_by_user_oid: authenticatedUser.oid,
-    created_at: now,
-    updated_by_user_oid: authenticatedUser.oid,
-    updated_at: now,
+    createdByUserOid: authenticatedUser.oid,
+    createdAt: now,
+    updatedByUserOid: authenticatedUser.oid,
+    updatedAt: now,
     version: 1,
-    achievement_approval_oid: achievementApproval.oid,
+    achievementApprovalOid: achievementApproval.oid,
   });
 };

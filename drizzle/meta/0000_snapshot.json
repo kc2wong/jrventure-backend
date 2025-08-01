@@ -1,0 +1,1092 @@
+{
+  "id": "fc6ed8b9-94c1-4748-931d-cfc64d6983f6",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.achievement_approval_attachment": {
+      "name": "achievement_approval_attachment",
+      "schema": "",
+      "columns": {
+        "oid": {
+          "name": "oid",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "achievement_approval_oid": {
+          "name": "achievement_approval_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bucket_name": {
+          "name": "bucket_name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "object_key": {
+          "name": "object_key",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "file_name": {
+          "name": "file_name",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "file_size": {
+          "name": "file_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "achievement_approval_attachment_achievement_approval_oid_achievement_approval_oid_fk": {
+          "name": "achievement_approval_attachment_achievement_approval_oid_achievement_approval_oid_fk",
+          "tableFrom": "achievement_approval_attachment",
+          "tableTo": "achievement_approval",
+          "columnsFrom": [
+            "achievement_approval_oid"
+          ],
+          "columnsTo": [
+            "oid"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.achievement_approval_review": {
+      "name": "achievement_approval_review",
+      "schema": "",
+      "columns": {
+        "oid": {
+          "name": "oid",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "achievement_approval_oid": {
+          "name": "achievement_approval_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "comment_type": {
+          "name": "comment_type",
+          "type": "ApprovalCommentType",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "comment": {
+          "name": "comment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_by_user_oid": {
+          "name": "created_by_user_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_by_user_oid": {
+          "name": "updated_by_user_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "achievement_approval_review_achievement_approval_oid_achievement_approval_oid_fk": {
+          "name": "achievement_approval_review_achievement_approval_oid_achievement_approval_oid_fk",
+          "tableFrom": "achievement_approval_review",
+          "tableTo": "achievement_approval",
+          "columnsFrom": [
+            "achievement_approval_oid"
+          ],
+          "columnsTo": [
+            "oid"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.achievement_approval": {
+      "name": "achievement_approval",
+      "schema": "",
+      "columns": {
+        "oid": {
+          "name": "oid",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "activity_oid": {
+          "name": "activity_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "student_oid": {
+          "name": "student_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "achievement_oid": {
+          "name": "achievement_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "achievement_submission_role": {
+          "name": "achievement_submission_role",
+          "type": "AchievementSubmissionRole",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "comment": {
+          "name": "comment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rating": {
+          "name": "rating",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "AchievementApprovalStatus",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "num_of_attachment": {
+          "name": "num_of_attachment",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_by_user_oid": {
+          "name": "created_by_user_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_by_user_oid": {
+          "name": "updated_by_user_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "achievement_approval_activity_oid_activity_oid_fk": {
+          "name": "achievement_approval_activity_oid_activity_oid_fk",
+          "tableFrom": "achievement_approval",
+          "tableTo": "activity",
+          "columnsFrom": [
+            "activity_oid"
+          ],
+          "columnsTo": [
+            "oid"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "achievement_approval_student_oid_student_oid_fk": {
+          "name": "achievement_approval_student_oid_student_oid_fk",
+          "tableFrom": "achievement_approval",
+          "tableTo": "student",
+          "columnsFrom": [
+            "student_oid"
+          ],
+          "columnsTo": [
+            "oid"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "achievement_approval_activity_oid_student_oid_achievement_submission_role_unique": {
+          "name": "achievement_approval_activity_oid_student_oid_achievement_submission_role_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "activity_oid",
+            "student_oid",
+            "achievement_submission_role"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.achievement_attachment": {
+      "name": "achievement_attachment",
+      "schema": "",
+      "columns": {
+        "oid": {
+          "name": "oid",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "achievement_oid": {
+          "name": "achievement_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bucket_name": {
+          "name": "bucket_name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "object_key": {
+          "name": "object_key",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "file_name": {
+          "name": "file_name",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "file_size": {
+          "name": "file_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "achievement_attachment_achievement_oid_achievement_oid_fk": {
+          "name": "achievement_attachment_achievement_oid_achievement_oid_fk",
+          "tableFrom": "achievement_attachment",
+          "tableTo": "achievement",
+          "columnsFrom": [
+            "achievement_oid"
+          ],
+          "columnsTo": [
+            "oid"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.achievement": {
+      "name": "achievement",
+      "schema": "",
+      "columns": {
+        "oid": {
+          "name": "oid",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "activity_oid": {
+          "name": "activity_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "student_oid": {
+          "name": "student_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "achievement_submission_role": {
+          "name": "achievement_submission_role",
+          "type": "AchievementSubmissionRole",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "comment": {
+          "name": "comment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rating": {
+          "name": "rating",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "AchievementStatus",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "num_of_attachment": {
+          "name": "num_of_attachment",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_by_user_oid": {
+          "name": "created_by_user_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_by_user_oid": {
+          "name": "updated_by_user_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "achievement_activity_oid_activity_oid_fk": {
+          "name": "achievement_activity_oid_activity_oid_fk",
+          "tableFrom": "achievement",
+          "tableTo": "activity",
+          "columnsFrom": [
+            "activity_oid"
+          ],
+          "columnsTo": [
+            "oid"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "achievement_student_oid_student_oid_fk": {
+          "name": "achievement_student_oid_student_oid_fk",
+          "tableFrom": "achievement",
+          "tableTo": "student",
+          "columnsFrom": [
+            "student_oid"
+          ],
+          "columnsTo": [
+            "oid"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "achievement_activity_oid_student_oid_achievement_submission_role_unique": {
+          "name": "achievement_activity_oid_student_oid_achievement_submission_role_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "activity_oid",
+            "student_oid",
+            "achievement_submission_role"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.activity": {
+      "name": "activity",
+      "schema": "",
+      "columns": {
+        "oid": {
+          "name": "oid",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "category_oid": {
+          "name": "category_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name_en": {
+          "name": "name_en",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name_en_up_case": {
+          "name": "name_en_up_case",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name_zh_hant": {
+          "name": "name_zh_hant",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name_zh_hans": {
+          "name": "name_zh_hans",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "participant_grade": {
+          "name": "participant_grade",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "start_date": {
+          "name": "start_date",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "end_date": {
+          "name": "end_date",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sharable": {
+          "name": "sharable",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ratable": {
+          "name": "ratable",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "e_coin": {
+          "name": "e_coin",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "achievement_submission_role": {
+          "name": "achievement_submission_role",
+          "type": "AchievementSubmissionRole",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "ActivityStatus",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_by_user_oid": {
+          "name": "created_by_user_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_by_user_oid": {
+          "name": "updated_by_user_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "activity_category_oid_activity_category_oid_fk": {
+          "name": "activity_category_oid_activity_category_oid_fk",
+          "tableFrom": "activity",
+          "tableTo": "activity_category",
+          "columnsFrom": [
+            "category_oid"
+          ],
+          "columnsTo": [
+            "oid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.activity_category": {
+      "name": "activity_category",
+      "schema": "",
+      "columns": {
+        "oid": {
+          "name": "oid",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "code": {
+          "name": "code",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name_en": {
+          "name": "name_en",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name_zh_hant": {
+          "name": "name_zh_hant",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name_zh_hans": {
+          "name": "name_zh_hans",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "activity_category_code_unique": {
+          "name": "activity_category_code_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "code"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.class": {
+      "name": "class",
+      "schema": "",
+      "columns": {
+        "oid": {
+          "name": "oid",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "grade": {
+          "name": "grade",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "class_number": {
+          "name": "class_number",
+          "type": "varchar(1)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "class_grade_class_number_unique": {
+          "name": "class_grade_class_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "grade",
+            "class_number"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.student": {
+      "name": "student",
+      "schema": "",
+      "columns": {
+        "oid": {
+          "name": "oid",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "firstname_en": {
+          "name": "firstname_en",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "firstname_zh_hant": {
+          "name": "firstname_zh_hant",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "firstname_zh_hans": {
+          "name": "firstname_zh_hans",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lastname_en": {
+          "name": "lastname_en",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lastname_zh_hant": {
+          "name": "lastname_zh_hant",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lastname_zh_hans": {
+          "name": "lastname_zh_hans",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name_en": {
+          "name": "name_en",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name_zh_hant": {
+          "name": "name_zh_hant",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name_zh_hans": {
+          "name": "name_zh_hans",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "class_oid": {
+          "name": "class_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "student_number": {
+          "name": "student_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "student_class_oid_class_oid_fk": {
+          "name": "student_class_oid_class_oid_fk",
+          "tableFrom": "student",
+          "tableTo": "class",
+          "columnsFrom": [
+            "class_oid"
+          ],
+          "columnsTo": [
+            "oid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "student_class_oid_student_number_unique": {
+          "name": "student_class_oid_student_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "class_oid",
+            "student_number"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user_student": {
+      "name": "user_student",
+      "schema": "",
+      "columns": {
+        "oid": {
+          "name": "oid",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "sequence": {
+          "name": "sequence",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_oid": {
+          "name": "user_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "student_oid": {
+          "name": "student_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_student_user_oid_user_oid_fk": {
+          "name": "user_student_user_oid_user_oid_fk",
+          "tableFrom": "user_student",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_oid"
+          ],
+          "columnsTo": [
+            "oid"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_student_student_oid_student_oid_fk": {
+          "name": "user_student_student_oid_student_oid_fk",
+          "tableFrom": "user_student",
+          "tableTo": "student",
+          "columnsFrom": [
+            "student_oid"
+          ],
+          "columnsTo": [
+            "oid"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user": {
+      "name": "user",
+      "schema": "",
+      "columns": {
+        "oid": {
+          "name": "oid",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name_en": {
+          "name": "name_en",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name_zh_hant": {
+          "name": "name_zh_hant",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name_zh_hans": {
+          "name": "name_zh_hans",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "UserRole",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "UserStatus",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password_expiry_datetime": {
+          "name": "password_expiry_datetime",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "with_approval_right": {
+          "name": "with_approval_right",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_login_datetime": {
+          "name": "last_login_datetime",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by_user_oid": {
+          "name": "created_by_user_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_by_user_oid": {
+          "name": "updated_by_user_oid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "user_email_unique": {
+          "name": "user_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.AchievementApprovalStatus": {
+      "name": "AchievementApprovalStatus",
+      "schema": "public",
+      "values": [
+        "pending",
+        "rejected"
+      ]
+    },
+    "public.AchievementStatus": {
+      "name": "AchievementStatus",
+      "schema": "public",
+      "values": [
+        "approved",
+        "published"
+      ]
+    },
+    "public.AchievementSubmissionRole": {
+      "name": "AchievementSubmissionRole",
+      "schema": "public",
+      "values": [
+        "student",
+        "teacher",
+        "both"
+      ]
+    },
+    "public.ActivityStatus": {
+      "name": "ActivityStatus",
+      "schema": "public",
+      "values": [
+        "closed",
+        "open",
+        "scheduled",
+        "cancelled"
+      ]
+    },
+    "public.ApprovalCommentType": {
+      "name": "ApprovalCommentType",
+      "schema": "public",
+      "values": [
+        "conversation",
+        "rejection",
+        "approval"
+      ]
+    },
+    "public.UserRole": {
+      "name": "UserRole",
+      "schema": "public",
+      "values": [
+        "student",
+        "parent",
+        "teacher",
+        "admin",
+        "alumni"
+      ]
+    },
+    "public.UserStatus": {
+      "name": "UserStatus",
+      "schema": "public",
+      "values": [
+        "active",
+        "inactivate",
+        "suspend"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

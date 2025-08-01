@@ -1,5 +1,6 @@
 import { dto2Entity as orderByDirectionDto2Entity } from '@shared/mapper/order-by-direction-mapper';
 import { dto2Entity as submissionRoleDto2Entity } from '@service/activity/mapper/achievement-submission-role-mapper';
+import { dto2Entity as status2Entity } from '@service/achievement-approval/mapper/achievement-approval-status-mapper';
 import { entity2Dto } from '@service/achievement-approval/mapper/achievement-approval-mapper';
 import { PaginationResultDto } from '@api/shared/search-schema';
 import {
@@ -12,11 +13,12 @@ import { safeParseInt } from '@util/string-util';
 export const findAchievementApprovalService = async (
   query: FindAchievementApprovalQueryDto
 ): Promise<PaginationResultDto<AchievementApprovalDto>> => {
-  const { activityId, role, orderByDirection, ...rest } = query;
+  const { activityId, role, status, orderByDirection, ...rest } = query;
   const { total, offset, data } = await findAchievementApprovalRepo({
     ...rest,
     activityOid : activityId ? safeParseInt(activityId) : undefined,
     role: role ? submissionRoleDto2Entity(role) : undefined,
+    status: status ? status2Entity(status) : undefined,
     orderByDirection: orderByDirection
       ? orderByDirectionDto2Entity(orderByDirection)
       : undefined,

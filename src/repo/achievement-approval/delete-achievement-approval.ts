@@ -1,31 +1,45 @@
-import { Prisma } from '@prisma/client';
-import prisma from '@repo/db';
+import { and, eq } from 'drizzle-orm';
+import {
+  achievementApprovalAttachments,
+  achievementApprovalReviews,
+  achievementApprovals,
+} from '@db/drizzle-schema';
+import { db } from '@repo/db';
 
 export const deleteAchievementApprovalRepo = async (
   oid: number,
   version: number
 ): Promise<void> => {
   try {
-    await prisma.$transaction([
-      prisma.achievementApprovalReview.deleteMany({
-        where: { achievement_approval_oid: oid },
-      }),
-      prisma.achievementApprovalAttachment.deleteMany({
-        where: { achievement_approval_oid: oid },
-      }),
-      prisma.achievementApproval.delete({
-        where: { oid, version }, // Use composite if needed
-      }),
-    ]);
-  } catch (error) {
-    console.error('Error delete achievementApproval1:', error);
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === 'P2025') {
+    await db.transaction(async (tx) => {
+      // 1. Delete related reviews
+      await tx
+        .delete(achievementApprovalReviews)
+        .where(eq(achievementApprovalReviews.achievementApprovalOid, oid));
+
+      // 2. Delete related attachments
+      await tx
+        .delete(achievementApprovalAttachments)
+        .where(eq(achievementApprovalAttachments.achievementApprovalOid, oid));
+
+      // 3. Delete approval itself (with version check)
+      const deleted = await tx
+        .delete(achievementApprovals)
+        .where(
+          and(
+            eq(achievementApprovals.oid, oid),
+            eq(achievementApprovals.version, version)
+          )
+        );
+
+      if (deleted.rowCount != 1) {
         throw new Error(
           'Optimistic Locking Failed: The record was modified by another process.'
         );
       }
-    }
+    });
+  } catch (error) {
+    console.error('Error delete achievementApproval1:', error);
     throw error;
   }
 };

@@ -1,21 +1,21 @@
-import { UserStatus } from '@prisma/client';
 import { UserStatusDto } from '@api/user/user-schema';
+import { UserStatusEnum } from '@db/drizzle-schema';
 
-const statusDto2EntityMap: Record<UserStatusDto, UserStatus> = {
-  Active: UserStatus.active,
-  Inactive: UserStatus.inactivate,
-  Suspend: UserStatus.suspend,
+const statusDto2EntityMap: Record<UserStatusDto, UserStatusEnum> = {
+  Active: UserStatusEnum.active,
+  Inactive: UserStatusEnum.inactivate,
+  Suspend: UserStatusEnum.suspend,
 };
 
-const statusEntity2DtoMap: Record<UserStatus, UserStatusDto> =
+const statusEntity2DtoMap: Record<UserStatusEnum, UserStatusDto> =
   Object.fromEntries(
     Object.entries(statusDto2EntityMap).map(([key, value]) => [value, key])
-  ) as Record<UserStatus, UserStatusDto>;
+  ) as Record<UserStatusEnum, UserStatusDto>;
 
-export const dto2Entity = (src: UserStatusDto): UserStatus => {
+export const dto2Entity = (src: UserStatusDto): UserStatusEnum => {
   return statusDto2EntityMap[src];
 };
 
-export const entity2Dto = (src: UserStatus): UserStatusDto => {
+export const entity2Dto = (src: UserStatusEnum): UserStatusDto => {
   return statusEntity2DtoMap[src];
 };

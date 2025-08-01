@@ -1,16 +1,16 @@
 import { AchievementAttachmentDto } from '@api/achievement/achievement-schema';
-import { AchievementApprovalAttachment } from '@prisma/client';
+import { AchievementApprovalAttachment } from '@repo/db';
 
 export const entity2Dto = ({
-  file_name,
-  object_key,
+  fileName,
+  objectKey,
   getUrl,
 }: AchievementApprovalAttachment & {
   getUrl: string;
 }): AchievementAttachmentDto => {
   return {
-    fileName: file_name,
-    objectKey: object_key,
+    fileName,
+    objectKey,
     getUrl,
   };
 };

@@ -1,44 +1,55 @@
 import {
+  achievementApprovalAttachments,
+  achievementApprovalReviews,
+  achievementApprovals,
+} from '@db/drizzle-schema';
+import {
+  db,
   AchievementApproval,
   AchievementApprovalAttachment,
   AchievementApprovalReview,
-} from '@prisma/client';
-import prisma from '@repo/db';
-import { create } from 'domain';
+} from '@repo/db';
 
 export const createAchievementApprovalRepo = async (
   achievement: Omit<AchievementApproval, 'oid'>,
   attachments: Omit<
     AchievementApprovalAttachment,
-    'oid' | 'achievement_approval_oid'
+    'oid' | 'achievementApprovalOid'
   >[],
-  reviews: Omit<AchievementApprovalReview, 'oid' | 'achievement_approval_oid'>[]
+  reviews: Omit<AchievementApprovalReview, 'oid' | 'achievementApprovalOid'>[]
 ): Promise<AchievementApproval> => {
   try {
-    return await prisma.achievementApproval.create({
-      data: {
-        ...achievement,
-        attachment:
-          attachments.length > 0
-            ? {
-                create: attachments.map(
-                  ({ object_key, file_name, file_size, bucket_name }) => ({
-                    object_key,
-                    file_name,
-                    file_size,
-                    bucket_name,
-                  })
-                ),
-              }
-            : undefined,
-        review:
-          reviews.length > 0
-            ? {
-                create: reviews,
-              }
-            : undefined,
-      },
-    });
+    // 1. Insert achievement
+    const [created] = await db
+      .insert(achievementApprovals)
+      .values(achievement)
+      .returning();
+
+    if (!created?.oid) {
+      throw new Error('Failed to insert achievement.');
+    }
+
+    // 2. Insert related attachments if provided
+    if (attachments.length > 0) {
+      await db.insert(achievementApprovalAttachments).values(
+        attachments.map((attachment) => ({
+          ...attachment,
+          achievementApprovalOid: created.oid,
+        }))
+      );
+    }
+
+    // 3. Insert related reviews if provided
+    if (reviews.length > 0) {
+      await db.insert(achievementApprovalReviews).values(
+        reviews.map((review) => ({
+          ...review,
+          achievementApprovalOid: created.oid,
+        }))
+      );
+    }
+
+    return created;
   } catch (error) {
     console.error('Error creating achievement approval:', error);
     throw error;

@@ -39,10 +39,14 @@ export const updateActivityService = async (
 
   const newActivity = await updateActivityRepo({
     ...activityUpdate,
-    created_by_user_oid: currentUser.oid,
-    created_at: now,
-    updated_by_user_oid: currentUser.oid,
-    updated_at: now,
+    // created_by_user_oid: currentUser.oid,
+    // created_at: now,
+    // updated_by_user_oid: currentUser.oid,
+    // updated_at: now,
+    createdByUserOid: currentUser.oid,
+    createdAt: now,
+    updatedByUserOid: currentUser.oid,
+    updatedAt: now,
     version: 1,
   });
 

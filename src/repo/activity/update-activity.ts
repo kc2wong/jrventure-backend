@@ -1,5 +1,6 @@
-import { Activity, Prisma } from '@prisma/client';
-import prisma from '@repo/db';
+import { eq, and } from 'drizzle-orm';
+import { activities } from '@db/drizzle-schema';
+import { Activity, db } from '@repo/db';
 
 export const updateActivityRepo = async (
   activity: Activity
@@ -7,19 +8,24 @@ export const updateActivityRepo = async (
   try {
     const { oid, version, ...rest } = activity; // separate controlled fields
 
-    return await prisma.activity.update({
-      where: { oid, version },
-      data: { ...rest, version: { increment: 1 } },
-    });
+    const updatedActivities = await db
+      .update(activities)
+      .set({
+        ...rest,
+        version: version + 1,
+      })
+      .where(and(eq(activities.oid, oid), eq(activities.version, version)))
+      .returning();
+
+    if (updatedActivities.length === 0) {
+      throw new Error(
+        'Optimistic Locking Failed: The record was modified by another process.'
+      );
+    }
+
+    return updatedActivities[0];
   } catch (error) {
     console.error('Error updating activity:', error);
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === 'P2025') {
-        throw new Error(
-          'Optimistic Locking Failed: The record was modified by another process.'
-        );
-      }
-    }
     throw error;
   }
 };

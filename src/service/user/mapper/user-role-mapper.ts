@@ -1,6 +1,5 @@
-import { UserRole } from '@prisma/client';
 import { UserRoleDto } from '@api/user/user-schema';
-
+import { UserRole } from '@repo/db';
 const roleDto2EntityMap: Record<UserRoleDto, UserRole> = {
   Student: UserRole.student,
   Parent: UserRole.parent,

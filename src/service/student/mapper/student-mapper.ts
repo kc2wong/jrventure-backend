@@ -1,26 +1,27 @@
-import { Class, Student } from '@prisma/client';
 import { entity2DtoId as classEntity2DtoId } from '@service/class/mapper/class-mapper';
 import { safeParseInt } from '@util/string-util';
 import { StudentDto } from '@api/student/student-schema';
+import { Class, Student } from '@repo/db';
 
 export const entity2Dto = (src: Student, clazz: Class): StudentDto => {
+  const { id, studentNumber } = src;
   const firstName = {
-    English: src.firstname_en,
-    TraditionalChinese: src.firstname_zh_hant,
-    SimplifiedChinese: src.firstname_zh_hans,
+    English: src.firstnameEn,
+    TraditionalChinese: src.firstnameZhHant,
+    SimplifiedChinese: src.firstnameZhHans,
   };
   const lastName = {
-    English: src.lastname_en,
-    TraditionalChinese: src.lastname_zh_hant,
-    SimplifiedChinese: src.lastname_zh_hans,
+    English: src.lastnameEn,
+    TraditionalChinese: src.lastnameZhHant,
+    SimplifiedChinese: src.firstnameZhHans,
   };
-  const classId = classEntity2DtoId(clazz.grade, clazz.class_number);
+  const classId = classEntity2DtoId(clazz.grade, clazz.classNumber);
   return {
-    id: src.id,
+    id,
     classId,
     firstName,
     lastName,
-    studentNumber: src.student_number,
+    studentNumber,
   };
 };
 

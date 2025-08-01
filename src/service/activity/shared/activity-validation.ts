@@ -1,8 +1,6 @@
 import { InvalidValueErrorDto } from '@api/shared/error-schema';
-import { Activity, ActivityCategory } from '@prisma/client';
 import { listActivityCategoryRepo } from '@repo/activity-category/list-activity-category';
-import { getActivityByOidRepo } from '@repo/activity/get-activity';
-import { safeParseInt } from '@util/string-util';
+import { ActivityCategory } from '@repo/db';
 
 export const validateActivityCategory = async (
   activityCategoryCode: string

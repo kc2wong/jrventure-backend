@@ -2,8 +2,8 @@ import { entity2Dto } from '@service/student/mapper/student-mapper';
 import { classIdDto2Entity } from '@service/class/mapper/class-mapper';
 import { FindStudentQueryDto, StudentDto } from '@api/student/student-schema';
 import { findStudentRepo } from '@repo/student/find-student';
-import { Class, Student } from '@prisma/client';
 import { findClassRepo } from '@repo/class/find-class';
+import { classes, students } from '@db/drizzle-schema';
 
 export const findStudentService = async (
   query: FindStudentQueryDto
@@ -14,10 +14,12 @@ export const findStudentService = async (
   const clazz = classsKey
     ? await findClassRepo(classsKey[0], classsKey[1])
     : undefined;
-  let result: [Student, Class][] = [];
+  // let result: [Student, Class][] = [];
+  let result: [typeof students.$inferSelect, typeof classes.$inferSelect][];
 
   if (clazz == undefined) {
     // not search by class
+    // result = await findStudentRepo(ids, name);
     result = await findStudentRepo(ids, name);
   } else {
     if (clazz.length == 1) {

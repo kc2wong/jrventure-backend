@@ -9,23 +9,16 @@ import {
 import { AuthenticatedUser } from '@type/authentication';
 import { currentDatetime } from '@util/datetime-util';
 import { dto2Entity as userRoleDto2Entity } from '@service/user/mapper/user-role-mapper';
-import { dto2Entity as achievementSubmissionRoleDto2Entity } from '@service/activity/mapper/achievement-submission-role-mapper';
+import { entity2Dto as achievementSubmissionRoleEntity2Dto } from '@service/activity/mapper/achievement-submission-role-mapper';
 import {
   creationDto2Entity,
   entity2Dto,
 } from '@service/achievement/mapper/achievement-mapper';
 
-import {
-  copyObject,
-  publicBucketName,
-} from '@util/s3-util';
-import {
-  createAchievementRepo,
-  findAchievementRepo,
-} from '@repo/achievement-repo';
-import {
-  AchievementStatus,
-} from '@prisma/client';
+import { copyObject, publicBucketName } from '@util/s3-util';
+import { findAchievementRepo } from '@repo/achievement/find-achievement';
+import { createAchievementRepo } from '@repo/achievement/create-achievement';
+import { AchievementStatus } from '@repo/db';
 
 export const createAchievementService = async (
   authenticatedUser: AuthenticatedUser,
@@ -48,7 +41,8 @@ export const createAchievementService = async (
     achievementCreationDto,
     student,
     activity,
-    achievementSubmissionRoleDto2Entity(submissionRole),
+    // achievementSubmissionRoleDto2Entity(submissionRole),
+    achievementSubmissionRoleEntity2Dto(submissionRole),
     achievementCreationDto.attachment.length
   );
 
@@ -78,9 +72,9 @@ export const createAchievementService = async (
           objectKey
         );
         return {
-          file_name: a.fileName,
-          object_key: objectKey,
-          file_size: fileSize,
+          fileName: a.fileName,
+          objectKey,
+          fileSize,
         };
       })
   );
@@ -92,20 +86,20 @@ export const createAchievementService = async (
 
   const payload = {
     ...achievementEntity,
-    status: 'Approved' as AchievementStatus,
-    updated_by_user_oid: authenticatedUser.oid,
-    updated_at: now,
+    status: AchievementStatus.approved,
+    updatedByUserOid: authenticatedUser.oid,
+    updatedAt: now,
   };
 
   const finalAttachments = [
-    ...newAttachments.map((a) => ({ ...a, bucket_name: publicBucketName })),
+    ...newAttachments.map((a) => ({ ...a, bucketName: publicBucketName })),
   ];
 
   const newAchievement = await createAchievementRepo(
     {
       ...payload,
-      created_by_user_oid: authenticatedUser.oid,
-      created_at: now,
+      createdByUserOid: authenticatedUser.oid,
+      createdAt: now,
       version: 1,
     },
     finalAttachments

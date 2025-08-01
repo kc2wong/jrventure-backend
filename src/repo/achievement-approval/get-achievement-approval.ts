@@ -1,12 +1,19 @@
+import { eq } from 'drizzle-orm';
 import {
+  db,
   AchievementApproval,
   AchievementApprovalAttachment,
   AchievementApprovalReview,
   Activity,
   Student,
-} from '@prisma/client';
-import prisma from '@repo/db';
-import { safeParseInt } from '@util/string-util';
+} from '@repo/db';
+import {
+  achievementApprovalAttachments,
+  achievementApprovalReviews,
+  achievementApprovals,
+  activities,
+  students,
+} from '@db/drizzle-schema';
 
 type GetAchievementApprovalResult = {
   achievementApproval: AchievementApproval;
@@ -23,27 +30,53 @@ export const getAchievementApprovalByOidRepo = async (
   | undefined
 > => {
   try {
-    const result = await prisma.achievementApproval.findUnique({
-      where: {
-        oid: oid,
-      },
-      include: {
-        activity: true,
-        student: true,
-        review: true,
-        attachment: true,
-      },
-    });
-    if (result) {
-      const { student, activity, review, attachment, ...rest } = result;
+    const activityJoin = eq(achievementApprovals.activityOid, activities.oid);
+    const studentJoin = eq(achievementApprovals.studentOid, students.oid);
+    const attachmentJoin = eq(
+      achievementApprovalAttachments.achievementApprovalOid,
+      achievementApprovals.oid
+    );
+    const reviewJoin = eq(
+      achievementApprovalReviews.achievementApprovalOid,
+      achievementApprovals.oid
+    );
+
+    const result = await db
+      .select({
+        achievementApproval: achievementApprovals,
+        student: students,
+        activity: activities,
+        attachment: achievementApprovalAttachments,
+        review: achievementApprovalReviews,
+      })
+      .from(achievementApprovals)
+      .innerJoin(activities, activityJoin)
+      .innerJoin(students, studentJoin)
+      .leftJoin(achievementApprovalAttachments, attachmentJoin)
+      .leftJoin(achievementApprovalReviews, reviewJoin)
+      .where(eq(achievementApprovals.oid, oid));
+
+    if (result.length > 0) {
+      // Group attachments and extract student/activity from the first row
+      const { achievementApproval, student, activity } = result[0];
+      const attachments = result
+        .map((r) => r.attachment)
+        .filter((a) => a !== null && a !== undefined);
+      const reviews = result
+        .map((r) => r.review)
+        .filter((r) => r !== null && r !== undefined);
+
       return {
-        achievementApproval: rest,
+        achievementApproval,
         student,
         activity,
-        review,
-        attachment,
+        attachment: attachments,
+        review: reviews,
       };
     } else {
+      console.log(
+        `getActivityByOid() - oid = ${oid}, number of result = ${result.length}`
+      );
       return undefined;
     }
   } catch (error) {

@@ -1,10 +1,21 @@
 import { findStudentRepo } from '@repo/student/find-student';
-import { findAchievementApprovalRepo } from '../../../repo/achievement-approval-repo';
 import { getActivityByOidRepo } from '@repo/activity/get-activity';
-import { Activity, Student, AchievementSubmissionRole, UserRole } from '@prisma/client';
-import { AchievementExistsErrorDto, DataEntitlementErrorDto, NotFoundErrorDto } from '@api/shared/error-schema';
-import { findAchievementRepo } from '@repo/achievement-repo';
+import {
+  AchievementSubmissionRole,
+  Activity,
+  Student,
+  UserRole,
+} from '@repo/db';
+import {
+  AchievementExistsErrorDto,
+  DataEntitlementErrorDto,
+  NotFoundErrorDto,
+} from '@api/shared/error-schema';
 import { safeParseInt } from '@util/string-util';
+
+import { entity2Dto as achievementSubmissionRoleEntity2Dto } from '@service/activity/mapper/achievement-submission-role-mapper';
+import { findAchievementRepo } from '@repo/achievement/find-achievement';
+import { findAchievementApprovalRepo } from '@repo/achievement-approval/find-achievement-approval';
 
 type ValidateStudentArgs = {
   entitledAllStudent: boolean;
@@ -48,25 +59,28 @@ export const validateActivity = async (
   // Check if the required submssion role of the activity matches with input user
   const submissionRole =
     userRole === 'teacher'
-      ? 'Teacher'
+      ? AchievementSubmissionRole.teacher
       : userRole === 'student' || userRole === 'parent'
-      ? 'Student'
+      ? AchievementSubmissionRole.student
       : undefined;
   if (
-    activity.achievement_submission_role === 'Both' &&
+    // activity.achievement_submission_role === 'Both' &&
+    activity.achievementSubmissionRole === AchievementSubmissionRole.both &&
     submissionRole === undefined
   ) {
     throw new DataEntitlementErrorDto('Activity', activityId, 'activityId');
   }
   if (
-    activity.achievement_submission_role === 'Teacher' &&
-    submissionRole !== 'Teacher'
+    // activity.achievement_submission_role === 'Teacher' &&
+    activity.achievementSubmissionRole === AchievementSubmissionRole.teacher &&
+    submissionRole !== AchievementSubmissionRole.teacher
   ) {
     throw new DataEntitlementErrorDto('Activity', activityId, 'activityId');
   }
   if (
-    activity.achievement_submission_role === 'Student' &&
-    submissionRole !== 'Student'
+    // activity.achievement_submission_role === 'Student' &&
+    activity.achievementSubmissionRole === AchievementSubmissionRole.student &&
+    submissionRole !== AchievementSubmissionRole.student
   ) {
     throw new DataEntitlementErrorDto('Activity', activityId, 'activityId');
   }
@@ -88,6 +102,7 @@ export const validateExistingAchievement = async (
   withApprovalRight: boolean
 ) => {
   // check if achievement already exists
+  const r = achievementSubmissionRoleEntity2Dto(role);
   const existingAchievements = withApprovalRight
     ? await findAchievementRepo({
         activityOid: activity.oid,

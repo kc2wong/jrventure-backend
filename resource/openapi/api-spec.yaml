@@ -19,7 +19,7 @@ tags:
 servers:
   - url: http://localhost:4000
     description: Local development server
-  - url: https://i00t3ay437.execute-api.eu-west-2.amazonaws.com/prod
+  - url: https://qv5bdz5hh4.execute-api.eu-west-2.amazonaws.com/prod
     description: Demo server
 
 security:

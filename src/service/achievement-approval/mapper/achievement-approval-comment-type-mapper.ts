@@ -1,12 +1,12 @@
 import { AchievementApprovalCommentType } from '@api/achievement-approval/achievement-approval-schema';
-import { ApprovalCommentType } from '@prisma/client';
+import { ApprovalCommentType } from '@repo/db';
 
 const statusDto2EntityMap: Record<
   AchievementApprovalCommentType,
   ApprovalCommentType
 > = {
-  Conversation: 'Conversation',
-  Rejection: 'Rejection',
+  Conversation: ApprovalCommentType.conversation,
+  Rejection: ApprovalCommentType.rejection,
 };
 
 const statusEntity2DtoMap: Record<

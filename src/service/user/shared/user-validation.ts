@@ -1,4 +1,3 @@
-import { Class, Student } from '@prisma/client';
 import { findUserRepo } from '@repo/user/find-user';
 import { findStudentRepo } from '@repo/student/find-student';
 import {
@@ -6,6 +5,7 @@ import {
   UserForStudentExistsErrorDto,
   UserWithEmailExistsErrorDto,
 } from '@api/shared/error-schema';
+import { Class, Student } from '@repo/db';
 
 type StudentClass = {
   student: Student;

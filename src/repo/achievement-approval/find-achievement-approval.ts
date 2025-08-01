@@ -1,20 +1,25 @@
+import { eq, and, count } from 'drizzle-orm';
 import {
+  db,
   AchievementApproval,
-  AchievementApprovalStatus,
   AchievementSubmissionRole,
   Activity,
-  Prisma,
   Student,
-} from '@prisma/client';
-import prisma from '@repo/db';
-import { PaginationResult } from '@repo/entity/db_entity';
+  PaginationResult,
+} from '@repo/db';
+import {
+  AchievementApprovalStatusEnum,
+  achievementApprovals,
+  activities,
+  students,
+} from '@db/drizzle-schema';
 
 type FindAchievementParams = {
   achievementOid?: number;
   studentId?: string;
   studentOid?: number;
   activityOid?: number;
-  status?: AchievementApprovalStatus;
+  status?: AchievementApprovalStatusEnum;
   role?: AchievementSubmissionRole;
   offset?: number;
   limit?: number;
@@ -43,48 +48,63 @@ export const findAchievementApprovalRepo = async ({
   PaginationResult<FindAchievementApprovalResult>
 > => {
   try {
-    const whereClause: Prisma.AchievementApprovalWhereInput = {
-      ...(status && { status: { equals: status } }),
-      ...(role && { achievement_submission_role: { equals: role } }),
-      ...(studentId && {
-        student: {
-          id: { equals: studentId },
-        },
-      }),
-      ...(achievementOid && { achievement_oid: { equals: achievementOid } }),
-      ...(studentOid && { student_oid: { equals: studentOid } }),
-      ...(activityOid && { activity_oid: { equals: activityOid } }),
-    };
+    const activityJoin = eq(achievementApprovals.activityOid, activities.oid);
+    const studentJoin = eq(achievementApprovals.studentOid, students.oid);
 
-    const orderByClause: Prisma.AchievementApprovalFindManyArgs['orderBy'] = [
+    const conditions = [];
+
+    if (role)
+      conditions.push(eq(achievementApprovals.achievementSubmissionRole, role));
+    if (status) conditions.push(eq(achievementApprovals.status, status));
+    if (studentId) conditions.push(eq(students.id, studentId));
+    if (studentOid)
+      conditions.push(eq(achievementApprovals.studentOid, studentOid));
+    if (activityOid)
+      conditions.push(eq(achievementApprovals.activityOid, activityOid));
+    if (achievementOid)
+      conditions.push(eq(achievementApprovals.achievementOid, achievementOid));
+
+    const where = and(...conditions);
+
+    const totalQuery = await db
+      .select({ count: count() })
+      .from(achievementApprovals)
+      .innerJoin(activities, activityJoin)
+      .innerJoin(students, studentJoin)
+      .where(where);
+
+    const total = Number(totalQuery[0].count);
+
+    const orderBy = [
       ...(orderByField
         ? [
             {
-              [orderByField]: orderByDirection,
-            },
+              [orderByField]: orderByDirection === 'desc' ? 'desc' : 'asc',
+            } as any,
           ]
         : []),
-      { oid: 'asc' }, // secondary sort to ensure consistent order
+      { oid: 'asc' },
     ];
 
-    const [total, items] = await prisma.$transaction([
-      prisma.achievementApproval.count({ where: whereClause }),
-      prisma.achievementApproval.findMany({
-        where: whereClause,
-        skip: offset,
-        take: limit,
-        orderBy: orderByClause,
-        include: { activity: true, student: true },
-      }),
-    ]);
+    const data = await db
+      .select({
+        achievementApproval: achievementApprovals,
+        student: students,
+        activity: activities,
+      })
+      .from(achievementApprovals)
+      .innerJoin(activities, activityJoin)
+      .innerJoin(students, studentJoin)
+      .where(where)
+      .offset(offset)
+      .limit(limit ?? 50)
+      .orderBy(...orderBy);
 
     return {
       offset,
       limit: limit ?? total,
       total,
-      data: items.map(({ student, activity, ...rest }) => {
-        return { achievementApproval: rest, student, activity };
-      }),
+      data,
     };
   } catch (error) {
     console.error('Error fetching achievement approval:', error);
