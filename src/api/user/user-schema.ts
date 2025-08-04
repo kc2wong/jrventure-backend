@@ -48,7 +48,7 @@ export const findUserQuerySchema = z.object({
     .transform((val) => asArray(val)),
 });
 
-const userRegistrationchema = z.object({
+export const userRegistrationchema = z.object({
   accessToken: zodString(),
   studentId: zodString(),
   studentName: zodString(),

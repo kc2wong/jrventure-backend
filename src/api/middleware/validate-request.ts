@@ -46,25 +46,28 @@ export const validateSchema = (
 
 export const validateRequest = (schema: ZodSchema | ZodSchema[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
-      const results = Array.isArray(schema) ? schema.map((schema) => validateSchema(schema, req.body)) : [validateSchema(schema, req.body)];
-      const successfulResult = results.filter((result) => result.success)[0];
-      const failedResult = results.filter((result) => result.success === false)[0];
-      if (successfulResult) {
-        Object.defineProperty(req, 'body', {
-          value: successfulResult.data,
-          writable: true,
-          configurable: true,
-          enumerable: true,
-        });
-        next();
-      }
-    else if (failedResult) {
+    const results = Array.isArray(schema)
+      ? schema.map((schema) => validateSchema(schema, req.body))
+      : [validateSchema(schema, req.body)];
+    const successfulResult = results.filter((result) => result.success)[0];
+    const failedResult = results.filter(
+      (result) => result.success === false
+    )[0];
+    if (successfulResult) {
+      Object.defineProperty(req, 'body', {
+        value: successfulResult.data,
+        writable: true,
+        configurable: true,
+        enumerable: true,
+      });
+      next();
+    } else if (failedResult) {
       console.log(`Validation failed: ${JSON.stringify(failedResult.error)}`);
       const error = zodIssue2Error(failedResult.error);
       res.status(400).json({ ...error });
       return;
     }
-  }
+  };
 };
 
 const attemptParseJson = (str: string): object | string => {

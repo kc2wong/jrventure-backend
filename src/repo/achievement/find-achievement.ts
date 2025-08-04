@@ -54,6 +54,8 @@ export const findAchievementRepo = async ({
     const totalQuery = await db
       .select({ count: count() })
       .from(achievements)
+      .innerJoin(activities, activityJoin)
+      .innerJoin(students, studentJoin)
       .where(where);
 
     const total = Number(totalQuery[0].count);

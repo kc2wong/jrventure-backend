@@ -1,7 +1,7 @@
 import { AchievementSubmissionRoleDto } from '@api/achievement/achievement-schema';
 import { AchievementSubmissionRole } from '@repo/db';
 
-const statusDto2EntityMap: Record<
+const roleDto2EntityMap: Record<
   AchievementSubmissionRoleDto,
   AchievementSubmissionRole
 > = {
@@ -10,21 +10,21 @@ const statusDto2EntityMap: Record<
   Both: AchievementSubmissionRole.both,
 };
 
-const statusEntity2DtoMap: Record<
+const roleEntity2DtoMap: Record<
   AchievementSubmissionRole,
   AchievementSubmissionRoleDto
 > = Object.fromEntries(
-  Object.entries(statusDto2EntityMap).map(([key, value]) => [value, key])
+  Object.entries(roleDto2EntityMap).map(([key, value]) => [value, key])
 ) as Record<AchievementSubmissionRole, AchievementSubmissionRoleDto>;
 
 export const dto2Entity = (
   src: AchievementSubmissionRoleDto
 ): AchievementSubmissionRole => {
-  return statusDto2EntityMap[src];
+  return roleDto2EntityMap[src];
 };
 
 export const entity2Dto = (
   src: AchievementSubmissionRole
 ): AchievementSubmissionRoleDto => {
-  return statusEntity2DtoMap[src];
+  return roleEntity2DtoMap[src];
 };
