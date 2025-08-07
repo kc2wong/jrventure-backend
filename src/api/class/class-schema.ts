@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import { components, paths } from '@openapi/schema';
 
 export type ClassDto = components['schemas']['Class'];

@@ -1,0 +1,9 @@
+{
+  "eslint.experimental.useFlatConfig": true,
+  "eslint.validate": [
+    "typescript"
+  ],
+  "eslint.run": "onType",
+  "eslint.packageManager": "npm"
+}
+

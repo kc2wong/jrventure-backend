@@ -1,8 +1,10 @@
 import { eq } from 'drizzle-orm';
-import { db, AchievementApprovalAttachment } from '@repo/db';
+
 import {
   achievementApprovalAttachments,
 } from '@db/drizzle-schema';
+import { db, AchievementApprovalAttachment } from '@repo/db';
+import { logger } from '@util/logging-util';
 
 export const findAchievementApprovalAttachmentByAchievementApprovalOidRepo =
   async (
@@ -27,7 +29,7 @@ export const findAchievementApprovalAttachmentByAchievementApprovalOidRepo =
         return [];
       }
     } catch (error) {
-      console.error('Error creating achievement approval attachment :', error);
+      logger.error(`Error creating achievement approval attachment : ${JSON.stringify(error)}`);
       throw error;
     }
   };

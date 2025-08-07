@@ -1,5 +1,5 @@
-import { db, Class, Student, User } from '@repo/db';
 import { eq, and, or, ilike, inArray } from 'drizzle-orm';
+
 import {
   classes,
   students,
@@ -8,6 +8,8 @@ import {
   UserRoleEnum,
   UserStatusEnum,
 } from '@db/drizzle-schema';
+import { db, Class, Student, User } from '@repo/db';
+import { logger } from '@util/logging-util';
 
 type FindUserParams = {
   id?: number[];
@@ -33,10 +35,18 @@ export const findUserRepo = async ({
 }: FindUserParams): Promise<FindUserResult[]> => {
   try {
     const conditions = [];
-    if (id) conditions.push(inArray(users.oid, id));
-    if (email) conditions.push(eq(users.email, email));
-    if (status) conditions.push(inArray(users.status, status));
-    if (role) conditions.push(inArray(users.role, role));
+    if (id) {
+      conditions.push(inArray(users.oid, id));
+    }
+    if (email) {
+      conditions.push(eq(users.email, email));
+    }
+    if (status) {
+      conditions.push(inArray(users.status, status));
+    }
+    if (role) {
+      conditions.push(inArray(users.role, role));
+    }
 
     if (name) {
       conditions.push(
@@ -112,8 +122,7 @@ export const findUserRepo = async ({
         .map(({ sequence, ...rest }) => rest), // remove sequence from final output
     }));
   } catch (error) {
-    console.error('Error fetching users:', error);
+    logger.error(`Error fetching users: ${JSON.stringify(error)}`);
     throw error;
   }
 };
-

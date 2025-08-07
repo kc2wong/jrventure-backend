@@ -1,12 +1,12 @@
+import { ActivityDto, CreateActivityDto } from '@api/activity/activity-schema';
+import { createActivityRepo } from '@repo/activity/create-activity';
 import {
   creationDto2Entity,
   entity2Dto,
 } from '@service/activity/mapper/activity-mapper';
-import { currentDatetime } from '@util/datetime-util';
-import { AuthenticatedUser } from '@type/authentication';
-import { ActivityDto, CreateActivityDto } from '@api/activity/activity-schema';
 import { validateActivityCategory } from '@service/activity/shared/activity-validation';
-import { createActivityRepo } from '@repo/activity/create-activity';
+import { AuthenticatedUser } from '@type/authentication';
+import { currentDatetime } from '@util/datetime-util';
 
 export const createActivityService = async (
   currentUser: AuthenticatedUser,

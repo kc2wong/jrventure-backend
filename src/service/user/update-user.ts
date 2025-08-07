@@ -1,20 +1,20 @@
-import { CreateUserDto, UpdateUserDto, UserDto } from '@api/user/user-schema';
+import { NotFoundErrorDto } from '@api/shared/error-schema';
+import { UpdateUserDto, UserDto } from '@api/user/user-schema';
+import {
+  Class as ClassEntity,
+  Student as StudentEntity,
+} from '@repo/db';
+import { findUserRepo } from '@repo/user/find-user';
+import { updateUserRepo } from '@repo/user/update-user';
 import { entity2Dto, updateDto2Entity } from '@service/user/mapper/user-mapper';
 import {
   validateStudentIds,
   validateStudentUserUniqueness,
   validateUserUniqueness,
 } from '@service/user/shared/user-validation';
-import {
-  Class as ClassEntity,
-  Student as StudentEntity,
-} from '@repo/db';
-import { currentDatetime } from '@util/datetime-util';
-import { NotFoundErrorDto } from '@api/shared/error-schema';
-import { safeParseInt } from '@util/string-util';
-import { findUserRepo } from '@repo/user/find-user';
-import { updateUserRepo } from '@repo/user/update-user';
 import { AuthenticatedUser } from '@type/authentication';
+import { currentDatetime } from '@util/datetime-util';
+import { safeParseInt } from '@util/string-util';
 
 export const updateUserService = async (
   currentUser: AuthenticatedUser,

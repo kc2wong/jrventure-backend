@@ -1,11 +1,15 @@
-import {
-  eq,
-  and,
-  gte,
-  count,
-} from 'drizzle-orm';
-import { db, Achievement, AchievementSubmissionRole, Activity, Student, PaginationResult } from '@repo/db';
+import { eq, and, gte, count } from 'drizzle-orm';
+
 import { achievements, activities, students } from '@db/drizzle-schema';
+import {
+  db,
+  Achievement,
+  AchievementSubmissionRole,
+  Activity,
+  Student,
+  PaginationResult,
+} from '@repo/db';
+import { logger } from '@util/logging-util';
 
 type FindAchievementParams = {
   studentId?: string;
@@ -37,17 +41,26 @@ export const findAchievementRepo = async ({
   orderByDirection,
 }: FindAchievementParams): Promise<PaginationResult<FindAchievementResult>> => {
   try {
-
     const activityJoin = eq(achievements.activityOid, activities.oid);
     const studentJoin = eq(achievements.studentOid, students.oid);
 
     const conditions = [];
 
-    if (role) conditions.push(eq(achievements.achievementSubmissionRole, role));
-    if (createAtFrom) conditions.push(gte(achievements.createdAt, createAtFrom));
-    if (studentId) conditions.push(eq(students.id, studentId));
-    if (studentOid) conditions.push(eq(achievements.studentOid, studentOid));
-    if (activityOid) conditions.push(eq(achievements.activityOid, activityOid));
+    if (role) {
+      conditions.push(eq(achievements.achievementSubmissionRole, role));
+    }
+    if (createAtFrom) {
+      conditions.push(gte(achievements.createdAt, createAtFrom));
+    }
+    if (studentId) {
+      conditions.push(eq(students.id, studentId));
+    }
+    if (studentOid) {
+      conditions.push(eq(achievements.studentOid, studentOid));
+    }
+    if (activityOid) {
+      conditions.push(eq(achievements.activityOid, activityOid));
+    }
 
     const where = and(...conditions);
 
@@ -62,7 +75,11 @@ export const findAchievementRepo = async ({
 
     const orderBy = [
       ...(orderByField
-        ? [{ [orderByField]: orderByDirection === 'desc' ? 'desc' : 'asc' } as any]
+        ? [
+            {
+              [orderByField]: orderByDirection === 'desc' ? 'desc' : 'asc',
+            } as any,
+          ]
         : []),
       { oid: 'asc' },
     ];
@@ -80,7 +97,7 @@ export const findAchievementRepo = async ({
       .offset(offset)
       .limit(limit ?? 50)
       .orderBy(...orderBy);
-      
+
     return {
       offset,
       limit: limit ?? total,
@@ -88,7 +105,7 @@ export const findAchievementRepo = async ({
       data,
     };
   } catch (error) {
-    console.error('Error fetching achievement:', error);
+    logger.error(`Error fetching achievement: ${JSON.stringify(error)}`);
     throw error;
   }
 };

@@ -1,6 +1,8 @@
 import { eq } from 'drizzle-orm';
-import { Activity, ActivityCategory, db } from '@repo/db';
+
 import { activities, activityCategories } from '@db/drizzle-schema';
+import { Activity, ActivityCategory, db } from '@repo/db';
+import { logger } from '@util/logging-util';
 
 type FindActivityResult = {
   activity: Activity;
@@ -28,13 +30,13 @@ export const getActivityByOidRepo = async (
     if (result.length === 1) {
       return result[0];
     } else {
-      console.log(
+      logger.info(
         `getActivityByOid() - oid = ${oid}, number of result = ${result.length}`
       );
       return undefined;
     }
   } catch (error) {
-    console.error('Error fetching activity:', error);
+    logger.error(`Error fetching activity: ${JSON.stringify(error)}`);
     throw error;
   }
 };

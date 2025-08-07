@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { findUserService } from '@service/user/find-user';
+
 import {
   CreateUser201ResponseDto,
   CreateUserRequestDto,
@@ -9,8 +9,9 @@ import {
   UpdateUserPathDto,
   UpdateUserRequestDto,
 } from '@api/user/user-schema';
-import { registerUserService } from '@service/user/register-user';
 import { createUserService } from '@service/user/create-user';
+import { findUserService } from '@service/user/find-user';
+import { registerUserService } from '@service/user/register-user';
 import { updateUserService } from '@service/user/update-user';
 
 export const findUserApi = async (
@@ -31,11 +32,9 @@ export const createUserApi = async (
   res: Response<CreateUser201ResponseDto>,
   next: NextFunction
 ) => {
-  console.log('createUserApi called hih = ');
   const authenticatedUser = res.locals.authenticatedUser;
   const userCreationDto = req.body;
   const isSignUpWithGoogle = 'accessToken' in userCreationDto;
-  console.log('createUserApi called, isSignUpWithGoogle = ', isSignUpWithGoogle);
   try {
     const newUser = isSignUpWithGoogle
       ? await registerUserService(userCreationDto)

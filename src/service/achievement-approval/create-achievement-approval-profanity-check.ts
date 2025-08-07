@@ -3,12 +3,12 @@ import Perspective from '@matsukky/perspective-client';
 import * as Diff from 'diff';
 import * as OpenCC from 'opencc-js';
 
-import { currentDatetime } from '@util/datetime-util';
 import { NotFoundErrorDto } from '@api/shared/error-schema';
-import { getAchievementApprovalByOidRepo } from '@repo/achievement-approval/get-achievement-approval';
-import { replaceParameters, safeParseInt } from '@util/string-util';
 import { createAchievementApprovalReviewRepo } from '@repo/achievement-approval/create-achievement-approval-review';
+import { getAchievementApprovalByOidRepo } from '@repo/achievement-approval/get-achievement-approval';
 import { ApprovalCommentType } from '@repo/db';
+import { currentDatetime } from '@util/datetime-util';
+import { replaceParameters, safeParseInt } from '@util/string-util';
 
 const perspective = new Perspective({
   apiKey: process.env.PERSPECTIVE_API_KEY!,
@@ -245,7 +245,7 @@ export const createAchievementApprovaProfanityChecklService = async (
   });
 };
 
-const getReplacedWords = (original: string, censored: string): string[] => {
+const _getReplacedWords = (original: string, censored: string): string[] => {
   const originalWords = original.split(/\s+/);
   const censoredWords = censored.split(/\s+/);
 

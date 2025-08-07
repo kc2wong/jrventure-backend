@@ -1,5 +1,6 @@
 import { users, userStudents } from '@db/drizzle-schema';
 import { db, Student, User } from '@repo/db';
+import { logger } from '@util/logging-util';
 
 export const createUserRepo = async (
   user: Omit<User, 'oid'>,
@@ -22,7 +23,7 @@ export const createUserRepo = async (
 
     return createdUser;
   } catch (error) {
-    console.error('Error creating user:', error);
+    logger.error(`Error creating user: ${JSON.stringify(error)}`);
     throw error;
   }
 };

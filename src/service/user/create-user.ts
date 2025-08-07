@@ -2,20 +2,20 @@ import {
   CreateUserDto,
   UserDto,
 } from '@api/user/user-schema';
+import { UserRoleEnum } from '@db/drizzle-schema';
+import {
+  Class as ClassEntity,
+  Student as StudentEntity,
+} from '@repo/db';
+import { createUserRepo } from '@repo/user/create-user';
 import { creationDto2Entity, entity2Dto } from '@service/user/mapper/user-mapper';
 import {
   validateStudentIds,
   validateStudentUserUniqueness,
   validateUserUniqueness,
 } from '@service/user/shared/user-validation';
-import {
-  Class as ClassEntity,
-  Student as StudentEntity,
-} from '@repo/db';
-import { currentDatetime } from '@util/datetime-util';
-import { createUserRepo } from '@repo/user/create-user';
 import { AuthenticatedUser } from '@type/authentication';
-import { UserRoleEnum } from '@db/drizzle-schema';
+import { currentDatetime } from '@util/datetime-util';
 
 export const createUserService = async (
   currentUser: AuthenticatedUser,

@@ -1,6 +1,8 @@
 import { eq, and } from 'drizzle-orm';
+
 import { activities } from '@db/drizzle-schema';
 import { Activity, db } from '@repo/db';
+import { logger } from '@util/logging-util';
 
 export const updateActivityRepo = async (
   activity: Activity
@@ -25,7 +27,7 @@ export const updateActivityRepo = async (
 
     return updatedActivities[0];
   } catch (error) {
-    console.error('Error updating activity:', error);
+    logger.error(`Error updating activity: ${JSON.stringify(error)}`);
     throw error;
   }
 };

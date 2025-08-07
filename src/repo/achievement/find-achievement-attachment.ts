@@ -1,6 +1,8 @@
 import { eq } from 'drizzle-orm';
-import { db, AchievementAttachment } from '@repo/db';
+
 import { achievementAttachments } from '@db/drizzle-schema';
+import { db, AchievementAttachment } from '@repo/db';
+import { logger } from '@util/logging-util';
 
 export const findAchievementAttachmentByAchievementOidRepo = async (
   achievementOid: number
@@ -19,7 +21,9 @@ export const findAchievementAttachmentByAchievementOidRepo = async (
       return [];
     }
   } catch (error) {
-    console.error('Error finding achievement attachment :', error);
+    logger.error(
+      `Error finding achievement attachment : ${JSON.stringify(error)}`
+    );
     throw error;
   }
 };

@@ -1,15 +1,15 @@
 import { Router } from 'express';
-import {
-  validateRequest,
-  validateQuery,
-} from '@api/middleware/validate-request';
+
+import * as controller from '@api/activity/activity-controller';
 import {
   findActivityQuerySchema,
   createActivitySchema,
   updateActivitySchema,
 } from '@api/activity/activity-schema';
-
-import * as controller from '@api/activity/activity-controller';
+import {
+  validateRequest,
+  validateQuery,
+} from '@api/middleware/validate-request';
 
 const router = Router();
 

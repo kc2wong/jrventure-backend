@@ -203,7 +203,9 @@ export const zodOptionalBoolean = () =>
       }
     )
     .transform((val) => {
-      if (val === undefined || val === '') return undefined;
+      if (val === undefined || val === '') {
+        return undefined;
+      }
       return val === true || val === 'true';
     })
     .optional();
@@ -394,7 +396,9 @@ export const zodOptionalEnum = <T extends [string, ...string[]]>(values: T) => {
   return z
     .any()
     .superRefine((val, ctx) => {
-      if (val === undefined) return;
+      if (val === undefined) {
+        return;
+      }
 
       const result = baseEnum.safeParse(val);
       if (!result.success) {

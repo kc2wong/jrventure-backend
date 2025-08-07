@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { achievementSubmissionRoleSchema } from '@api/activity/activity-schema';
 import { components, paths } from '@openapi/schema';
 import {
@@ -8,7 +10,6 @@ import {
   zodOptionalString,
   zodString,
 } from '@type/zod';
-import { z } from 'zod';
 
 export const achievementApprovalStatusSchema = zodEnum(['Pending', 'Rejected']);
 

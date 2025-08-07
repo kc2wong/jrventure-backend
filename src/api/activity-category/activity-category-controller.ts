@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { ListActivityCategory200ResponseDto } from './activity-category-schema';
+
 import { listActivityCategoryService } from '@service/activity-category/list-activity-category';
+
+import { ListActivityCategory200ResponseDto } from './activity-category-schema';
 
 export const listActivityCategoryApi = async (
   req: Request<{}, {}, {}>,

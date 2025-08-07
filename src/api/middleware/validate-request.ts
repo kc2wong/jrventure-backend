@@ -1,6 +1,7 @@
-import { is } from 'drizzle-orm';
 import { Request, Response, NextFunction } from 'express';
-import { SafeParseReturnType, z, ZodIssue, ZodSchema } from 'zod';
+import { z, ZodIssue, ZodSchema } from 'zod';
+
+import { logger } from '@util/logging-util';
 
 const errorSchema = z.object({
   code: z.string(),
@@ -37,7 +38,7 @@ export const validateSchema = (
   const result = schema.safeParse(body);
 
   if (!result.success) {
-    console.log(`Validation failed: ${JSON.stringify(result.error)}`);
+    logger.warn(`Validation failed: ${JSON.stringify(result.error)}`);
     return { success: false, error: result.error.issues[0] };
   } else {
     return { success: true, data: result.data };
@@ -62,7 +63,7 @@ export const validateRequest = (schema: ZodSchema | ZodSchema[]) => {
       });
       next();
     } else if (failedResult) {
-      console.log(`Validation failed: ${JSON.stringify(failedResult.error)}`);
+      logger.warn(`Validation failed: ${JSON.stringify(failedResult.error)}`);
       const error = zodIssue2Error(failedResult.error);
       res.status(400).json({ ...error });
       return;

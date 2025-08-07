@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { paginationQuerySchema } from '@api/shared/search-schema';
 import { components, paths } from '@openapi/schema';
 import {
@@ -7,15 +9,13 @@ import {
   zodBoolean,
   zodDate,
   zodEnum,
-  ZodErrorObject,
   zodNumber,
   zodOptionalDate,
-  zodOptionalEmail,
   zodOptionalEnum,
   zodOptionalString,
   zodString,
 } from '@type/zod';
-import { z } from 'zod';
+
 
 export const achievementSubmissionRoleSchema = zodEnum([
   'Student',

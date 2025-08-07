@@ -1,10 +1,10 @@
+import { CreateUserDto, UpdateUserDto, UserDto } from '@api/user/user-schema';
 import {
   User as UserEntity,
   Class as ClassEntity,
   Student as StudentEntity,
   CreateUserEntity,
 } from '@repo/db';
-import { CreateUserDto, UpdateUserDto, UserDto } from '@api/user/user-schema';
 import {
   entity2Dto as roleEntity2Dto,
   dto2Entity as roleDto2Entity,

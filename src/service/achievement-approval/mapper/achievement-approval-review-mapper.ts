@@ -1,7 +1,8 @@
-import { entity2Dto as datetimeEntity2Dto } from '@shared/mapper/datetime-mapper';
-import { entity2Dto as commentTypeEntity2Dto } from './achievement-approval-comment-type-mapper';
 import { AchievementApprovalReviewDto } from '@api/achievement-approval/achievement-approval-schema';
 import { AchievementApprovalReview } from '@repo/db';
+import { entity2Dto as commentTypeEntity2Dto } from '@service/achievement-approval/mapper/achievement-approval-comment-type-mapper';
+import { entity2Dto as datetimeEntity2Dto } from '@shared/mapper/datetime-mapper';
+
 
 export const entity2Dto = ({
   oid,

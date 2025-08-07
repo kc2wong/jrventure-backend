@@ -1,4 +1,6 @@
 import { Router } from 'express';
+
+import { validateQuery, validateRequest } from '@api/middleware/validate-request';
 import * as controller from '@api/user/user-controller';
 import {
   createUserSchema,
@@ -6,7 +8,6 @@ import {
   updateUserSchema,
   userRegistrationchema
 } from '@api/user/user-schema';
-import { validateQuery, validateRequest } from '@api/middleware/validate-request';
 
 const router = Router();
 

@@ -1,18 +1,18 @@
 import {
-  entity2Dto,
-  updateDto2Entity,
-} from '@service/activity/mapper/activity-mapper';
-import { currentDatetime } from '@util/datetime-util';
-import { AuthenticatedUser } from '@type/authentication';
-import {
   ActivityDto,
   UpdateActivityDto,
 } from '@api/activity/activity-schema';
-import { validateActivityCategory } from '@service/activity/shared/activity-validation';
-import { updateActivityRepo } from '@repo/activity/update-activity';
-import { safeParseInt } from '@util/string-util';
 import { NotFoundErrorDto } from '@api/shared/error-schema';
 import { getActivityByOidRepo } from '@repo/activity/get-activity';
+import { updateActivityRepo } from '@repo/activity/update-activity';
+import {
+  entity2Dto,
+  updateDto2Entity,
+} from '@service/activity/mapper/activity-mapper';
+import { validateActivityCategory } from '@service/activity/shared/activity-validation';
+import { AuthenticatedUser } from '@type/authentication';
+import { currentDatetime } from '@util/datetime-util';
+import { safeParseInt } from '@util/string-util';
 
 export const updateActivityService = async (
   currentUser: AuthenticatedUser,

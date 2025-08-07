@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { achievementSubmissionRoleSchema } from '@api/activity/activity-schema';
 import { paginationQuerySchema } from '@api/shared/search-schema';
 import { components, paths } from '@openapi/schema';
@@ -9,20 +11,12 @@ import {
   zodOptionalString,
   zodString,
 } from '@type/zod';
-import { asArray } from '@util/array-util';
-import { z } from 'zod';
+
 
 export const findAchievementQuerySchema = paginationQuerySchema.extend({
   studentId: zodOptionalString(),
   activityId: zodOptionalString(),
   role: achievementSubmissionRoleSchema.optional(),
-  // role: z
-  //   .union([
-  //     achievementSubmissionRoleSchema,
-  //     z.array(achievementSubmissionRoleSchema),
-  //   ])
-  //   .optional()
-  //   .transform((val) => asArray(val)),
   createDateFrom: zodOptionalDate(),
   offset: zodNumber({ min: 0 }).default(0),
   limit: zodNumber({ max: 100 }),

@@ -1,6 +1,8 @@
 import { eq } from 'drizzle-orm';
-import { db, AchievementApprovalReview } from '@repo/db';
+
 import { achievementApprovalReviews } from '@db/drizzle-schema';
+import { db, AchievementApprovalReview } from '@repo/db';
+import { logger } from '@util/logging-util';
 
 export const findAchievementApprovalReviewByAchievementApprovalOidRepo = async (
   achievementApprovalOid: number
@@ -24,7 +26,9 @@ export const findAchievementApprovalReviewByAchievementApprovalOidRepo = async (
       return [];
     }
   } catch (error) {
-    console.error('Error creating achievement approval review :', error);
+    logger.error(
+      `Error creating achievement approval review : ${JSON.stringify(error)}`
+    );
     throw error;
   }
 };

@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+
 import {
   BaseErrorDto,
   ErrorDto,
@@ -6,6 +7,7 @@ import {
   BadRequestErrorDto,
   UnAuthorizedErrorDto,
 } from '@api/shared/error-schema';
+import { logger } from '@util/logging-util';
 
 export const errorHandler = (
   err: Error,
@@ -20,7 +22,7 @@ export const errorHandler = (
   } else if (err instanceof NotFoundErrorDto) {
     res.status(404).json(createErrorDto(err));
   } else {
-    console.error('Unexpected error:', err);
+    logger.error(`Unexpected error: ${JSON.stringify(err)}`);
     const errorDto: ErrorDto = {
       code:
         err.message ===

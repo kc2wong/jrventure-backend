@@ -1,4 +1,11 @@
 import { eq, and, count } from 'drizzle-orm';
+
+import {
+  AchievementApprovalStatusEnum,
+  achievementApprovals,
+  activities,
+  students,
+} from '@db/drizzle-schema';
 import {
   db,
   AchievementApproval,
@@ -7,12 +14,7 @@ import {
   Student,
   PaginationResult,
 } from '@repo/db';
-import {
-  AchievementApprovalStatusEnum,
-  achievementApprovals,
-  activities,
-  students,
-} from '@db/drizzle-schema';
+import { logger } from '@util/logging-util';
 
 type FindAchievementParams = {
   achievementOid?: number;
@@ -53,16 +55,24 @@ export const findAchievementApprovalRepo = async ({
 
     const conditions = [];
 
-    if (role)
+    if (role) {
       conditions.push(eq(achievementApprovals.achievementSubmissionRole, role));
-    if (status) conditions.push(eq(achievementApprovals.status, status));
-    if (studentId) conditions.push(eq(students.id, studentId));
-    if (studentOid)
+    }
+    if (status) {
+      conditions.push(eq(achievementApprovals.status, status));
+    }
+    if (studentId) {
+      conditions.push(eq(students.id, studentId));
+    }
+    if (studentOid) {
       conditions.push(eq(achievementApprovals.studentOid, studentOid));
-    if (activityOid)
+    }
+    if (activityOid) {
       conditions.push(eq(achievementApprovals.activityOid, activityOid));
-    if (achievementOid)
+    }
+    if (achievementOid) {
       conditions.push(eq(achievementApprovals.achievementOid, achievementOid));
+    }
 
     const where = and(...conditions);
 
@@ -107,7 +117,9 @@ export const findAchievementApprovalRepo = async ({
       data,
     };
   } catch (error) {
-    console.error('Error fetching achievement approval:', error);
+    logger.error(
+      `Error fetching achievement approval: ${JSON.stringify(error)}`
+    );
     throw error;
   }
 };

@@ -1,11 +1,11 @@
-import { findUserRepo } from '@repo/user/find-user';
-import { findStudentRepo } from '@repo/student/find-student';
 import {
   NotFoundErrorDto,
   UserForStudentExistsErrorDto,
   UserWithEmailExistsErrorDto,
 } from '@api/shared/error-schema';
 import { Class, Student } from '@repo/db';
+import { findStudentRepo } from '@repo/student/find-student';
+import { findUserRepo } from '@repo/user/find-user';
 
 type StudentClass = {
   student: Student;

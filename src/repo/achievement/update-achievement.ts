@@ -1,6 +1,9 @@
-import { achievementAttachments, achievements } from "@db/drizzle-schema";
-import { db, Achievement, AchievementAttachment } from "@repo/db";
-import { and, eq } from "drizzle-orm";
+import { and, eq } from 'drizzle-orm';
+
+import { achievementAttachments, achievements } from '@db/drizzle-schema';
+import { db, Achievement, AchievementAttachment } from '@repo/db';
+import { logger } from '@util/logging-util';
+
 
 export const updateAchievementRepo = async (
   achievement: Achievement,
@@ -43,7 +46,7 @@ export const updateAchievementRepo = async (
 
     return updated;
   } catch (error) {
-    console.error('Error updating achievement:', error);
+    logger.error(`Error updating achievement: ${JSON.stringify(error)}`);
     throw error;
   }
 };

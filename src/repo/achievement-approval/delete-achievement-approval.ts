@@ -1,10 +1,12 @@
 import { and, eq } from 'drizzle-orm';
+
 import {
   achievementApprovalAttachments,
   achievementApprovalReviews,
   achievementApprovals,
 } from '@db/drizzle-schema';
 import { db } from '@repo/db';
+import { logger } from '@util/logging-util';
 
 export const deleteAchievementApprovalRepo = async (
   oid: number,
@@ -39,7 +41,7 @@ export const deleteAchievementApprovalRepo = async (
       }
     });
   } catch (error) {
-    console.error('Error delete achievementApproval1:', error);
+    logger.error(`Error delete achievementApproval1: ${JSON.stringify(error)}`);
     throw error;
   }
 };

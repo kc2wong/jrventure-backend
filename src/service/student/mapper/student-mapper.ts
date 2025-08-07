@@ -1,7 +1,7 @@
-import { entity2DtoId as classEntity2DtoId } from '@service/class/mapper/class-mapper';
-import { safeParseInt } from '@util/string-util';
 import { StudentDto } from '@api/student/student-schema';
 import { Class, Student } from '@repo/db';
+import { entity2DtoId as classEntity2DtoId } from '@service/class/mapper/class-mapper';
+import { safeParseInt } from '@util/string-util';
 
 export const entity2Dto = (src: Student, clazz: Class): StudentDto => {
   const { id, studentNumber } = src;

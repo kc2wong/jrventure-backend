@@ -1,13 +1,13 @@
-import { currentDatetime } from '@util/datetime-util';
 import {
   UserAuthentication200ResponseDto,
   UserAuthenticationRequestDto,
 } from '@api/authentication/authentication-schema';
-import { findUserRepo } from '@repo/user/find-user';
 import { InvalidEmailOrPasswordErrorDto } from '@api/shared/error-schema';
+import { UserStatus } from '@repo/db';
+import { findUserRepo } from '@repo/user/find-user';
 import { updateUserRepo } from '@repo/user/update-user';
 import { entity2Dto as userEntity2Dto } from '@service/user/mapper/user-mapper';
-import { UserStatus } from '@repo/db';
+import { currentDatetime } from '@util/datetime-util';
 
 export const userAuthenticationService = async (
   requestDto: UserAuthenticationRequestDto

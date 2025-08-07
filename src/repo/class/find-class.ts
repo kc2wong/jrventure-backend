@@ -1,6 +1,8 @@
-import { classes } from '@db/drizzle-schema';
 import { and, eq } from 'drizzle-orm';
+
+import { classes } from '@db/drizzle-schema';
 import { db, Class } from '@repo/db';
+import { logger } from '@util/logging-util';
 
 export const findClassRepo = async (
   grade?: number,
@@ -24,7 +26,7 @@ export const findClassRepo = async (
 
     return result;
   } catch (error) {
-    console.error('Error fetching classes:', error);
+    logger.error(`Error fetching classes: ${JSON.stringify(error)}`);
     throw error;
   }
 };

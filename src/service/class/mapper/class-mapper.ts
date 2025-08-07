@@ -1,5 +1,5 @@
-import { Class } from '@repo/db';
 import { ClassDto } from '@api/student/student-schema';
+import { Class } from '@repo/db';
 import { safeParseInt } from '@util/string-util';
 
 export const entity2DtoId = (grade: number, class_number: string): string => {

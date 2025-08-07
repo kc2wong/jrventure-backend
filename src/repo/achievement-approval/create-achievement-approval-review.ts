@@ -1,5 +1,6 @@
 import { achievementApprovalReviews } from '@db/drizzle-schema';
 import { db, AchievementApprovalReview } from '@repo/db';
+import { logger } from '@util/logging-util';
 
 export const createAchievementApprovalReviewRepo = async (
   review: Omit<AchievementApprovalReview, 'oid'>
@@ -11,7 +12,7 @@ export const createAchievementApprovalReviewRepo = async (
       .returning();
     return created;
   } catch (error) {
-    console.error('Error creating achievement approval review :', error);
+    logger.error(`Error creating achievement approval review ${JSON.stringify(error)}`);
     throw error;
   }
 };

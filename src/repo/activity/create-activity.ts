@@ -1,5 +1,6 @@
 import { activities } from '@db/drizzle-schema';
 import { Activity, db } from '@repo/db';
+import { logger } from '@util/logging-util';
 
 export const createActivityRepo = async (
   activity: Omit<Activity, 'oid'>
@@ -11,7 +12,7 @@ export const createActivityRepo = async (
       .returning();
     return createdActivity;
   } catch (error) {
-    console.error('Error creating activity:', error);
+    logger.error(`Error creating activity: ${JSON.stringify(error)}`);
     throw error;
   }
 };

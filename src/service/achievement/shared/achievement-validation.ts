@@ -1,4 +1,10 @@
-import { findStudentRepo } from '@repo/student/find-student';
+import {
+  AchievementExistsErrorDto,
+  DataEntitlementErrorDto,
+  NotFoundErrorDto,
+} from '@api/shared/error-schema';
+import { findAchievementRepo } from '@repo/achievement/find-achievement';
+import { findAchievementApprovalRepo } from '@repo/achievement-approval/find-achievement-approval';
 import { getActivityByOidRepo } from '@repo/activity/get-activity';
 import {
   AchievementSubmissionRole,
@@ -6,16 +12,8 @@ import {
   Student,
   UserRole,
 } from '@repo/db';
-import {
-  AchievementExistsErrorDto,
-  DataEntitlementErrorDto,
-  NotFoundErrorDto,
-} from '@api/shared/error-schema';
+import { findStudentRepo } from '@repo/student/find-student';
 import { safeParseInt } from '@util/string-util';
-
-import { entity2Dto as achievementSubmissionRoleEntity2Dto } from '@service/activity/mapper/achievement-submission-role-mapper';
-import { findAchievementRepo } from '@repo/achievement/find-achievement';
-import { findAchievementApprovalRepo } from '@repo/achievement-approval/find-achievement-approval';
 
 type ValidateStudentArgs = {
   entitledAllStudent: boolean;
@@ -102,7 +100,6 @@ export const validateExistingAchievement = async (
   withApprovalRight: boolean
 ) => {
   // check if achievement already exists
-  const r = achievementSubmissionRoleEntity2Dto(role);
   const existingAchievements = withApprovalRight
     ? await findAchievementRepo({
         activityOid: activity.oid,

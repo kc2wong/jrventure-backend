@@ -1,4 +1,12 @@
 import { eq } from 'drizzle-orm';
+
+import {
+  achievementApprovalAttachments,
+  achievementApprovalReviews,
+  achievementApprovals,
+  activities,
+  students,
+} from '@db/drizzle-schema';
 import {
   db,
   AchievementApproval,
@@ -7,13 +15,7 @@ import {
   Activity,
   Student,
 } from '@repo/db';
-import {
-  achievementApprovalAttachments,
-  achievementApprovalReviews,
-  achievementApprovals,
-  activities,
-  students,
-} from '@db/drizzle-schema';
+import { logger } from '@util/logging-util';
 
 type GetAchievementApprovalResult = {
   achievementApproval: AchievementApproval;
@@ -74,13 +76,13 @@ export const getAchievementApprovalByOidRepo = async (
         review: reviews,
       };
     } else {
-      console.log(
+      logger.info(
         `getActivityByOid() - oid = ${oid}, number of result = ${result.length}`
       );
       return undefined;
     }
   } catch (error) {
-    console.error('Error fetching achievement approval:', error);
+    logger.error(`Error fetching achievement approval: ${JSON.stringify(error)}`);
     throw error;
   }
 };

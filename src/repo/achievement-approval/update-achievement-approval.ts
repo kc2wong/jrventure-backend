@@ -1,3 +1,5 @@
+import { and, eq } from 'drizzle-orm';
+
 import {
   achievementApprovalAttachments,
   achievementApprovals,
@@ -7,7 +9,7 @@ import {
   AchievementApproval,
   AchievementApprovalAttachment,
 } from '@repo/db';
-import { and, eq } from 'drizzle-orm';
+import { logger } from '@util/logging-util';
 
 export const updateAchievementApprovalRepo = async (
   achievement: AchievementApproval,
@@ -58,7 +60,7 @@ export const updateAchievementApprovalRepo = async (
 
     return updated;
   } catch (error) {
-    console.error('Error updating achievementApproval1:', error);
+    logger.error(`Error updating achievementApproval1: ${JSON.stringify(error)}`);
     throw error;
   }
 };

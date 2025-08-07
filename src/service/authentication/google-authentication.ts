@@ -1,14 +1,16 @@
-import { currentDatetime } from '@util/datetime-util';
+import { OAuth2Client } from 'google-auth-library';
+
 import {
   GoogleAuthentication200ResponseDto,
   GoogleAuthenticationRequestDto,
 } from '@api/authentication/authentication-schema';
-import { findUserRepo } from '@repo/user/find-user';
 import { InvalidEmailOrPasswordErrorDto } from '@api/shared/error-schema';
+import { UserStatus } from '@repo/db';
+import { findUserRepo } from '@repo/user/find-user';
 import { updateUserRepo } from '@repo/user/update-user';
 import { entity2Dto as userEntity2Dto } from '@service/user/mapper/user-mapper';
-import { OAuth2Client } from 'google-auth-library';
-import { UserStatus } from '@repo/db';
+import { currentDatetime } from '@util/datetime-util';
+import { logger } from '@util/logging-util';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID);
@@ -23,7 +25,11 @@ export const googleAuthenticationService = async (
   requestDto: GoogleAuthenticationRequestDto
 ): Promise<GoogleAuthentication200ResponseDto> => {
   const { type, token } = requestDto;
-  console.log('googleAuthenticationService called, requestDto = ', requestDto);
+  logger.debug(
+    `googleAuthenticationService called, requestDto = , ${JSON.stringify(
+      requestDto
+    )}`
+  );
 
   const email =
     type === 'Web'
@@ -31,11 +37,12 @@ export const googleAuthenticationService = async (
       : type === 'iOS'
       ? await verifyIosIdToken(token)
       : await verifyAndroidIdToken(token);
+  logger.debug(`googleAuthenticationService, email of user = , ${email}`);
+  
   const users = await findUserRepo({
     email,
   });
 
-  console.log('googleAuthenticationService, users = ', email);
   if (users.length != 1) {
     throw new InvalidEmailOrPasswordErrorDto(email!);
   }

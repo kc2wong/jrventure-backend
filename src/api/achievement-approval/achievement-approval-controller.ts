@@ -1,12 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
-import { NotFoundErrorDto } from '@api/shared/error-schema';
+
 import {
   UpdateAchievement200ResponseDto,
   UpdateAchievementDto,
   UpdateAchievementPathDto,
 } from '@api/achievement/achievement-schema';
-import { updateAchievementService } from '@service/achievement/update-achievement';
-import { createAchievementApprovalService } from '@service/achievement-approval/create-achievement-approval';
 import {
   ApproveAchievementApproval201ResponseDto,
   ApproveAchievementApprovalPathDto,
@@ -19,11 +17,14 @@ import {
   GetAchievementApprovalByIdPathDto,
   ProfanityCheckAchievementApprovalPathDto,
 } from '@api/achievement-approval/achievement-approval-schema';
-import { getAchievementApprovalByIdService } from '@service/achievement-approval/get-achievement-approval';
-import { findAchievementApprovalService } from '@service/achievement-approval/find-achievement-approval';
-import { createAchievementApprovalReviewService } from '@service/achievement-approval/create-achievement-approval-review';
+import { NotFoundErrorDto } from '@api/shared/error-schema';
+import { updateAchievementService } from '@service/achievement/update-achievement';
 import { approveAchievementApprovalService } from '@service/achievement-approval/approve-achievement-approval';
+import { createAchievementApprovalService } from '@service/achievement-approval/create-achievement-approval';
 import { createAchievementApprovaProfanityChecklService } from '@service/achievement-approval/create-achievement-approval-profanity-check';
+import { createAchievementApprovalReviewService } from '@service/achievement-approval/create-achievement-approval-review';
+import { findAchievementApprovalService } from '@service/achievement-approval/find-achievement-approval';
+import { getAchievementApprovalByIdService } from '@service/achievement-approval/get-achievement-approval';
 
 export const findAchievementApprovalApi = async (
   req: Request<{}, {}, {}, FindAchievementApprovalQueryDto>,
@@ -89,7 +90,6 @@ export const approveAchievementApprovalApi = async (
 ) => {
   const authenticatedUser = res.locals.authenticatedUser;
   const id = req.params.id;
-  const review = req.body;
   try {
     const achievementDetail = await approveAchievementApprovalService(
       authenticatedUser,

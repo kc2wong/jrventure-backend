@@ -11,6 +11,8 @@ import {
   asc,
   SQL,
 } from 'drizzle-orm';
+
+import { activities, activityCategories } from '@db/drizzle-schema';
 import {
   AchievementSubmissionRole,
   Activity,
@@ -18,7 +20,7 @@ import {
   ActivityStatus,
   db,
 } from '@repo/db';
-import { activities, activityCategories } from '@db/drizzle-schema';
+import { logger } from '@util/logging-util';
 
 type FindActivityParams = {
   oid?: number[];
@@ -73,10 +75,15 @@ export const findActivityRepo = async ({
   try {
     const conditions = [];
 
-    if (oid?.length) conditions.push(inArray(activities.oid, oid));
-    if (role?.length)
+    if (oid?.length) {
+      conditions.push(inArray(activities.oid, oid));
+    }
+    if (role?.length) {
       conditions.push(inArray(activities.achievementSubmissionRole, role));
-    if (status?.length) conditions.push(inArray(activities.status, status));
+    }
+    if (status?.length) {
+      conditions.push(inArray(activities.status, status));
+    }
 
     if (name) {
       conditions.push(
@@ -88,11 +95,18 @@ export const findActivityRepo = async ({
       );
     }
 
-    if (startDateFrom)
+    if (startDateFrom) {
       conditions.push(gte(activities.startDate, startDateFrom));
-    if (startDateTo) conditions.push(lte(activities.startDate, startDateTo));
-    if (endDateFrom) conditions.push(gte(activities.endDate, endDateFrom));
-    if (endDateTo) conditions.push(lte(activities.endDate, endDateTo));
+    }
+    if (startDateTo) {
+      conditions.push(lte(activities.startDate, startDateTo));
+    }
+    if (endDateFrom) {
+      conditions.push(gte(activities.endDate, endDateFrom));
+    }
+    if (endDateTo) {
+      conditions.push(lte(activities.endDate, endDateTo));
+    }
 
     if (participantGrade?.length) {
       conditions.push(
@@ -151,7 +165,7 @@ export const findActivityRepo = async ({
       data,
     };
   } catch (error) {
-    console.error('Error fetching activity:', error);
+    logger.error(`Error fetching activity: ${JSON.stringify(error)}`);
     throw error;
   }
 };

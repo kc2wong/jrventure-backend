@@ -1,6 +1,8 @@
 import { eq, and } from 'drizzle-orm';
+
 import { users, userStudents } from '@db/drizzle-schema';
 import { db, Student, User } from '@repo/db';
+import { logger } from '@util/logging-util';
 
 export const updateUserRepo = async (
   user: User,
@@ -42,7 +44,7 @@ export const updateUserRepo = async (
 
     return updatedUsers[0];
   } catch (error) {
-    console.error('Error updating user:', error);
+    logger.error(`Error updating user: ${JSON.stringify(error)}`);
     throw error;
   }
 };

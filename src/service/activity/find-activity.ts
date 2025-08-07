@@ -1,17 +1,15 @@
-import { entity2Dto } from '@service/activity/mapper/activity-mapper';
-import { safeParseInt } from '@util/string-util';
 import {
-  ActivityDto,
   FindActivity200ResponseDto,
   FindActivityQueryDto,
 } from '@api/activity/activity-schema';
 import { findActivityRepo } from '@repo/activity/find-activity';
+import { dto2Entity as submissionRoleDto2Entity } from '@service/activity/mapper/achievement-submission-role-mapper';
+import { entity2Dto } from '@service/activity/mapper/activity-mapper';
+import { dto2Entity as statusDto2Entity } from '@service/activity/mapper/activity-status-mapper';
+import { dto2Entity as orderByFieldDto2Entity } from '@service/activity/mapper/order-by-field-mapper';
 import { dto2Entity as datetimeDto2Entity } from '@shared/mapper/datetime-mapper';
 import { dto2Entity as orderByDirectionDto2Entity } from '@shared/mapper/order-by-direction-mapper';
-import { dto2Entity as orderByFieldDto2Entity } from '@service/activity/mapper/order-by-field-mapper';
-import { dto2Entity as statusDto2Entity } from '@service/activity/mapper/activity-status-mapper';
-import { dto2Entity as submissionRoleDto2Entity } from '@service/activity/mapper/achievement-submission-role-mapper';
-import { getActivityByOidRepo } from '@repo/activity/get-activity';
+import { safeParseInt } from '@util/string-util';
 
 export const findActivityService = async (
   query: FindActivityQueryDto

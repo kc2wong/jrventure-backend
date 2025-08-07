@@ -1,19 +1,20 @@
+import { OAuth2Client } from 'google-auth-library';
+
+import { NotFoundErrorDto } from '@api/shared/error-schema';
 import { UserDto, UserRegistrationDto } from '@api/user/user-schema';
+import {
+  UserRole,
+  Class as ClassEntity,
+  Student as StudentEntity,
+} from '@repo/db';
+import { createUserRepo } from '@repo/user/create-user';
 import { creationDto2Entity, entity2Dto } from '@service/user/mapper/user-mapper';
 import {
   validateStudentIds,
   validateStudentUserUniqueness,
   validateUserUniqueness,
 } from '@service/user/shared/user-validation';
-import {
-  UserRole,
-  Class as ClassEntity,
-  Student as StudentEntity,
-} from '@repo/db';
 import { currentDatetime } from '@util/datetime-util';
-import { createUserRepo } from '@repo/user/create-user';
-import { OAuth2Client } from 'google-auth-library';
-import { NotFoundErrorDto } from '@api/shared/error-schema';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);

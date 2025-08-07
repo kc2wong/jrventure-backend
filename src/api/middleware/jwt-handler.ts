@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { jwtDecode } from 'jwt-decode';
+
 import { safeParseInt } from '@util/string-util';
 
 const unauthenticatedPath = [

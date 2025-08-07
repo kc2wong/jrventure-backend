@@ -9,6 +9,7 @@ import {
   AchievementApprovalAttachment,
   AchievementApprovalReview,
 } from '@repo/db';
+import { logger } from '@util/logging-util';
 
 export const createAchievementApprovalRepo = async (
   achievement: Omit<AchievementApproval, 'oid'>,
@@ -51,7 +52,9 @@ export const createAchievementApprovalRepo = async (
 
     return created;
   } catch (error) {
-    console.error('Error creating achievement approval:', error);
+    logger.error(
+      `Error creating achievement approval: ${JSON.stringify(error)}`
+    );
     throw error;
   }
 };

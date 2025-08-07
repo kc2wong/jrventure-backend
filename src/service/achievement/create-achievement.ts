@@ -2,23 +2,22 @@ import {
   AchievementDto,
   CreateAchievementDto,
 } from '@api/achievement/achievement-schema';
-import {
-  validateActivity,
-  validateStudent,
-} from '@service/achievement/shared/achievement-validation';
-import { AuthenticatedUser } from '@type/authentication';
-import { currentDatetime } from '@util/datetime-util';
-import { dto2Entity as userRoleDto2Entity } from '@service/user/mapper/user-role-mapper';
-import { entity2Dto as achievementSubmissionRoleEntity2Dto } from '@service/activity/mapper/achievement-submission-role-mapper';
+import { createAchievementRepo } from '@repo/achievement/create-achievement';
+import { findAchievementRepo } from '@repo/achievement/find-achievement';
+import { AchievementStatus } from '@repo/db';
 import {
   creationDto2Entity,
   entity2Dto,
 } from '@service/achievement/mapper/achievement-mapper';
-
+import {
+  validateActivity,
+  validateStudent,
+} from '@service/achievement/shared/achievement-validation';
+import { entity2Dto as achievementSubmissionRoleEntity2Dto } from '@service/activity/mapper/achievement-submission-role-mapper';
+import { dto2Entity as userRoleDto2Entity } from '@service/user/mapper/user-role-mapper';
+import { AuthenticatedUser } from '@type/authentication';
+import { currentDatetime } from '@util/datetime-util';
 import { copyObject, publicBucketName } from '@util/s3-util';
-import { findAchievementRepo } from '@repo/achievement/find-achievement';
-import { createAchievementRepo } from '@repo/achievement/create-achievement';
-import { AchievementStatus } from '@repo/db';
 
 export const createAchievementService = async (
   authenticatedUser: AuthenticatedUser,
@@ -55,9 +54,6 @@ export const createAchievementService = async (
   };
 
   const prefix = `activity/${achievementCreationDto.activityId}/student/${achievementCreationDto.studentId}`;
-  const inObjectKeys = achievementCreationDto.attachment.map(
-    (a) => a.objectKey
-  );
 
   // 🔄 Handle attachment copying
   const newAttachments = await Promise.all(

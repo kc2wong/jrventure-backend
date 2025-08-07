@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+
 import {
   GetActivityById200ResponseDto,
   GetActivityByIdPathDto,
@@ -10,10 +11,10 @@ import {
   UpdateActivity200ResponseDto,
   UpdateActivityPathDto,
 } from '@api/activity/activity-schema';
-import { findActivityService } from '@service/activity/find-activity';
-import { getActivityByIdService } from '@service/activity/get-activity';
 import { NotFoundErrorDto } from '@api/shared/error-schema';
 import { createActivityService } from '@service/activity/create-activity';
+import { findActivityService } from '@service/activity/find-activity';
+import { getActivityByIdService } from '@service/activity/get-activity';
 import { updateActivityService } from '@service/activity/update-activity';
 
 export const findActivityApi = async (

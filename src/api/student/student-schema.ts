@@ -1,7 +1,9 @@
+import { z } from 'zod';
+
 import { components, paths } from '@openapi/schema';
 import { zodOptionalString, zodString } from '@type/zod';
 import { asArray } from '@util/array-util';
-import { z } from 'zod';
+
 
 export const findStudentQuerySchema = z.object({
   id: z

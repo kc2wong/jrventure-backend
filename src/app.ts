@@ -1,18 +1,18 @@
-import express from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+import express from 'express';
 
-import classRouter from '@api/class/class-router';
-import studentRouter from '@api/student/student-router';
-import userRouter from '@api/user/user-router';
-import userAuthenticationRouter from '@api/authentication/user-authentication-router';
-import googleAuthenticationRouter from '@api/authentication/google-authentication-router';
-import activityCategoryRouter from '@api/activity-category/activity-category-router';
 import achievementRouter from '@api/achievement/achievement-router';
 import achievementApprovalRouter from '@api/achievement-approval/achievement-approval-router';
 import activityRouter from '@api/activity/activity-router';
+import activityCategoryRouter from '@api/activity-category/activity-category-router';
+import googleAuthenticationRouter from '@api/authentication/google-authentication-router';
+import userAuthenticationRouter from '@api/authentication/user-authentication-router';
+import classRouter from '@api/class/class-router';
 import { errorHandler } from '@api/middleware/error-handler';
 import { jwtHandler } from '@api/middleware/jwt-handler';
+import studentRouter from '@api/student/student-router';
+import userRouter from '@api/user/user-router';
 
 const app = express();
 app.use(bodyParser.json());

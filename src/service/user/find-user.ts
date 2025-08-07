@@ -1,8 +1,8 @@
 import { FindUserQueryDto, UserDto } from '@api/user/user-schema';
+import { findUserRepo } from '@repo/user/find-user';
 import { entity2Dto } from '@service/user/mapper/user-mapper';
 import { dto2Entity as roleDto2Entity } from '@service/user/mapper/user-role-mapper';
 import { dto2Entity as statusDto2Entity } from '@service/user/mapper/user-status-mapper';
-import { findUserRepo } from '@repo/user/find-user';
 import { safeParseInt } from '@util/string-util';
 
 export const findUserService = async (query: FindUserQueryDto): Promise<UserDto[]> => {

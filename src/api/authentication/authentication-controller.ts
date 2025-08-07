@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
+
 import {
   GoogleAuthentication200ResponseDto,
   GoogleAuthenticationRequestDto,
   UserAuthentication200ResponseDto,
   UserAuthenticationRequestDto,
 } from '@api/authentication/authentication-schema';
-import { userAuthenticationService } from '@service/authentication/user-authentication';
 import { googleAuthenticationService } from '@service/authentication/google-authentication';
+import { userAuthenticationService } from '@service/authentication/user-authentication';
 
 export const userAuthenticationApi = async (
   req: Request<{}, {}, UserAuthenticationRequestDto>,

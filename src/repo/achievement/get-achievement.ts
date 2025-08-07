@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+
 import {
   achievementAttachments,
   achievements,
@@ -12,6 +13,7 @@ import {
   Activity,
   Student,
 } from '@repo/db';
+import { logger } from '@util/logging-util';
 
 type GetAchievementResult = {
   achievement: Achievement;
@@ -58,13 +60,13 @@ export const getAchievementByOidRepo = async (
         attachment: attachments,
       };
     } else {
-      console.log(
+      logger.info(
         `getActivityByOid() - oid = ${oid}, number of result = ${result.length}`
       );
       return undefined;
     }
   } catch (error) {
-    console.error('Error fetching achievement:', error);
+    logger.error(`Error fetching achievement: ${JSON.stringify(error)}`);
     throw error;
   }
 };

@@ -1,5 +1,6 @@
 import { achievementAttachments, achievements } from '@db/drizzle-schema';
 import { db, Achievement, AchievementAttachment } from '@repo/db';
+import { logger } from '@util/logging-util';
 
 export const createAchievementRepo = async (
   achievement: Omit<Achievement, 'oid'>,
@@ -28,7 +29,7 @@ export const createAchievementRepo = async (
 
     return created;
   } catch (error) {
-    console.error('Error creating achievement:', error);
+    logger.error(`Error creating achievement: ${JSON.stringify(error)}`);
     throw error;
   }
 };

@@ -1,9 +1,9 @@
-import { entity2Dto } from '@service/class/mapper/class-mapper';
+import { FindClassQueryDto } from '@api/class/class-schema';
 import {
   ClassDto,
 } from '@api/student/student-schema';
 import { findClassRepo } from '@repo/class/find-class';
-import { FindClassQueryDto } from '@api/class/class-schema';
+import { entity2Dto } from '@service/class/mapper/class-mapper';
 
 export const findClassService = async (
   query: FindClassQueryDto

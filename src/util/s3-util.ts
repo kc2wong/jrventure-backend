@@ -17,7 +17,7 @@ export const doesFileExist = async (
   try {
     await s3client.send(new HeadObjectCommand({ Bucket: bucket, Key: key }));
     return true; // exists
-  } catch (err: any) {
+  } catch (_err: any) {
     return false;
   }
 };
@@ -28,7 +28,7 @@ export const copyObject = async (
   newKey: string
 ): Promise<number> => {
   // 1. Copy the object
-  const result = await s3client.send(
+  const _result = await s3client.send(
     new CopyObjectCommand({
       Bucket: bucket,
       CopySource: oldKey, // source bucket/key

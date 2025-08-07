@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { findClassService } from '@service/class/find-class';
+
 import { FindClassQueryDto, FindClass200ResponseDto } from '@api/class/class-schema';
+import { findClassService } from '@service/class/find-class';
 
 export const findClassApi = async (
   req: Request<{}, {}, {}, FindClassQueryDto>,

@@ -4,21 +4,20 @@ import {
   FindActivityOrderByFieldDto,
   UpdateActivityDto,
 } from '@api/activity/activity-schema';
+import { Activity, ActivityCategory, ActivityCreationEntity } from '@repo/db';
 import {
-  entity2Dto as datetimeEntity2Dto,
-  dto2Entity as datetimeDto2Entity,
-} from '@shared/mapper/datetime-mapper';
+  entity2Dto as achievementSubmissionRoleEntity2Dto,
+  dto2Entity as achievementSubmissionRoleDto2Entity,
+} from '@service/activity/mapper/achievement-submission-role-mapper';
 import {
   entity2Dto as activityStatusEntity2Dto,
   dto2Entity as activityStatusDto2Entity,
 } from '@service/activity/mapper/activity-status-mapper';
 import {
-  entity2Dto as achievementSubmissionRoleEntity2Dto,
-  dto2Entity as achievementSubmissionRoleDto2Entity,
-} from '@service/activity/mapper/achievement-submission-role-mapper';
-
+  entity2Dto as datetimeEntity2Dto,
+  dto2Entity as datetimeDto2Entity,
+} from '@shared/mapper/datetime-mapper';
 import { removeNilValues } from '@util/string-util';
-import { Activity, ActivityCategory, ActivityCreationEntity } from '@repo/db';
 
 const bitmaskToArray = (bitmask: number): number[] => {
   const enabledBits: number[] = [];
