@@ -10,8 +10,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "ts-node src/db/seed/seed.ts",
     "dev": "ts-node-dev --respawn -r tsconfig-paths/register src/index.ts",
-    "build": "tsc",    
-    "watch": "tsc -w",    
+    "build": "tsc",
+    "watch": "tsc -w",
     "test": "vitest",
     "lint": "eslint .",
     "cdk": "cdk"
@@ -52,6 +52,13 @@
     "@aws-sdk/client-s3": "^3.821.0",
     "@aws-sdk/s3-request-presigner": "^3.823.0",
     "@matsukky/perspective-client": "^0.1.4",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/instrumentation": "^0.203.0",
+    "@opentelemetry/instrumentation-express": "^0.52.0",
+    "@opentelemetry/instrumentation-http": "^0.203.0",
+    "@opentelemetry/propagator-b3": "^2.0.1",
+    "@opentelemetry/sdk-node": "^0.203.0",
+    "@opentelemetry/semantic-conventions": "^1.36.0",
     "@types/opencc-js": "^1.0.3",
     "@vendia/serverless-express": "^4.12.6",
     "aws-cdk-lib": "2.185.0",
@@ -68,6 +75,7 @@
     "opencc-js": "^1.0.5",
     "pg": "^8.16.3",
     "tongwen-core": "^4.1.1",
+    "winston": "^3.17.0",
     "zod": "^3.24.3"
   }
 }

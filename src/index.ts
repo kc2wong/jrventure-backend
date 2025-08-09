@@ -1,3 +1,5 @@
+import './util/tracing'; // must be first import
+
 import { logger } from '@util/logging-util';
 
 import app from './app';

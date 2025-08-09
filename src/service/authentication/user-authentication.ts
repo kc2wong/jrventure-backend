@@ -8,10 +8,13 @@ import { findUserRepo } from '@repo/user/find-user';
 import { updateUserRepo } from '@repo/user/update-user';
 import { entity2Dto as userEntity2Dto } from '@service/user/mapper/user-mapper';
 import { currentDatetime } from '@util/datetime-util';
+import { logger } from '@util/logging-util';
 
 export const userAuthenticationService = async (
   requestDto: UserAuthenticationRequestDto
 ): Promise<UserAuthentication200ResponseDto> => {
+  logger.info('userAuthenticationService() - start');
+
   const { email, password } = requestDto;
   const users = await findUserRepo({
     email,
@@ -22,7 +25,6 @@ export const userAuthenticationService = async (
   }
 
   const u = users[0].user;
-  // const lastLoginDatetime = u.last_login_datetime;
   const lastLoginDatetime = u.lastLoginDatetime;
   const studentWithClass = users[0].studentWithClass;
 
@@ -36,6 +38,7 @@ export const userAuthenticationService = async (
   u.lastLoginDatetime = currentDatetime();
   updateUserRepo(u);
 
+  logger.info('userAuthenticationService() - end');
   return {
     user: userEntity2Dto(
       // { ...u, last_login_datetime: lastLoginDatetime },
